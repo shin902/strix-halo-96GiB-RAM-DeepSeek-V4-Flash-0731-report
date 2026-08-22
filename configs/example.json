@@ -1,0 +1,76 @@
+{
+  "manifestPath": "example-manifest.jsonl",
+  "outputDir": "../runs/example",
+  "repositories": {
+    "django": "/replace/with/a/local/django/checkout"
+  },
+  "variants": {
+    "cloud-fp": {
+      "provider": "DeepSeek cloud",
+      "baseUrl": "https://api.example.invalid/v1",
+      "model": "deepseek-v4-flash",
+      "apiKeyEnv": "DEEPSEEK_CLOUD_API_KEY",
+      "reasoning": true,
+      "contextWindow": 131072,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      },
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      }
+    },
+    "q2": {
+      "baseUrl": "http://127.0.0.1:8101/v1",
+      "model": "deepseek-v4-flash-q2",
+      "apiKey": "dummy",
+      "reasoning": true,
+      "contextWindow": 131072,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      },
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false,
+        "maxTokensField": "max_tokens"
+      }
+    },
+    "reap-a": {
+      "baseUrl": "http://127.0.0.1:8102/v1",
+      "model": "deepseek-v4-flash-reap-a",
+      "apiKey": "dummy",
+      "reasoning": true,
+      "contextWindow": 131072,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      }
+    },
+    "reap-b": {
+      "baseUrl": "http://127.0.0.1:8103/v1",
+      "model": "deepseek-v4-flash-reap-b",
+      "apiKey": "dummy",
+      "reasoning": true,
+      "contextWindow": 131072,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      }
+    }
+  },
+  "agent": {
+    "systemPrompt": "You are a benchmark coding agent. Work only in the current repository. Inspect before editing, make the smallest correct fix, run relevant tests when practical, and leave the working tree with the proposed patch. Do not merely explain the answer.",
+    "tools": ["read", "bash", "grep", "find", "ls", "edit", "write"],
+    "thinkingLevel": "off",
+    "maxTurns": 40,
+    "timeoutMs": 1800000,
+    "promptTemplate": "Solve this SWE-bench issue in the current working directory.\n\nInstance: {{instance_id}}\nRepository: {{repo}}\n\nProblem statement:\n{{problem_statement}}\n\nLeave the code changes in the working tree and run relevant tests when practical."
+  },
+  "keepWorktrees": true
+}

@@ -1,0 +1,34 @@
+{
+  "dataset": "princeton-nlp/SWE-bench_Verified",
+  "config": "default",
+  "split": "test",
+  "revision": "c104f840cc67f8b6eec6f759ebc8b2693d585d4a",
+  "totalRows": 500,
+  "selection": {
+    "count": 20,
+    "method": "lowest SHA-256(seed + NUL + instance_id)",
+    "seed": "genai-expo-swebench-v1"
+  },
+  "instanceIds": [
+    "django__django-11163",
+    "django__django-11490",
+    "django__django-13670",
+    "django__django-13794",
+    "django__django-13809",
+    "django__django-14373",
+    "django__django-14771",
+    "django__django-15098",
+    "django__django-15572",
+    "django__django-16032",
+    "matplotlib__matplotlib-23299",
+    "matplotlib__matplotlib-25332",
+    "pytest-dev__pytest-5631",
+    "scikit-learn__scikit-learn-10297",
+    "scikit-learn__scikit-learn-13135",
+    "sphinx-doc__sphinx-10673",
+    "sphinx-doc__sphinx-11510",
+    "sympy__sympy-11618",
+    "sympy__sympy-12481",
+    "sympy__sympy-21379"
+  ]
+}

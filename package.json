@@ -1,0 +1,19 @@
+{
+  "name": "deepseek-v4-flash-swebench-harness",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "tsx src/cli.ts",
+    "dry-run": "tsx src/cli.ts --mode dry-run --config configs/example.json",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/**/*.test.ts"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.2"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.0",
+    "tsx": "4.19.4",
+    "typescript": "5.8.3"
+  }
+}
