@@ -1,9 +1,11 @@
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { access, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { loadConfig, parseConfig, selectVariantNames } from "../src/config.js";
+import { loadManifest } from "../src/manifest.js";
 import { runGit, prepareWorkspace, validateWorkspace } from "../src/git.js";
 import { type AgentSessionFactory, runBenchmark } from "../src/runner.js";
 import type { ModelVariantConfig } from "../src/types.js";
@@ -115,6 +117,73 @@ test("fixed q2+REAP config keeps the variant name and repository keys aligned", 
     "sphinx-doc/sphinx",
     "sympy/sympy",
   ]);
+});
+
+test("formal Web benchmark has the pinned 30-instance selection and matching lock", async () => {
+  const config = await loadConfig("configs/swebench-multilingual-web-30.json");
+  const instances = await loadManifest(config.manifestPath);
+  const lock = JSON.parse(await readFile("configs/swebench-multilingual-web-30.lock.json", "utf8")) as {
+    dataset: string;
+    config: string;
+    split: string;
+    revision: string;
+    source: { path: string; url: string; sha256: string };
+    totalRows: number;
+    selection: { count: number; repositories: string[]; repoCounts: Record<string, number> };
+    manifest: { path: string; count: number; sha256: string; fields: string[]; excludedFields: string[] };
+    instanceIds: string[];
+  };
+  const expectedRepositories = ["preactjs/preact", "vuejs/core", "facebook/docusaurus", "mrdoob/three.js"];
+  const expectedCounts = {
+    "preactjs/preact": 17,
+    "vuejs/core": 5,
+    "facebook/docusaurus": 5,
+    "mrdoob/three.js": 3,
+  };
+  const counts = Object.fromEntries(expectedRepositories.map((repo) => [
+    repo,
+    instances.filter((instance) => instance.repo === repo).length,
+  ]));
+  const manifestBytes = await readFile(config.manifestPath);
+
+  assert.deepEqual(Object.keys(config.repositories), expectedRepositories);
+  assert.equal(instances.length, 30);
+  assert.equal(new Set(instances.map((instance) => instance.instance_id)).size, 30);
+  assert.deepEqual(counts, expectedCounts);
+  assert.deepEqual(lock.selection.repositories, expectedRepositories);
+  assert.deepEqual(lock.selection.repoCounts, expectedCounts);
+  assert.equal(lock.selection.count, 30);
+  assert.equal(lock.totalRows, 300);
+  assert.equal(lock.dataset, "SWE-bench/SWE-bench_Multilingual");
+  assert.equal(lock.config, "default");
+  assert.equal(lock.split, "test");
+  assert.equal(lock.revision, "846e647b9f33c0b51b739d005d13d85493c9af09");
+  assert.equal(lock.source.path, "data/test-00000-of-00001.parquet");
+  assert.equal(lock.source.url, "https://huggingface.co/datasets/SWE-bench/SWE-bench_Multilingual/resolve/846e647b9f33c0b51b739d005d13d85493c9af09/data/test-00000-of-00001.parquet");
+  assert.equal(lock.source.sha256, "92abca7cb527b41a9f66d03a26ce441ff7319e3a49f985998fd56be4bb9b08b2");
+  assert.equal(lock.manifest.path, "swebench-multilingual-web-30.jsonl");
+  assert.equal(lock.manifest.count, 30);
+  assert.equal(createHash("sha256").update(manifestBytes).digest("hex"), lock.manifest.sha256);
+  assert.deepEqual(lock.instanceIds, instances.map((instance) => instance.instance_id));
+  assert.deepEqual(lock.manifest.fields, ["repo", "instance_id", "base_commit", "problem_statement"]);
+  assert.deepEqual(lock.manifest.excludedFields, ["patch", "test_patch", "eval_script"]);
+  for (const instance of instances) {
+    assert.deepEqual(Object.keys(instance).sort(), ["base_commit", "instance_id", "problem_statement", "repo"]);
+  }
+});
+
+test("Verified 20 and SymPy smoke benchmark files remain available", async () => {
+  for (const path of [
+    "configs/swebench-verified-20.json",
+    "configs/swebench-verified-20.jsonl",
+    "configs/swebench-verified-20.lock.json",
+    "configs/swebench-verified-single-sympy-12481.json",
+    "configs/swebench-verified-single-sympy-12481.jsonl",
+  ]) {
+    await assert.doesNotReject(access(resolve(path)));
+  }
+  assert.equal((await loadManifest(resolve("configs/swebench-verified-20.jsonl"))).length, 20);
+  assert.equal((await loadManifest(resolve("configs/swebench-verified-single-sympy-12481.jsonl"))).length, 1);
 });
 
 test("selects exact variants and reap wildcard", () => {

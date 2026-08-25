@@ -1,0 +1,76 @@
+{
+  "dataset": "SWE-bench/SWE-bench_Multilingual",
+  "config": "default",
+  "split": "test",
+  "revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+  "source": {
+    "path": "data/test-00000-of-00001.parquet",
+    "url": "https://huggingface.co/datasets/SWE-bench/SWE-bench_Multilingual/resolve/846e647b9f33c0b51b739d005d13d85493c9af09/data/test-00000-of-00001.parquet",
+    "sha256": "92abca7cb527b41a9f66d03a26ce441ff7319e3a49f985998fd56be4bb9b08b2"
+  },
+  "totalRows": 300,
+  "selection": {
+    "method": "allowlisted repositories, preserving pinned dataset row order",
+    "count": 30,
+    "repositories": [
+      "preactjs/preact",
+      "vuejs/core",
+      "facebook/docusaurus",
+      "mrdoob/three.js"
+    ],
+    "repoCounts": {
+      "preactjs/preact": 17,
+      "vuejs/core": 5,
+      "facebook/docusaurus": 5,
+      "mrdoob/three.js": 3
+    }
+  },
+  "manifest": {
+    "path": "swebench-multilingual-web-30.jsonl",
+    "count": 30,
+    "sha256": "1645622ba8b3a1d590ff837a7c772e64a5010c9dbdd675d203ee8af522c12a6e",
+    "fields": [
+      "repo",
+      "instance_id",
+      "base_commit",
+      "problem_statement"
+    ],
+    "excludedFields": [
+      "patch",
+      "test_patch",
+      "eval_script"
+    ]
+  },
+  "instanceIds": [
+    "facebook__docusaurus-10130",
+    "facebook__docusaurus-10309",
+    "facebook__docusaurus-8927",
+    "facebook__docusaurus-9183",
+    "facebook__docusaurus-9897",
+    "mrdoob__three.js-25687",
+    "mrdoob__three.js-26589",
+    "mrdoob__three.js-27395",
+    "preactjs__preact-2757",
+    "preactjs__preact-2896",
+    "preactjs__preact-2927",
+    "preactjs__preact-3010",
+    "preactjs__preact-3062",
+    "preactjs__preact-3345",
+    "preactjs__preact-3454",
+    "preactjs__preact-3562",
+    "preactjs__preact-3567",
+    "preactjs__preact-3689",
+    "preactjs__preact-3739",
+    "preactjs__preact-3763",
+    "preactjs__preact-4152",
+    "preactjs__preact-4182",
+    "preactjs__preact-4245",
+    "preactjs__preact-4316",
+    "preactjs__preact-4436",
+    "vuejs__core-11589",
+    "vuejs__core-11739",
+    "vuejs__core-11870",
+    "vuejs__core-11899",
+    "vuejs__core-11915"
+  ]
+}

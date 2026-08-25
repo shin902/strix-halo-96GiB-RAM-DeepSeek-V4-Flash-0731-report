@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "bench": "tsx src/cli.ts",
-    "dry-run": "tsx src/cli.ts --mode dry-run --config configs/example.json",
+    "dry-run": "tsx src/cli.ts --mode dry-run --config configs/swebench-multilingual-web-30.json",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test test/**/*.test.ts"
   },
