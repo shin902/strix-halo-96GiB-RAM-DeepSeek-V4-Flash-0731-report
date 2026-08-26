@@ -51,16 +51,23 @@ npm run bench -- --config configs/example.json --mode dry-run --variant cloud-fp
 ~/benchmarks/swebench-repos/three.js
 ```
 
-endpointを起動・設定した後、まず正式セットの1問で疎通します。
+正式セットの`q2`と`q2-reap`を比較する場合は、**別々のbackendを2つ起動**し、次のendpointへ割り当ててください。
+
+- `q2`: `http://127.0.0.1:8101/v1`
+- `q2-reap`: `http://127.0.0.1:8000/v1`
+
+このconfigは同じbackendをvariant名だけ変えて比較することを許しません。両variantを選択した実行では、2つの`baseUrl`が同じ場合にharnessが開始前にエラーにします。別ポートを使う場合はconfigの両方の`baseUrl`を実際のbackendへ変更し、同じserverを2つのポートへ転送しないでください。
+
+2つのendpointを起動・設定した後、まず正式セットの1問で疎通します。
 
 ```bash
 npm run bench -- \
   --config configs/swebench-multilingual-web-30.json \
-  --variant q2-reap \
+  --variant q2,q2-reap \
   --limit 1
 ```
 
-全variant（cloud-fp、q2、q2-reap）を正式セットへ通す場合は、`--limit`を付けずに実行します。
+全variant（cloud-fp、q2、q2-reap）を正式セットへ通す場合は、2つのlocal backendとcloud endpointを設定してから`--limit`を付けずに実行します。
 
 ## 旧セット（正式スコアには使用しない）
 
@@ -122,7 +129,7 @@ SWE-benchのバージョンによってCLI引数が異なるため、使用す�
 ```bash
 python -m swebench.harness.run_evaluation \
   --dataset_name SWE-bench/SWE-bench_Multilingual \
-  --predictions_path runs/example/q2/predictions.jsonl \
+  --predictions_path runs/swebench-multilingual-web-30/q2/predictions.jsonl \
   --run_id deepseek-q2
 ```
 

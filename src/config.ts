@@ -237,6 +237,32 @@ export function selectVariantNames(
   return [...selected];
 }
 
+function endpointKey(baseUrl: string): string {
+  try {
+    const url = new URL(baseUrl);
+    url.pathname = url.pathname.replace(/\/+$/, "") || "/";
+    return url.toString();
+  } catch {
+    return baseUrl.replace(/\/+$/, "");
+  }
+}
+
+/** Reject a Q2/Q2+REAP run that would send both labels to one endpoint. */
+export function assertDistinctComparisonEndpoints(
+  variants: Record<string, ModelVariantConfig>,
+  selectedNames: string[],
+): void {
+  if (!selectedNames.includes("q2") || !selectedNames.includes("q2-reap")) return;
+  const q2 = variants.q2;
+  const q2Reap = variants["q2-reap"];
+  if (!q2 || !q2Reap) return;
+  if (endpointKey(q2.baseUrl) === endpointKey(q2Reap.baseUrl)) {
+    throw new Error(
+      `q2 and q2-reap must use distinct baseUrl endpoints when selected together (both use ${q2.baseUrl})`,
+    );
+  }
+}
+
 export function modelRequiresEnvironment(variant: ModelVariantConfig): string | undefined {
   if (variant.apiKeyEnv !== undefined && process.env[variant.apiKeyEnv] === undefined) return variant.apiKeyEnv;
   return undefined;

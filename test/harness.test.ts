@@ -106,6 +106,48 @@ test("corrupt repository fails before an agent session is created", async () => 
   assert.equal(await readFile(join(artifactRoot, "events.jsonl"), "utf8"), "");
 });
 
+test("patch capture failure marks an otherwise completed run as error", async () => {
+  const root = await mkdtemp(join(tmpdir(), "swebench-patch-capture-test-"));
+  const fixture = await createGitFixture(root);
+  await writeFile(
+    join(root, "manifest.jsonl"),
+    `${JSON.stringify({
+      instance_id: "repo__project-1",
+      repo: "repo",
+      base_commit: fixture.commit,
+      problem_statement: "Fix the example.",
+    })}\n`,
+    "utf8",
+  );
+  const config = fixtureConfig(root, { repo: fixture.source });
+  const createSession = (async (options: { cwd: string }) => {
+    const session = {
+      messages: [],
+      subscribe: () => () => undefined,
+      prompt: async () => {
+        await rm(join(options.cwd, ".git", "HEAD"));
+      },
+      abort: async () => undefined,
+      dispose: () => undefined,
+    };
+    return { session };
+  }) as unknown as AgentSessionFactory;
+
+  const summary = await runBenchmark(config, {
+    mode: "run",
+    variantNames: ["q2-reap"],
+    createSession,
+  });
+
+  const result = summary.results[0];
+  assert.equal(result?.status, "error");
+  assert.match(result?.error ?? "", /git diff .*failed/);
+  const artifactRoot = join(root, "runs", "q2-reap", "repo__project-1");
+  const timing = JSON.parse(await readFile(join(artifactRoot, "timing.json"), "utf8")) as { status: string };
+  assert.equal(timing.status, "error");
+  assert.equal(await readFile(join(artifactRoot, "patch.diff"), "utf8"), "");
+});
+
 test("fixed q2+REAP config keeps the variant name and repository keys aligned", async () => {
   const config = await loadConfig("configs/swebench-verified-20.json");
   assert.ok(config.variants["q2-reap"]);
@@ -147,6 +189,7 @@ test("formal Web benchmark has the pinned 30-instance selection and matching loc
   const manifestBytes = await readFile(config.manifestPath);
 
   assert.deepEqual(Object.keys(config.repositories), expectedRepositories);
+  assert.notEqual(config.variants.q2?.baseUrl, config.variants["q2-reap"]?.baseUrl);
   assert.equal(instances.length, 30);
   assert.equal(new Set(instances.map((instance) => instance.instance_id)).size, 30);
   assert.deepEqual(counts, expectedCounts);
@@ -170,6 +213,27 @@ test("formal Web benchmark has the pinned 30-instance selection and matching loc
   for (const instance of instances) {
     assert.deepEqual(Object.keys(instance).sort(), ["base_commit", "instance_id", "problem_statement", "repo"]);
   }
+});
+
+test("rejects a same-endpoint q2 and q2-reap comparison", async () => {
+  const root = await mkdtemp(join(tmpdir(), "swebench-endpoint-validation-test-"));
+  await writeFile(
+    join(root, "manifest.jsonl"),
+    `${JSON.stringify({
+      instance_id: "repo__project-1",
+      repo: "repo",
+      base_commit: "abc",
+      problem_statement: "Fix the example.",
+    })}\n`,
+    "utf8",
+  );
+  const config = fixtureConfig(root);
+  config.variants["q2-reap"]!.baseUrl = config.variants.q2!.baseUrl;
+
+  await assert.rejects(
+    runBenchmark(config, { mode: "dry-run", variantNames: ["q2", "q2-reap"], limit: 1 }),
+    /q2 and q2-reap must use distinct baseUrl endpoints/,
+  );
 });
 
 test("Verified 20 and SymPy smoke benchmark files remain available", async () => {

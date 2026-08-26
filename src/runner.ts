@@ -10,6 +10,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { writeJson, writeJsonl, writeTrajectory, summarizeUsage } from "./artifacts.js";
 import {
+  assertDistinctComparisonEndpoints,
   buildPiModelsCatalog,
   modelRequiresEnvironment,
   writePiModelsFile,
@@ -274,12 +275,14 @@ async function runRealInstance(
         patch = await gitDiff(workspaceDir);
       } catch (error) {
         failure = failure ?? errorMessage(error);
+        status = "error";
       }
     }
     try {
       await writeFile(join(artifactDir, "git-status.txt"), await gitStatus(workspaceDir), "utf8");
     } catch (error) {
       failure = failure ?? errorMessage(error);
+      status = "error";
       await writeFile(join(artifactDir, "git-status.txt"), "", "utf8");
     }
     await writeFile(join(artifactDir, "patch.diff"), patch, "utf8");
@@ -325,6 +328,7 @@ async function writePredictions(outputDir: string, variantName: string, results:
 }
 
 export async function runBenchmark(config: BenchmarkConfig, options: BenchmarkRunOptions): Promise<RunSummary> {
+  assertDistinctComparisonEndpoints(config.variants, options.variantNames);
   const manifest = await loadManifest(config.manifestPath);
   const instances = selectInstances(manifest, options.instanceIds, options.limit);
   const catalog = buildPiModelsCatalog(config.variants, options.variantNames);
