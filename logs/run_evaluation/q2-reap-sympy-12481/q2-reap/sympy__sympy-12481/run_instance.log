@@ -1,0 +1,99 @@
+2026-08-22 16:48:42,588 - INFO - Image not found locally, attempting to pull...
+2026-08-22 16:51:27,947 - INFO - Creating container for sympy__sympy-12481...
+2026-08-22 16:51:28,372 - INFO - Container for sympy__sympy-12481 created: fd2c5688910f659e30a95ff13bd8770514ac4e8fa5ed4324b65558ec66da22af
+2026-08-22 16:51:28,494 - INFO - Container for sympy__sympy-12481 started: fd2c5688910f659e30a95ff13bd8770514ac4e8fa5ed4324b65558ec66da22af
+2026-08-22 16:51:28,494 - INFO - Intermediate patch for sympy__sympy-12481 written to logs/run_evaluation/q2-reap-sympy-12481/q2-reap/sympy__sympy-12481/patch.diff, now applying to container...
+2026-08-22 16:51:28,567 - INFO - >>>>> Applied Patch:
+Checking patch sympy/combinatorics/permutations.py...
+warning: sympy/combinatorics/permutations.py has type 100755, expected 100644
+Checking patch sympy/combinatorics/tests/test_permutations.py...
+warning: sympy/combinatorics/tests/test_permutations.py has type 100755, expected 100644
+Applied patch sympy/combinatorics/permutations.py cleanly.
+Applied patch sympy/combinatorics/tests/test_permutations.py cleanly.
+
+2026-08-22 16:51:28,761 - INFO - Git diff before:
+diff --git a/sympy/combinatorics/permutations.py b/sympy/combinatorics/permutations.py
+index 136ed5a47..7926b4f55 100755
+--- a/sympy/combinatorics/permutations.py
++++ b/sympy/combinatorics/permutations.py
+@@ -802,7 +802,9 @@ def __new__(cls, *args, **kwargs):
+         """
+         Constructor for the Permutation object from a list or a
+         list of lists in which all elements of the permutation may
+-        appear only once.
++        appear only once.  If the permutation is entered in cyclic form,
++        the cycles need not be disjoint; they are applied in left-to-right
++        order.
+ 
+         Examples
+         ========
+@@ -895,12 +897,8 @@ def __new__(cls, *args, **kwargs):
+         # counting starts from 1.
+ 
+         temp = flatten(args)
+-        if has_dups(temp):
+-            if is_cycle:
+-                raise ValueError('there were repeated elements; to resolve '
+-                'cycles use Cycle%s.' % ''.join([str(tuple(c)) for c in args]))
+-            else:
+-                raise ValueError('there were repeated elements.')
++        if has_dups(temp) and not is_cycle:
++            raise ValueError('there were repeated elements.')
+         temp = set(temp)
+ 
+         if not is_cycle and \
+diff --git a/sympy/combinatorics/tests/test_permutations.py b/sympy/combinatorics/tests/test_permutations.py
+index 7f8cd572e..cb7ef829b 100755
+--- a/sympy/combinatorics/tests/test_permutations.py
++++ b/sympy/combinatorics/tests/test_permutations.py
+@@ -349,7 +349,7 @@ def test_args():
+     raises(ValueError, lambda: Permutation([[1, 2], 0]))
+            # enclosing brackets needed on 0
+     raises(ValueError, lambda: Permutation([1, 1, 0]))
+-    raises(ValueError, lambda: Permutation([[1], [1, 2]]))
++    assert Permutation([[1], [1, 2]]) == Permutation([0, 2, 1])
+     raises(ValueError, lambda: Permutation([4, 5], size=10))  # where are 0-3?
+     # but this is ok because cycles imply that only those listed moved
+     assert Permutation(4, 5) == Permutation([0, 1, 2, 3, 5, 4])
+2026-08-22 16:51:28,761 - INFO - Eval script for sympy__sympy-12481 written to logs/run_evaluation/q2-reap-sympy-12481/q2-reap/sympy__sympy-12481/eval.sh; copying to container...
+2026-08-22 16:51:31,201 - INFO - Test runtime: 2.40 seconds
+2026-08-22 16:51:31,202 - INFO - Test output for sympy__sympy-12481 written to logs/run_evaluation/q2-reap-sympy-12481/q2-reap/sympy__sympy-12481/test_output.txt
+2026-08-22 16:51:31,239 - INFO - Git diff after:
+diff --git a/sympy/combinatorics/permutations.py b/sympy/combinatorics/permutations.py
+index 136ed5a47..7926b4f55 100755
+--- a/sympy/combinatorics/permutations.py
++++ b/sympy/combinatorics/permutations.py
+@@ -802,7 +802,9 @@ def __new__(cls, *args, **kwargs):
+         """
+         Constructor for the Permutation object from a list or a
+         list of lists in which all elements of the permutation may
+-        appear only once.
++        appear only once.  If the permutation is entered in cyclic form,
++        the cycles need not be disjoint; they are applied in left-to-right
++        order.
+ 
+         Examples
+         ========
+@@ -895,12 +897,8 @@ def __new__(cls, *args, **kwargs):
+         # counting starts from 1.
+ 
+         temp = flatten(args)
+-        if has_dups(temp):
+-            if is_cycle:
+-                raise ValueError('there were repeated elements; to resolve '
+-                'cycles use Cycle%s.' % ''.join([str(tuple(c)) for c in args]))
+-            else:
+-                raise ValueError('there were repeated elements.')
++        if has_dups(temp) and not is_cycle:
++            raise ValueError('there were repeated elements.')
+         temp = set(temp)
+ 
+         if not is_cycle and \
+2026-08-22 16:51:31,239 - INFO - Git diff changed after running eval script
+2026-08-22 16:51:31,239 - INFO - Grading answer for sympy__sympy-12481...
+2026-08-22 16:51:31,240 - INFO - report: {'sympy__sympy-12481': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_args'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_Permutation', 'test_josephus', 'test_ranking', 'test_mul', 'test_Cycle', 'test_from_sequence', 'test_printing_cyclic'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-12481: resolved: True
+2026-08-22 16:51:31,240 - INFO - Attempting to stop container sweb.eval.sympy__sympy-12481.q2-reap-sympy-12481...
+2026-08-22 16:51:46,374 - INFO - Container sweb.eval.sympy__sympy-12481.q2-reap-sympy-12481 stopped successfully.
+2026-08-22 16:51:46,375 - INFO - Attempting to remove container sweb.eval.sympy__sympy-12481.q2-reap-sympy-12481...
+2026-08-22 16:51:46,414 - INFO - Container sweb.eval.sympy__sympy-12481.q2-reap-sympy-12481 removed successfully.

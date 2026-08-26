@@ -1,0 +1,106 @@
+{
+  "manifestPath": "swebench-verified-20.jsonl",
+  "outputDir": "../runs/swebench-verified-20",
+  "repositories": {
+    "django/django": "~/benchmarks/swebench-repos/django",
+    "matplotlib/matplotlib": "~/benchmarks/swebench-repos/matplotlib",
+    "pytest-dev/pytest": "~/benchmarks/swebench-repos/pytest",
+    "scikit-learn/scikit-learn": "~/benchmarks/swebench-repos/scikit-learn",
+    "sphinx-doc/sphinx": "~/benchmarks/swebench-repos/sphinx",
+    "sympy/sympy": "~/benchmarks/swebench-repos/sympy"
+  },
+  "variants": {
+    "cloud-fp": {
+      "provider": "DeepSeek cloud",
+      "baseUrl": "https://api.example.invalid/v1",
+      "model": "deepseek-v4-flash",
+      "apiKeyEnv": "DEEPSEEK_CLOUD_API_KEY",
+      "reasoning": true,
+      "contextWindow": 131072,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      },
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      }
+    },
+    "q2": {
+      "baseUrl": "http://127.0.0.1:8000/v1",
+      "model": "deepseek-v4-flash",
+      "apiKey": "dummy",
+      "reasoning": true,
+      "contextWindow": 100000,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      },
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false,
+        "maxTokensField": "max_tokens"
+      }
+    },
+    "reap-a": {
+      "baseUrl": "http://127.0.0.1:8000/v1",
+      "model": "deepseek-v4-flash",
+      "apiKey": "dummy",
+      "reasoning": true,
+      "contextWindow": 100000,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      }
+    },
+    "reap-b": {
+      "baseUrl": "http://127.0.0.1:8000/v1",
+      "model": "deepseek-v4-flash",
+      "apiKey": "dummy",
+      "reasoning": true,
+      "contextWindow": 100000,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      }
+    },
+    "q2-reap": {
+      "baseUrl": "http://127.0.0.1:8000/v1",
+      "model": "deepseek-v4-flash",
+      "apiKey": "dummy",
+      "reasoning": true,
+      "contextWindow": 100000,
+      "maxTokens": 16384,
+      "samplingParams": {
+        "temperature": 0,
+        "top_p": 1
+      },
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false,
+        "maxTokensField": "max_tokens"
+      }
+    }
+  },
+  "agent": {
+    "systemPrompt": "You are a benchmark coding agent. Work only in the current repository. Inspect before editing, make the smallest correct fix, run relevant tests when practical, and leave the working tree with the proposed patch. Do not merely explain the answer.",
+    "tools": [
+      "read",
+      "bash",
+      "grep",
+      "find",
+      "ls",
+      "edit",
+      "write"
+    ],
+    "thinkingLevel": "off",
+    "maxTurns": 40,
+    "timeoutMs": 1800000,
+    "promptTemplate": "Solve this SWE-bench issue in the current working directory.\n\nInstance: {{instance_id}}\nRepository: {{repo}}\n\nProblem statement:\n{{problem_statement}}\n\nLeave the code changes in the working tree and run relevant tests when practical."
+  },
+  "keepWorktrees": true
+}
