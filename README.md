@@ -62,6 +62,17 @@ npm run bench -- \
 
 全variant（cloud-fp、q2、q2-reap）を正式セットへ通す場合は、`--limit`を付けずに実行します。
 
+### 正式評価の実行・報告方針
+
+- 各instanceの上限は **100 turns / 1時間** とする。
+- 正式評価は各variant・各instanceにつきまず1回実行し、全30問を一律3回反復しない。
+- endpoint障害など評価不能な実行だけを再実行する。`timeout`、`turn-limit`、空patchはモデルの結果として保持し、結果を改善する目的では差し替えない。
+- 再実行した場合は初回結果を削除せず、理由と試行番号を分けて保存する。同一結果として平均化するのは、事前に反復評価対象として固定した試行だけにする。
+- variant比較ではresolved率に加え、patch生成率、`timeout` / `turn-limit`率、wall-clock、turn数、input/output token数を保存・報告する。速度指標を出す場合は算出方法を明記し、少なくともoutput tokens / wall-clockを実効値として区別する。
+- 公式graderの出力はagent artifactと同じrun IDへ紐づけ、instance単位のresolved判定と集計結果を残す。grader未実行のrunをresolved扱いしない。
+
+実行条件は各instanceの`run.json`、終了状態とwall-clock・turn数は`timing.json`、token数は`usage.json`へ自動保存されます。公式grader結果と最終比較表・グラフは別途生成して紐づけます。
+
 ## 旧セット（正式スコアには使用しない）
 
 既存のSWE-bench Verified固定20問とSymPy 1問は削除・改名せず、pilot / smoke test / harness回帰確認用として残します。正式なWeb系比較の問題数やresolved率へ混ぜません。
