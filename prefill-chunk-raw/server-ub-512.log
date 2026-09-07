@@ -1,0 +1,50 @@
+0.00.039.160 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.039.284 I srv          init: The UI is disabled
+0.00.039.287 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.039.531 W srv  llama_server: -----------------
+0.00.039.535 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.039.536 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.039.536 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.039.536 W srv  llama_server: -----------------
+0.00.040.848 I srv    load_model: loading model '/mnt/data/DeepSeek-V4-Flash-0731-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-imatrix.gguf'
+0.46.072.422 W resolve_fused_ops: layer 2 is assigned to device Vulkan0 but Lightning Indexer is assigned to device CPU (usually due to missing support)
+0.46.072.427 W resolve_fused_ops: Lightning Indexer not supported, set to disabled
+0.46.075.949 W resolve_fused_ops: layer 0 is assigned to device Vulkan0 but fused DeepSeek V4 HC pre is assigned to device CPU (usually due to missing support)
+0.46.075.952 W resolve_fused_ops: fused DeepSeek V4 HC pre not supported, set to disabled
+0.46.080.245 W resolve_fused_ops: layer 0 is assigned to device Vulkan0 but fused DeepSeek V4 HC comb is assigned to device CPU (usually due to missing support)
+0.46.080.247 W resolve_fused_ops: fused DeepSeek V4 HC comb not supported, set to disabled
+0.46.096.467 W resolve_fused_ops: layer 0 is assigned to device Vulkan0 but fused DeepSeek V4 HC post is assigned to device CPU (usually due to missing support)
+0.46.096.469 W resolve_fused_ops: fused DeepSeek V4 HC post not supported, set to disabled
+0.47.124.570 I cmn          init: llama threadpool init, n_threads = 16
+0.47.711.571 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 100096, kv_unified = 'false'
+0.47.715.194 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.47.715.245 I srv  llama_server: model loaded
+0.47.715.251 I srv  llama_server: listening on http://127.0.0.1:18124
+0.48.567.146 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.48.567.194 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.55.178.584 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =    717, progress = 0.58, t =   6.61 s / 108.45 tokens per second
+0.59.652.546 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =   1229, progress = 1.00, t =  11.09 s / 110.87 tokens per second
+1.00.072.245 I slot print_timing: id  0 | task 0 | prompt eval time =   11505.00 ms /  1233 tokens (    9.33 ms per token,   107.17 tokens per second)
+1.00.072.251 I slot print_timing: id  0 | task 0 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token,     0.00 tokens per second)
+1.00.072.253 I slot print_timing: id  0 | task 0 |       total time =   11505.00 ms /  1234 tokens
+1.00.072.258 I slot print_timing: id  0 | task 0 |    graphs reused =          1
+1.00.072.383 I slot      release: id  0 | task 0 | stop processing: n_tokens = 1233, truncated = 0
+1.00.140.467 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, f_sim_best = 1.000 (> 0.100 thold), f_keep = 1.000
+1.00.140.517 I slot launch_slot_: id  0 | task 4 | processing task, is_child = 0
+1.07.247.532 I slot print_timing: id  0 | task 4 | prompt processing, n_tokens =    717, progress = 0.58, t =   7.11 s / 100.89 tokens per second
+1.11.716.143 I slot print_timing: id  0 | task 4 | prompt processing, n_tokens =   1229, progress = 1.00, t =  11.58 s / 106.17 tokens per second
+1.12.125.841 I slot print_timing: id  0 | task 4 | prompt eval time =   11985.28 ms /  1233 tokens (    9.72 ms per token,   102.88 tokens per second)
+1.12.125.848 I slot print_timing: id  0 | task 4 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token,     0.00 tokens per second)
+1.12.125.849 I slot print_timing: id  0 | task 4 |       total time =   11985.29 ms /  1234 tokens
+1.12.125.851 I slot print_timing: id  0 | task 4 |    graphs reused =          1
+1.12.125.959 I slot      release: id  0 | task 4 | stop processing: n_tokens = 1233, truncated = 0
+1.12.198.262 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, f_sim_best = 1.000 (> 0.100 thold), f_keep = 1.000
+1.12.198.314 I slot launch_slot_: id  0 | task 8 | processing task, is_child = 0
+1.19.302.819 I slot print_timing: id  0 | task 8 | prompt processing, n_tokens =    717, progress = 0.58, t =   7.10 s / 100.92 tokens per second
+1.23.769.086 I slot print_timing: id  0 | task 8 | prompt processing, n_tokens =   1229, progress = 1.00, t =  11.57 s / 106.22 tokens per second
+1.24.180.842 I slot print_timing: id  0 | task 8 | prompt eval time =   11982.49 ms /  1233 tokens (    9.72 ms per token,   102.90 tokens per second)
+1.24.180.848 I slot print_timing: id  0 | task 8 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token,     0.00 tokens per second)
+1.24.180.849 I slot print_timing: id  0 | task 8 |       total time =   11982.50 ms /  1234 tokens
+1.24.180.851 I slot print_timing: id  0 | task 8 |    graphs reused =          1
+1.24.180.957 I slot      release: id  0 | task 8 | stop processing: n_tokens = 1233, truncated = 0
+1.24.210.360 I srv    operator(): operator(): cleaning up before exit...

@@ -1,0 +1,12 @@
+START ub=128 port=18121
+DONE ub=128
+START ub=256 port=18122
+DONE ub=256
+START ub=512 port=18124
+DONE ub=512
+START ub=1024 port=18128
+DONE ub=1024
+START ub=2048 port=18136
+DONE ub=2048
+RESULTS=/tmp/llama-prefill-bench/results.jsonl
+BENCH_ELAPSED_SECONDS=443.268
