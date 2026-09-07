@@ -9,10 +9,10 @@
   },
   "variants": {
     "cloud-fp": {
-      "provider": "DeepSeek cloud",
-      "baseUrl": "https://api.example.invalid/v1",
+      "provider": "OpenCode Zen",
+      "baseUrl": "https://opencode.ai/zen/v1",
       "model": "deepseek-v4-flash",
-      "apiKeyEnv": "DEEPSEEK_CLOUD_API_KEY",
+      "apiKeyEnv": "OPENCODE_API_KEY",
       "reasoning": true,
       "contextWindow": 131072,
       "maxTokens": 16384,
