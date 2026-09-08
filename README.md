@@ -139,6 +139,21 @@ python -m swebench.harness.run_evaluation \
 
 graderのresolved結果はこのrunnerの`timing.json`へ書き戻さず、predictionsとgrader出力を別管理します。
 
+### Dockerのディスク使用量
+
+SWE-bench公式graderはinstanceごとのDocker imageを自動削除しないため、30問を一括実行するとイメージが蓄積します。ローカル実行では、非空patchを1問ずつgraderへ渡し、各instance終了直後にこの実行が作成したimageだけを削除するwrapperを使ってください。
+
+```bash
+PYTHON_BIN="$HOME/.cache/genai-expo-swebench-venv/bin/python" \
+  scripts/run-swebench-grader-serial.sh \
+  --dataset "$HOME/.cache/genai-expo-grader/test-00000-of-00001.parquet" \
+  --predictions runs/swebench-multilingual-web-30/cloud-fp/predictions.jsonl \
+  --run-id genai-expo-cloud-fp-web30 \
+  --report-dir runs/swebench-multilingual-web-30/cloud-fp/grader
+```
+
+wrapperは開始前に存在した`swebench/sweb.eval.*` imageを保持し、新規作成分だけを各instance後と中断時に削除します。別のSWE-bench評価と同時に実行しないでください。これにより公式graderのログ・集計reportは維持しつつ、imageの累積を防ぎます。
+
 ## CLI
 
 ```text
