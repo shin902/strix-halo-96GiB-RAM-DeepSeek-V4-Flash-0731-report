@@ -12,6 +12,7 @@ interface CliOptions {
   instances?: string[];
   limit?: number;
   envFile?: string;
+  resume: boolean;
 }
 
 function usage(): string {
@@ -24,6 +25,7 @@ Options:
   --limit <n>           Run only the first n manifest entries
   --mode <run|dry-run>  Execute Pi or only create/validate artifacts (default: run)
   --env-file <path>     Load KEY=VALUE entries before reading config
+  --resume              Reuse instances already marked completed
   --help                Show this message
 `;
 }
@@ -38,6 +40,7 @@ function parseArgs(args: string[]): CliOptions | undefined {
   const options: CliOptions = {
     configPath: "configs/example.json",
     mode: "run",
+    resume: false,
   };
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -72,6 +75,8 @@ function parseArgs(args: string[]): CliOptions | undefined {
       const [value, next] = takeValue(args, index, arg);
       options.envFile = value;
       index = next;
+    } else if (arg === "--resume") {
+      options.resume = true;
     } else {
       throw new Error(`unknown option: ${arg}`);
     }
@@ -117,6 +122,7 @@ export async function main(args = process.argv.slice(2)): Promise<void> {
   const summary = await runBenchmark(config, {
     mode: options.mode,
     variantNames,
+    resume: options.resume,
     ...(options.instances === undefined ? {} : { instanceIds: options.instances }),
     ...(options.limit === undefined ? {} : { limit: options.limit }),
   });

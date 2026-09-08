@@ -85,5 +85,5 @@
     "timeoutMs": 3600000,
     "promptTemplate": "Solve this SWE-bench issue in the current working directory.\n\nInstance: {{instance_id}}\nRepository: {{repo}}\n\nProblem statement:\n{{problem_statement}}\n\nLeave the code changes in the working tree and run relevant tests when practical."
   },
-  "keepWorktrees": true
+  "keepWorktrees": false
 }

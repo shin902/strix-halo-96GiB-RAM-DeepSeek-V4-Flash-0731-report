@@ -201,6 +201,46 @@ test("selects exact variants and reap wildcard", () => {
   assert.deepEqual(selectVariantNames(names, ["cloud-fp", "reap-*"]), ["cloud-fp", "reap-a", "reap-b"]);
 });
 
+test("resume preserves completed artifacts without creating another agent session", async () => {
+  const root = await mkdtemp(join(tmpdir(), "swebench-resume-test-"));
+  await writeFile(
+    join(root, "manifest.jsonl"),
+    `${JSON.stringify({
+      instance_id: "repo__project-1",
+      repo: "repo",
+      base_commit: "abc",
+      problem_statement: "Fix the example.",
+    })}\n`,
+    "utf8",
+  );
+  const artifactRoot = join(root, "runs", "q2", "repo__project-1");
+  await mkdir(artifactRoot, { recursive: true });
+  await writeFile(join(artifactRoot, "patch.diff"), "saved patch\n", "utf8");
+  await writeFile(
+    join(artifactRoot, "timing.json"),
+    `${JSON.stringify({ status: "completed", turns: 7, durationMs: 1234 })}\n`,
+    "utf8",
+  );
+  let sessionStarts = 0;
+  const createSession = (async () => {
+    sessionStarts += 1;
+    throw new Error("unexpected agent session");
+  }) as AgentSessionFactory;
+
+  const summary = await runBenchmark(fixtureConfig(root), {
+    mode: "run",
+    variantNames: ["q2"],
+    resume: true,
+    createSession,
+  });
+
+  assert.equal(sessionStarts, 0);
+  assert.equal(summary.results[0]?.status, "completed");
+  assert.equal(summary.results[0]?.patch, "saved patch\n");
+  assert.equal(summary.results[0]?.turns, 7);
+  assert.match(await readFile(join(root, "runs", "q2", "predictions.jsonl"), "utf8"), /saved patch/);
+});
+
 test("dry-run creates per-variant artifacts and grader predictions", async () => {
   const root = await mkdtemp(join(tmpdir(), "swebench-harness-test-"));
   await writeFile(

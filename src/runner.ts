@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import {
@@ -8,7 +8,7 @@ import {
   SettingsManager,
   type AgentSessionEvent,
 } from "@earendil-works/pi-coding-agent";
-import { writeJson, writeJsonl, writeTrajectory, summarizeUsage } from "./artifacts.js";
+import { jsonString, writeJson, writeJsonl, writeTrajectory, summarizeUsage } from "./artifacts.js";
 import {
   buildPiModelsCatalog,
   modelRequiresEnvironment,
@@ -44,6 +44,8 @@ export interface BenchmarkRunOptions {
   variantNames: string[];
   instanceIds?: string[];
   limit?: number;
+  /** Reuse instances whose timing.json records a completed run. */
+  resume?: boolean;
   /** Test seam; the real Pi factory remains the default. */
   createSession?: AgentSessionFactory;
 }
@@ -161,7 +163,10 @@ async function runRealInstance(
 ): Promise<RunResult> {
   const startedAt = new Date().toISOString();
   const started = Date.now();
-  const events: unknown[] = [];
+  const eventsPath = join(artifactDir, "events.jsonl");
+  let eventSequence = 0;
+  let eventWrites = Promise.resolve();
+  let eventLogFailure: string | undefined;
   let turns = 0;
   let timedOut = false;
   let turnLimitReached = false;
@@ -172,6 +177,7 @@ async function runRealInstance(
   let failure: string | undefined;
 
   await mkdir(artifactDir, { recursive: true });
+  await writeFile(eventsPath, "", "utf8");
   await writeJson(join(artifactDir, "run.json"), {
     ...artifactMetadata(context, instance, workspaceDir),
     mode: "run",
@@ -209,11 +215,21 @@ async function runRealInstance(
     const activeSession = session;
 
     const unsubscribe = activeSession.subscribe((event: AgentSessionEvent) => {
-      events.push({
-        sequence: events.length,
-        timestamp: new Date().toISOString(),
-        event,
-      });
+      try {
+        const line = `${jsonString({
+          sequence: eventSequence,
+          timestamp: new Date().toISOString(),
+          event,
+        })}\n`;
+        eventSequence += 1;
+        eventWrites = eventWrites
+          .then(() => appendFile(eventsPath, line, "utf8"))
+          .catch((error: unknown) => {
+            eventLogFailure = eventLogFailure ?? errorMessage(error);
+          });
+      } catch (error) {
+        eventLogFailure = eventLogFailure ?? errorMessage(error);
+      }
       if (event.type === "turn_end") {
         turns += 1;
         if (turns >= context.config.agent.maxTurns && !turnLimitReached) {
@@ -284,7 +300,8 @@ async function runRealInstance(
       await writeFile(join(artifactDir, "git-status.txt"), "", "utf8");
     }
     await writeFile(join(artifactDir, "patch.diff"), patch, "utf8");
-    await writeJsonl(join(artifactDir, "events.jsonl"), events);
+    await eventWrites;
+    failure = failure ?? eventLogFailure;
     await writeJson(join(artifactDir, "timing.json"), {
       startedAt,
       endedAt: new Date().toISOString(),
@@ -310,6 +327,34 @@ async function runRealInstance(
     durationMs: Date.now() - started,
     ...(failure === undefined ? {} : { error: failure }),
   };
+}
+
+async function readCompletedResult(
+  variantName: string,
+  instanceId: string,
+  artifactDir: string,
+): Promise<RunResult | undefined> {
+  try {
+    const timing = JSON.parse(await readFile(join(artifactDir, "timing.json"), "utf8")) as {
+      status?: unknown;
+      turns?: unknown;
+      durationMs?: unknown;
+      error?: unknown;
+    };
+    if (timing.status !== "completed") return undefined;
+    return {
+      variant: variantName,
+      instanceId,
+      status: "completed",
+      patch: await readFile(join(artifactDir, "patch.diff"), "utf8"),
+      artifactDir,
+      turns: typeof timing.turns === "number" ? timing.turns : 0,
+      durationMs: typeof timing.durationMs === "number" ? timing.durationMs : 0,
+      ...(typeof timing.error === "string" ? { error: timing.error } : {}),
+    };
+  } catch {
+    return undefined;
+  }
 }
 
 async function writePredictions(outputDir: string, variantName: string, results: RunResult[]): Promise<string> {
@@ -365,11 +410,14 @@ export async function runBenchmark(config: BenchmarkConfig, options: BenchmarkRu
       const variantResults: RunResult[] = [];
       for (const instance of instances) {
         const artifactDir = join(config.outputDir, variantName, artifactName(instance.instance_id));
-        await rm(artifactDir, { recursive: true, force: true });
+        const existing = options.mode === "run" && options.resume
+          ? await readCompletedResult(variantName, instance.instance_id, artifactDir)
+          : undefined;
+        if (existing === undefined) await rm(artifactDir, { recursive: true, force: true });
         const workspaceDir = join(artifactDir, "workspace");
-        const result = options.mode === "dry-run"
+        const result = existing ?? (options.mode === "dry-run"
           ? await writeDryRunArtifacts(context, instance, artifactDir, workspaceDir)
-          : await runRealInstance(context, instance, artifactDir, workspaceDir);
+          : await runRealInstance(context, instance, artifactDir, workspaceDir));
         results.push(result);
         variantResults.push(result);
       }

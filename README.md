@@ -99,6 +99,15 @@ npm run bench -- \
   --instance django__django-00001
 ```
 
+中断後は`--resume`を付けると、`timing.json`が`completed`のinstanceを再実行せず、保存済みpatchをpredictionsへ含めて残りだけを実行します。
+
+```bash
+npm run bench -- \
+  --config configs/swebench-multilingual-web-30.json \
+  --variant q2 \
+  --resume
+```
+
 実行前に以下を編集してください。
 
 - `configs/example.json` の `repositories` をローカルgit checkoutへ向ける
