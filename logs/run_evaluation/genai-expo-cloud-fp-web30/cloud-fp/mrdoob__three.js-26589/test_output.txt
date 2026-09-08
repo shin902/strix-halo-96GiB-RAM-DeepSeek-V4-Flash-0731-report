@@ -1,0 +1,432 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch dev
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   src/objects/Line.js
+	modified:   src/objects/Mesh.js
+	modified:   src/objects/Points.js
+	modified:   test/unit/src/objects/Line.tests.js
+	modified:   test/unit/src/objects/Mesh.tests.js
+	modified:   test/unit/src/objects/Points.tests.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 8d9f8d50b923d5f8a673590ae138bc5d86a3a256
+Author: skyclouds2001 <95597335+skyclouds2001@users.noreply.github.com>
+Date:   Wed Aug 16 20:58:42 2023 +0800
+
+    Update webgl_shaders_ocean.html (#26580)
+    
+    * Update webgl_shaders_ocean.html
+    
+    * Update webgl_shaders_ocean.html
+    
+    * Update webgl_shaders_ocean.html
+    
+    * Update webgl_shaders_ocean.html
+    
+    * Update webgl_shaders_ocean.html
+    
+    ---------
+    
+    Co-authored-by: Michael Herzog <michael.herzog@human-interactive.org>
+
+diff --git a/examples/webgl_shaders_ocean.html b/examples/webgl_shaders_ocean.html
+index d4d8608bd5..e12d9bbea5 100644
+--- a/examples/webgl_shaders_ocean.html
++++ b/examples/webgl_shaders_ocean.html
+@@ -113,6 +113,8 @@
+ 				};
+ 
+ 				const pmremGenerator = new THREE.PMREMGenerator( renderer );
++				const sceneEnv = new THREE.Scene();
++
+ 				let renderTarget;
+ 
+ 				function updateSun() {
+@@ -127,7 +129,9 @@
+ 
+ 					if ( renderTarget !== undefined ) renderTarget.dispose();
+ 
+-					renderTarget = pmremGenerator.fromScene( sky );
++					sceneEnv.add( sky );
++					renderTarget = pmremGenerator.fromScene( sceneEnv );
++					scene.add( sky );
+ 
+ 					scene.environment = renderTarget.texture;
+ 
++ git -c core.fileMode=false diff 8d9f8d50b923d5f8a673590ae138bc5d86a3a256
+diff --git a/src/objects/Line.js b/src/objects/Line.js
+index e359bcfb29..6a6d0d4e2c 100644
+--- a/src/objects/Line.js
++++ b/src/objects/Line.js
+@@ -34,7 +34,7 @@ class Line extends Object3D {
+ 
+ 		super.copy( source, recursive );
+ 
+-		this.material = source.material;
++		this.material = Array.isArray( source.material ) ? source.material.slice() : source.material;
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Mesh.js b/src/objects/Mesh.js
+index 03f5290243..38b07c6fa7 100644
+--- a/src/objects/Mesh.js
++++ b/src/objects/Mesh.js
+@@ -65,7 +65,7 @@ class Mesh extends Object3D {
+ 
+ 		}
+ 
+-		this.material = source.material;
++		this.material = Array.isArray( source.material ) ? source.material.slice() : source.material;
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Points.js b/src/objects/Points.js
+index 8da688140b..20122389c4 100644
+--- a/src/objects/Points.js
++++ b/src/objects/Points.js
+@@ -32,7 +32,7 @@ class Points extends Object3D {
+ 
+ 		super.copy( source, recursive );
+ 
+-		this.material = source.material;
++		this.material = Array.isArray( source.material ) ? source.material.slice() : source.material;
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/test/unit/src/objects/Line.tests.js b/test/unit/src/objects/Line.tests.js
+index 7258948db6..04f8f815c0 100644
+--- a/test/unit/src/objects/Line.tests.js
++++ b/test/unit/src/objects/Line.tests.js
+@@ -3,6 +3,7 @@
+ import { Line } from '../../../../src/objects/Line.js';
+ 
+ import { Object3D } from '../../../../src/core/Object3D.js';
++import { Material } from '../../../../src/materials/Material.js';
+ 
+ export default QUnit.module( 'Objects', () => {
+ 
+@@ -67,6 +68,23 @@ export default QUnit.module( 'Objects', () => {
+ 
+ 		} );
+ 
++		QUnit.test( 'copy/material', ( assert ) => {
++
++			// Material arrays are cloned
++			const mesh1 = new Line();
++			mesh1.material = [ new Material() ];
++
++			const copy1 = mesh1.clone();
++			assert.notStrictEqual( mesh1.material, copy1.material );
++
++			// Non arrays are not cloned
++			const mesh2 = new Line();
++			mesh1.material = new Material();
++			const copy2 = mesh2.clone();
++			assert.strictEqual( mesh2.material, copy2.material );
++
++		} );
++
+ 		QUnit.todo( 'computeLineDistances', ( assert ) => {
+ 
+ 			assert.ok( false, 'everything\'s gonna be alright' );
+diff --git a/test/unit/src/objects/Mesh.tests.js b/test/unit/src/objects/Mesh.tests.js
+index 1728636225..c494a99f7e 100644
+--- a/test/unit/src/objects/Mesh.tests.js
++++ b/test/unit/src/objects/Mesh.tests.js
+@@ -9,6 +9,7 @@ import { MeshBasicMaterial } from '../../../../src/materials/MeshBasicMaterial.j
+ import { Vector2 } from '../../../../src/math/Vector2.js';
+ import { Vector3 } from '../../../../src/math/Vector3.js';
+ import { DoubleSide } from '../../../../src/constants.js';
++import { Material } from '../../../../src/materials/Material.js';
+ 
+ export default QUnit.module( 'Objects', () => {
+ 
+@@ -73,6 +74,23 @@ export default QUnit.module( 'Objects', () => {
+ 
+ 		} );
+ 
++		QUnit.test( 'copy/material', ( assert ) => {
++
++			// Material arrays are cloned
++			const mesh1 = new Mesh();
++			mesh1.material = [ new Material() ];
++
++			const copy1 = mesh1.clone();
++			assert.notStrictEqual( mesh1.material, copy1.material );
++
++			// Non arrays are not cloned
++			const mesh2 = new Mesh();
++			mesh1.material = new Material();
++			const copy2 = mesh2.clone();
++			assert.strictEqual( mesh2.material, copy2.material );
++
++		} );
++
+ 		QUnit.todo( 'updateMorphTargets', ( assert ) => {
+ 
+ 			assert.ok( false, 'everything\'s gonna be alright' );
+diff --git a/test/unit/src/objects/Points.tests.js b/test/unit/src/objects/Points.tests.js
+index e03640239b..7ee1af2e2d 100644
+--- a/test/unit/src/objects/Points.tests.js
++++ b/test/unit/src/objects/Points.tests.js
+@@ -1,6 +1,7 @@
+ /* global QUnit */
+ 
+ import { Object3D } from '../../../../src/core/Object3D.js';
++import { Material } from '../../../../src/materials/Material.js';
+ import { Points } from '../../../../src/objects/Points.js';
+ 
+ export default QUnit.module( 'Objects', () => {
+@@ -66,6 +67,23 @@ export default QUnit.module( 'Objects', () => {
+ 
+ 		} );
+ 
++		QUnit.test( 'copy/material', ( assert ) => {
++
++			// Material arrays are cloned
++			const mesh1 = new Points();
++			mesh1.material = [ new Material() ];
++
++			const copy1 = mesh1.clone();
++			assert.notStrictEqual( mesh1.material, copy1.material );
++
++			// Non arrays are not cloned
++			const mesh2 = new Points();
++			mesh1.material = new Material();
++			const copy2 = mesh2.clone();
++			assert.strictEqual( mesh2.material, copy2.material );
++
++		} );
++
+ 		QUnit.todo( 'raycast', ( assert ) => {
+ 
+ 			assert.ok( false, 'everything\'s gonna be alright' );
++ git checkout 8d9f8d50b923d5f8a673590ae138bc5d86a3a256 test/unit/src/objects/Line.tests.js test/unit/src/objects/Mesh.tests.js test/unit/src/objects/Points.tests.js
+Updated 3 paths from 2f4477c1a3
++ git apply -v -
+Checking patch test/unit/src/objects/Line.tests.js...
+Checking patch test/unit/src/objects/Mesh.tests.js...
+Checking patch test/unit/src/objects/Points.tests.js...
+Applied patch test/unit/src/objects/Line.tests.js cleanly.
+Applied patch test/unit/src/objects/Mesh.tests.js cleanly.
+Applied patch test/unit/src/objects/Points.tests.js cleanly.
++ : '>>>>> Start Test Output'
++ npx qunit test/unit/src/objects/Line.tests.js test/unit/src/objects/Mesh.tests.js test/unit/src/objects/Points.tests.js
++ cat
+TAP version 13
+ok 1 Objects > Line > Extending
+ok 2 Objects > Line > Instancing
+ok 3 Objects > Line > type
+not ok 4 # TODO Objects > Line > geometry
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Line.tests.js:44:11)
+  ...
+not ok 5 # TODO Objects > Line > material
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Line.tests.js:50:11)
+  ...
+ok 6 Objects > Line > isLine
+not ok 7 # TODO Objects > Line > copy
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Line.tests.js:67:11)
+  ...
+ok 8 Objects > Line > copy/material
+not ok 9 # TODO Objects > Line > computeLineDistances
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Line.tests.js:90:11)
+  ...
+not ok 10 # TODO Objects > Line > raycast
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Line.tests.js:96:11)
+  ...
+not ok 11 # TODO Objects > Line > updateMorphTargets
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Line.tests.js:102:11)
+  ...
+not ok 12 # TODO Objects > Line > clone
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Line.tests.js:109:11)
+  ...
+ok 13 Objects > Mesh > Extending
+ok 14 Objects > Mesh > Instancing
+ok 15 Objects > Mesh > type
+not ok 16 # TODO Objects > Mesh > geometry
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Mesh.tests.js:50:11)
+  ...
+not ok 17 # TODO Objects > Mesh > material
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Mesh.tests.js:56:11)
+  ...
+ok 18 Objects > Mesh > isMesh
+not ok 19 # TODO Objects > Mesh > copy
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Mesh.tests.js:73:11)
+  ...
+ok 20 Objects > Mesh > copy/material
+not ok 21 # TODO Objects > Mesh > updateMorphTargets
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Mesh.tests.js:96:11)
+  ...
+not ok 22 # TODO Objects > Mesh > getVertexPosition
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Mesh.tests.js:102:11)
+  ...
+not ok 23 # TODO Objects > Mesh > raycast
+  ---
+  message: intersction face index
+  severity: todo
+  actual  : 0
+  expected: 1
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Mesh.tests.js:125:11)
+  ...
+  ---
+  message: intersction vertex indices
+  severity: todo
+  actual  : {
+  "a": 0,
+  "b": 2,
+  "c": 1,
+  "normal": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "materialIndex": 0
+}
+  expected: {
+  "a": 0,
+  "b": 2,
+  "c": 1
+}
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Mesh.tests.js:126:11)
+  ...
+ok 24 Objects > Mesh > raycast/range
+ok 25 Objects > Points > Extending
+ok 26 Objects > Points > Instancing
+ok 27 Objects > Points > type
+not ok 28 # TODO Objects > Points > geometry
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Points.tests.js:43:11)
+  ...
+not ok 29 # TODO Objects > Points > material
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Points.tests.js:49:11)
+  ...
+ok 30 Objects > Points > isPoints
+not ok 31 # TODO Objects > Points > copy
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Points.tests.js:66:11)
+  ...
+ok 32 Objects > Points > copy/material
+not ok 33 # TODO Objects > Points > raycast
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Points.tests.js:89:11)
+  ...
+not ok 34 # TODO Objects > Points > updateMorphTargets
+  ---
+  message: "everything's gonna be alright"
+  severity: todo
+  actual  : false
+  expected: true
+  stack: |
+        at Object.<anonymous> (file:///testbed/test/unit/src/objects/Points.tests.js:95:11)
+  ...
+1..34
+# pass 16
+# skip 0
+# todo 18
+# fail 0
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
++ git checkout 8d9f8d50b923d5f8a673590ae138bc5d86a3a256 test/unit/src/objects/Line.tests.js test/unit/src/objects/Mesh.tests.js test/unit/src/objects/Points.tests.js
+>>>>> Test Exit Code: 0
+Updated 3 paths from 2f4477c1a3

@@ -1,0 +1,42 @@
+diff --git a/src/diff/props.js b/src/diff/props.js
+index 472d9977..952c23b7 100644
+--- a/src/diff/props.js
++++ b/src/diff/props.js
+@@ -106,7 +106,7 @@ export function setProperty(dom, name, value, oldValue, isSvg) {
+ 			// Normalize incorrect prop usage for SVG:
+ 			// - xlink:href / xlinkHref --> href (xlink:href was removed from SVG and isn't needed)
+ 			// - className --> class
+-			name = name.replace(/xlink[H:h]/, 'h').replace(/sName$/, 's');
++			name = name.replace(/xlink[H:h]+/, 'h').replace(/sName$/, 's');
+ 		} else if (
+ 			name !== 'href' &&
+ 			name !== 'list' &&
+diff --git a/test/browser/svg.test.js b/test/browser/svg.test.js
+index ef2e796e..5c164b66 100644
+--- a/test/browser/svg.test.js
++++ b/test/browser/svg.test.js
+@@ -91,6 +91,24 @@ describe('svg', () => {
+ 		);
+ 	});
+ 
++	it('should support xlink:href attribute', () => {
++		render(
++			createElement(
++				'svg',
++				{},
++				createElement('use', { 'xlink:href': '#foo' })
++			),
++			scratch
++		);
++
++		expect(scratch.querySelector('use').getAttribute('href')).to.equal(
++			'#foo'
++		);
++		expect(scratch.querySelector('use').hasAttribute('hhref')).to.equal(
++			false
++		);
++	});
++
+ 	it('should render SVG to DOM', () => {
+ 		const Demo = () => (
+ 			<svg viewBox="0 0 360 360">

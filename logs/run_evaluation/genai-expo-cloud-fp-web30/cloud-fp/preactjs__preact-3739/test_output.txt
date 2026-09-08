@@ -1,0 +1,188 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   hooks/src/index.js
+	modified:   hooks/test/browser/useState.test.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 2cafedee2ddf7c73795e887ef1970df4be2bca90
+Author: Podaru Dragos <podaru.dragos@gmail.com>
+Date:   Fri Sep 23 00:15:37 2022 +0300
+
+    align ts definitions from react to refs and forward refs (#3713)
+    
+    * align ts definitions from react to refs and forward refs
+    
+    * type ref to also allow null as per react type definition
+    
+    * add PropsWithChildren also to preact/compat
+    
+    Co-authored-by: Jovi De Croock <decroockjovi@gmail.com>
+
+diff --git a/compat/src/index.d.ts b/compat/src/index.d.ts
+index eaf108fe..ebff341d 100644
+--- a/compat/src/index.d.ts
++++ b/compat/src/index.d.ts
+@@ -124,7 +124,7 @@ declare namespace React {
+ 	): C;
+ 
+ 	export interface ForwardFn<P = {}, T = any> {
+-		(props: P, ref: Ref<T>): preact.ComponentChild;
++		(props: P, ref: ForwardedRef<T>): preact.ComponentChild;
+ 		displayName?: string;
+ 	}
+ 
+@@ -132,11 +132,21 @@ declare namespace React {
+ 		fn: ForwardFn<P, R>
+ 	): preact.FunctionalComponent<Omit<P, 'ref'> & { ref?: preact.Ref<R> }>;
+ 
++	interface MutableRefObject<T> {
++		current: T;
++	}
++	
++	export type ForwardedRef<T> = ((instance: T | null) => void) | MutableRefObject<T | null> | null;
++
+ 	export function unstable_batchedUpdates(
+ 		callback: (arg?: any) => void,
+ 		arg?: any
+ 	): void;
+ 
++	export type PropsWithChildren<P = unknown> = P & {
++		children?: preact.ComponentChild | undefined
++	};
++	
+ 	export const Children: {
+ 		map<T extends preact.ComponentChild, R>(
+ 			children: T | T[],
+diff --git a/src/index.d.ts b/src/index.d.ts
+index 44b5acb7..06fe433f 100644
+--- a/src/index.d.ts
++++ b/src/index.d.ts
+@@ -39,7 +39,7 @@ export type Key = string | number | any;
+ 
+ export type RefObject<T> = { current: T | null };
+ export type RefCallback<T> = (instance: T | null) => void;
+-export type Ref<T> = RefObject<T> | RefCallback<T>;
++export type Ref<T> = RefObject<T> | RefCallback<T> | null;
+ 
+ export type ComponentChild =
+ 	| VNode<any>
++ git -c core.fileMode=false diff 2cafedee2ddf7c73795e887ef1970df4be2bca90
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index d51517f9..b120d0ad 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -233,7 +233,7 @@ export function useReducer(reducer, initialState, init) {
+ 					}
+ 				});
+ 
+-				return shouldUpdate
++				return shouldUpdate || hookState._component.props !== p
+ 					? prevScu
+ 						? prevScu.call(this, p, s, c)
+ 						: true
+diff --git a/hooks/test/browser/useState.test.js b/hooks/test/browser/useState.test.js
+index 64b5e59a..a4c1bdc7 100644
+--- a/hooks/test/browser/useState.test.js
++++ b/hooks/test/browser/useState.test.js
+@@ -77,6 +77,42 @@ describe('useState', () => {
+ 		expect(Comp).to.be.calledOnce;
+ 	});
+ 
++	it('rerenders when props change and state is set then undone on same tick', () => {
++		let setParentValue;
++		let setActive;
++		let childRenders = 0;
++
++		function Parent() {
++			const [value, setValue] = useState(0);
++			setParentValue = setValue;
++			return <Child value={value} />;
++		}
++
++		function Child({ value }) {
++			const [active, setActiveState] = useState(false);
++			setActive = setActiveState;
++			childRenders++;
++			return (
++				<div>
++					{value}-{String(active)}
++				</div>
++			);
++		}
++
++		render(<Parent />, scratch);
++		expect(scratch.textContent).to.equal('0-false');
++		expect(childRenders).to.equal(1);
++
++		// Set state then undo it, and update the parent's prop, all in the same tick
++		setActive(true);
++		setActive(false);
++		setParentValue(1);
++		rerender();
++
++		expect(scratch.textContent).to.equal('1-false');
++		expect(childRenders).to.equal(2);
++	});
++
+ 	it('rerenders when setting the state', () => {
+ 		let lastState;
+ 		let doSetState;
++ git checkout 2cafedee2ddf7c73795e887ef1970df4be2bca90 hooks/test/browser/errorBoundary.test.js hooks/test/browser/useState.test.js
+Updated 1 path from b82ecad9
++ git apply -v -
+Checking patch hooks/test/browser/errorBoundary.test.js...
+Checking patch hooks/test/browser/useState.test.js...
+Applied patch hooks/test/browser/errorBoundary.test.js cleanly.
+Applied patch hooks/test/browser/useState.test.js cleanly.
++ : '>>>>> Start Test Output'
++ COVERAGE=false
++ BABEL_NO_MODULES=true
++ npx karma start karma.conf.js --single-run --grep=hooks/test/browser/useState.test.js
++ cat
+
+START:
+[32m08 09 2026 04:31:26.367:INFO [esbuild]: [39mCompiling...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[32m08 09 2026 04:31:27.023:INFO [esbuild]: [39mCompiling done (655ms)
+[32m08 09 2026 04:31:27.025:INFO [karma-server]: [39mKarma v6.3.16 server started at http://localhost:9876/
+[32m08 09 2026 04:31:27.026:INFO [launcher]: [39mLaunching browsers ChromeNoSandboxHeadless with concurrency 2
+[32m08 09 2026 04:31:27.029:INFO [launcher]: [39mStarting browser Chrome
+[32m08 09 2026 04:31:27.232:INFO [Chrome Headless 151.0.0.0 (Linux x86_64)]: [39mConnected on socket nfBffWOhS23Qer6xAAAB with id 80570222
+  useState
+    ✔ serves the same state across render calls
+    ✔ can initialize the state via a function
+    ✔ does not rerender on equal state
+    ✔ rerenders when setting the state
+    ✔ can be set by another component
+    ✔ should correctly initialize
+    ✔ should correctly re-initialize when first run threw an error
+    ✔ should handle queued useState
+    ✔ should render a second time when the render function updates state
+    ✔ correctly updates with multiple state updates
+    ✔ ensure we iterate over all hooks
+    ✔ does not loop when states are equal after batches
+    ✔ respects updates initiated from the parent
+
+Finished in 0.001 secs / 0.005 secs @ 04:31:27 GMT+0000 (Coordinated Universal Time)
+
+SUMMARY:
+✔ 13 tests completed
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
++ git checkout 2cafedee2ddf7c73795e887ef1970df4be2bca90 hooks/test/browser/errorBoundary.test.js hooks/test/browser/useState.test.js
+>>>>> Test Exit Code: 0
+Updated 2 paths from b82ecad9

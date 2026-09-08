@@ -1,0 +1,60 @@
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index d51517f9..b120d0ad 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -233,7 +233,7 @@ export function useReducer(reducer, initialState, init) {
+ 					}
+ 				});
+ 
+-				return shouldUpdate
++				return shouldUpdate || hookState._component.props !== p
+ 					? prevScu
+ 						? prevScu.call(this, p, s, c)
+ 						: true
+diff --git a/hooks/test/browser/useState.test.js b/hooks/test/browser/useState.test.js
+index 64b5e59a..a4c1bdc7 100644
+--- a/hooks/test/browser/useState.test.js
++++ b/hooks/test/browser/useState.test.js
+@@ -77,6 +77,42 @@ describe('useState', () => {
+ 		expect(Comp).to.be.calledOnce;
+ 	});
+ 
++	it('rerenders when props change and state is set then undone on same tick', () => {
++		let setParentValue;
++		let setActive;
++		let childRenders = 0;
++
++		function Parent() {
++			const [value, setValue] = useState(0);
++			setParentValue = setValue;
++			return <Child value={value} />;
++		}
++
++		function Child({ value }) {
++			const [active, setActiveState] = useState(false);
++			setActive = setActiveState;
++			childRenders++;
++			return (
++				<div>
++					{value}-{String(active)}
++				</div>
++			);
++		}
++
++		render(<Parent />, scratch);
++		expect(scratch.textContent).to.equal('0-false');
++		expect(childRenders).to.equal(1);
++
++		// Set state then undo it, and update the parent's prop, all in the same tick
++		setActive(true);
++		setActive(false);
++		setParentValue(1);
++		rerender();
++
++		expect(scratch.textContent).to.equal('1-false');
++		expect(childRenders).to.equal(2);
++	});
++
+ 	it('rerenders when setting the state', () => {
+ 		let lastState;
+ 		let doSetState;

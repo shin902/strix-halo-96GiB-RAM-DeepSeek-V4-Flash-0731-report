@@ -1,0 +1,167 @@
+2026-09-08 13:38:04,518 - INFO - Image not found locally, attempting to pull...
+2026-09-08 13:40:37,972 - INFO - Creating container for vuejs__core-11589...
+2026-09-08 13:40:38,504 - INFO - Container for vuejs__core-11589 created: 61bf412c5e54fb17ccc55e54e9742189d5f75c0ff6f69cd00ac4f185f99cd9b6
+2026-09-08 13:40:38,798 - INFO - Container for vuejs__core-11589 started: 61bf412c5e54fb17ccc55e54e9742189d5f75c0ff6f69cd00ac4f185f99cd9b6
+2026-09-08 13:40:38,798 - INFO - Intermediate patch for vuejs__core-11589 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/vuejs__core-11589/patch.diff, now applying to container...
+2026-09-08 13:40:38,867 - INFO - >>>>> Applied Patch:
+Checking patch packages/reactivity/src/effect.ts...
+Checking patch packages/runtime-core/__tests__/apiWatch.spec.ts...
+Checking patch packages/runtime-core/src/apiWatch.ts...
+Applied patch packages/reactivity/src/effect.ts cleanly.
+Applied patch packages/runtime-core/__tests__/apiWatch.spec.ts cleanly.
+Applied patch packages/runtime-core/src/apiWatch.ts cleanly.
+
+2026-09-08 13:40:38,957 - INFO - Git diff before:
+diff --git a/packages/reactivity/src/effect.ts b/packages/reactivity/src/effect.ts
+index 6b18318d..c769ba57 100644
+--- a/packages/reactivity/src/effect.ts
++++ b/packages/reactivity/src/effect.ts
+@@ -45,8 +45,7 @@ export enum EffectFlags {
+   NOTIFIED = 1 << 3,
+   DIRTY = 1 << 4,
+   ALLOW_RECURSE = 1 << 5,
+-  NO_BATCH = 1 << 6,
+-  PAUSED = 1 << 7,
++  PAUSED = 1 << 6,
+ }
+ 
+ /**
+@@ -169,9 +168,6 @@ export class ReactiveEffect<T = any>
+     ) {
+       return
+     }
+-    if (this.flags & EffectFlags.NO_BATCH) {
+-      return this.trigger()
+-    }
+     if (!(this.flags & EffectFlags.NOTIFIED)) {
+       this.flags |= EffectFlags.NOTIFIED
+       this.nextEffect = batchedEffect
+@@ -267,6 +263,7 @@ export function endBatch(): void {
+     return
+   }
+ 
++  batchDepth--
+   let error: unknown
+   while (batchedEffect) {
+     let e: ReactiveEffect | undefined = batchedEffect
+@@ -286,7 +283,6 @@ export function endBatch(): void {
+     }
+   }
+ 
+-  batchDepth--
+   if (error) throw error
+ }
+ 
+diff --git a/packages/runtime-core/__tests__/apiWatch.spec.ts b/packages/runtime-core/__tests__/apiWatch.spec.ts
+index 85afec24..67f0bc16 100644
+--- a/packages/runtime-core/__tests__/apiWatch.spec.ts
++++ b/packages/runtime-core/__tests__/apiWatch.spec.ts
+@@ -1856,4 +1856,32 @@ describe('api: watch', () => {
+ 
+     warn.mockRestore()
+   })
++
++  it('should be executed correctly', () => {
++    const v = ref(1)
++    let foo = ''
++
++    watch(
++      v,
++      () => {
++        foo += '1'
++      },
++      {
++        flush: 'sync',
++      },
++    )
++    watch(
++      v,
++      () => {
++        foo += '2'
++      },
++      {
++        flush: 'sync',
++      },
++    )
++
++    expect(foo).toBe('')
++    v.value++
++    expect(foo).toBe('12')
++  })
+ })
+diff --git a/packages/runtime-core/src/apiWatch.ts b/packages/runtime-core/src/apiWatch.ts
+index 2ad887a3..479a263b 100644
+--- a/packages/runtime-core/src/apiWatch.ts
++++ b/packages/runtime-core/src/apiWatch.ts
+@@ -394,7 +394,6 @@ function doWatch(
+ 
+   let scheduler: EffectScheduler
+   if (flush === 'sync') {
+-    effect.flags |= EffectFlags.NO_BATCH
+     scheduler = job as any // the scheduler function gets called directly
+   } else if (flush === 'post') {
+     scheduler = () => queuePostRenderEffect(job, instance && instance.suspense)
+2026-09-08 13:40:38,957 - INFO - Eval script for vuejs__core-11589 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/vuejs__core-11589/eval.sh; copying to container...
+2026-09-08 13:40:40,772 - INFO - Test runtime: 1.77 seconds
+2026-09-08 13:40:40,772 - INFO - Test output for vuejs__core-11589 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/vuejs__core-11589/test_output.txt
+2026-09-08 13:40:40,808 - INFO - Git diff after:
+diff --git a/packages/reactivity/src/effect.ts b/packages/reactivity/src/effect.ts
+index 6b18318d..c769ba57 100644
+--- a/packages/reactivity/src/effect.ts
++++ b/packages/reactivity/src/effect.ts
+@@ -45,8 +45,7 @@ export enum EffectFlags {
+   NOTIFIED = 1 << 3,
+   DIRTY = 1 << 4,
+   ALLOW_RECURSE = 1 << 5,
+-  NO_BATCH = 1 << 6,
+-  PAUSED = 1 << 7,
++  PAUSED = 1 << 6,
+ }
+ 
+ /**
+@@ -169,9 +168,6 @@ export class ReactiveEffect<T = any>
+     ) {
+       return
+     }
+-    if (this.flags & EffectFlags.NO_BATCH) {
+-      return this.trigger()
+-    }
+     if (!(this.flags & EffectFlags.NOTIFIED)) {
+       this.flags |= EffectFlags.NOTIFIED
+       this.nextEffect = batchedEffect
+@@ -267,6 +263,7 @@ export function endBatch(): void {
+     return
+   }
+ 
++  batchDepth--
+   let error: unknown
+   while (batchedEffect) {
+     let e: ReactiveEffect | undefined = batchedEffect
+@@ -286,7 +283,6 @@ export function endBatch(): void {
+     }
+   }
+ 
+-  batchDepth--
+   if (error) throw error
+ }
+ 
+diff --git a/packages/runtime-core/src/apiWatch.ts b/packages/runtime-core/src/apiWatch.ts
+index 2ad887a3..479a263b 100644
+--- a/packages/runtime-core/src/apiWatch.ts
++++ b/packages/runtime-core/src/apiWatch.ts
+@@ -394,7 +394,6 @@ function doWatch(
+ 
+   let scheduler: EffectScheduler
+   if (flush === 'sync') {
+-    effect.flags |= EffectFlags.NO_BATCH
+     scheduler = job as any // the scheduler function gets called directly
+   } else if (flush === 'post') {
+     scheduler = () => queuePostRenderEffect(job, instance && instance.suspense)
+2026-09-08 13:40:40,808 - INFO - Git diff changed after running eval script
+2026-09-08 13:40:40,808 - INFO - Grading answer for vuejs__core-11589...
+2026-09-08 13:40:40,809 - INFO - report: {'vuejs__core-11589': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should be executed correctly'], 'failure': []}, 'PASS_TO_PASS': {'success': ['packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > effect', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching single source: getter', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching single source: ref', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching single source: array', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not call functions inside a reactive source array', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not unwrap refs in a reactive source array', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not fire if watched getter result did not change', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching single source: computed ref', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching primitive with deep: true', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > directly watching reactive object (with automatic deep: true)', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > directly watching reactive object with explicit deep: false', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > directly watching reactive array with explicit deep: false', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching shallow reactive array with deep: false', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should still respect deep: true on shallowReactive source', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources: undefined initial values and immediate: true', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources: readonly array', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources: reactive object (with automatic deep: true)', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > warn invalid watch source', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > warn invalid watch source: multiple sources', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > stopping the watcher (effect)', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > stopping the watcher (with source)', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > cleanup registration (effect)', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > cleanup registration (with source)', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush timing: pre (default)', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush timing: post', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchPostEffect', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush timing: sync', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchSyncEffect', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not fire on component unmount w/ flush: post', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not fire on component unmount w/ flush: pre', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not fire on child component unmount w/ flush: pre', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush: pre watcher in child component should not fire before parent update', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush: pre watcher watching props should fire before child update', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush: pre triggered in component setup should be buffered and called before mounted', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush: post watcher should fire after template refs updated', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > deep', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching deep ref', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > deep with symbols', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > immediate', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > immediate: triggers when initial value is null', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > immediate: triggers when initial value is undefined', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > warn immediate option when using effect', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > warn and not respect deep option when using effect', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > onTrack', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > onTrigger', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should work sync', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should force trigger on triggerRef when watching a shallow ref', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should force trigger on triggerRef when watching multiple sources: shallow ref array', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should force trigger on triggerRef with toRef from reactive', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchEffect should not recursively trigger itself', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > computed refs should not trigger watch if value has no change', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > $watch should always register its effects with its own instance', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > this.$watch should pass `this.proxy` to watch source as the first argument', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not leak `this.proxy` to setup()', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > pre watcher callbacks should not track dependencies', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching keypath', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching sources: ref<any[]>', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources: computed', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watch should not register in owner component if created inside detached scope', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchEffect should keep running if created in a detached scope', "packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch'", "packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch with deep'", "packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch with flush: s…'", "packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch with flush: p…'", "packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch with immediate'", 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > OnCleanup also needs to be cleaned，', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching reactive depth', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching ref depth', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching array depth', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > pause / resume', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > shallowReactive', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching reactive with deep: false', "packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > effect should be removed from scope's effects after it is stopped", 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > sync watcher should not be batched', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchEffect should not fire on computed deps that did not change', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > circular reference', 'packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watch immediate error in effect scope should be catched by onErrorCaptured'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for vuejs__core-11589: resolved: True
+2026-09-08 13:40:40,809 - INFO - Attempting to stop container sweb.eval.vuejs__core-11589.genai-expo-cloud-fp-web30...
+2026-09-08 13:40:55,945 - INFO - Container sweb.eval.vuejs__core-11589.genai-expo-cloud-fp-web30 stopped successfully.
+2026-09-08 13:40:55,945 - INFO - Attempting to remove container sweb.eval.vuejs__core-11589.genai-expo-cloud-fp-web30...
+2026-09-08 13:40:55,974 - INFO - Container sweb.eval.vuejs__core-11589.genai-expo-cloud-fp-web30 removed successfully.

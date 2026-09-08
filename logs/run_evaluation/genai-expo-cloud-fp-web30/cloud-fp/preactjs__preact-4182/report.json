@@ -1,0 +1,35 @@
+{
+    "preactjs__preact-4182": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "infra_failure": false,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "errorBoundary > should not duplicate in lists where an item throws and the parent catches and returns a differing type"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "errorBoundary > catches errors",
+                    "errorBoundary > calls the errorBoundary callback",
+                    "errorBoundary > returns error",
+                    "errorBoundary > does not leave a stale closure",
+                    "errorBoundary > does not invoke old effects when a cleanup callback throws an error and is handled"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

@@ -1,0 +1,97 @@
+2026-09-08 13:30:44,989 - INFO - Image not found locally, attempting to pull...
+2026-09-08 13:31:25,082 - INFO - Creating container for preactjs__preact-3739...
+2026-09-08 13:31:25,350 - INFO - Container for preactjs__preact-3739 created: 36919a5bb6245e737f1d8b5467b9d071235f7efbca3c83880a3b867d5055d403
+2026-09-08 13:31:25,456 - INFO - Container for preactjs__preact-3739 started: 36919a5bb6245e737f1d8b5467b9d071235f7efbca3c83880a3b867d5055d403
+2026-09-08 13:31:25,456 - INFO - Intermediate patch for preactjs__preact-3739 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-3739/patch.diff, now applying to container...
+2026-09-08 13:31:25,526 - INFO - >>>>> Applied Patch:
+Checking patch hooks/src/index.js...
+Checking patch hooks/test/browser/useState.test.js...
+Applied patch hooks/src/index.js cleanly.
+Applied patch hooks/test/browser/useState.test.js cleanly.
+
+2026-09-08 13:31:25,584 - INFO - Git diff before:
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index d51517f9..b120d0ad 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -233,7 +233,7 @@ export function useReducer(reducer, initialState, init) {
+ 					}
+ 				});
+ 
+-				return shouldUpdate
++				return shouldUpdate || hookState._component.props !== p
+ 					? prevScu
+ 						? prevScu.call(this, p, s, c)
+ 						: true
+diff --git a/hooks/test/browser/useState.test.js b/hooks/test/browser/useState.test.js
+index 64b5e59a..a4c1bdc7 100644
+--- a/hooks/test/browser/useState.test.js
++++ b/hooks/test/browser/useState.test.js
+@@ -77,6 +77,42 @@ describe('useState', () => {
+ 		expect(Comp).to.be.calledOnce;
+ 	});
+ 
++	it('rerenders when props change and state is set then undone on same tick', () => {
++		let setParentValue;
++		let setActive;
++		let childRenders = 0;
++
++		function Parent() {
++			const [value, setValue] = useState(0);
++			setParentValue = setValue;
++			return <Child value={value} />;
++		}
++
++		function Child({ value }) {
++			const [active, setActiveState] = useState(false);
++			setActive = setActiveState;
++			childRenders++;
++			return (
++				<div>
++					{value}-{String(active)}
++				</div>
++			);
++		}
++
++		render(<Parent />, scratch);
++		expect(scratch.textContent).to.equal('0-false');
++		expect(childRenders).to.equal(1);
++
++		// Set state then undo it, and update the parent's prop, all in the same tick
++		setActive(true);
++		setActive(false);
++		setParentValue(1);
++		rerender();
++
++		expect(scratch.textContent).to.equal('1-false');
++		expect(childRenders).to.equal(2);
++	});
++
+ 	it('rerenders when setting the state', () => {
+ 		let lastState;
+ 		let doSetState;
+2026-09-08 13:31:25,585 - INFO - Eval script for preactjs__preact-3739 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-3739/eval.sh; copying to container...
+2026-09-08 13:31:27,391 - INFO - Test runtime: 1.76 seconds
+2026-09-08 13:31:27,391 - INFO - Test output for preactjs__preact-3739 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-3739/test_output.txt
+2026-09-08 13:31:27,428 - INFO - Git diff after:
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index d51517f9..b120d0ad 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -233,7 +233,7 @@ export function useReducer(reducer, initialState, init) {
+ 					}
+ 				});
+ 
+-				return shouldUpdate
++				return shouldUpdate || hookState._component.props !== p
+ 					? prevScu
+ 						? prevScu.call(this, p, s, c)
+ 						: true
+2026-09-08 13:31:27,428 - INFO - Git diff changed after running eval script
+2026-09-08 13:31:27,428 - INFO - Grading answer for preactjs__preact-3739...
+2026-09-08 13:31:27,429 - INFO - report: {'preactjs__preact-3739': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['useState > respects updates initiated from the parent'], 'failure': []}, 'PASS_TO_PASS': {'success': ['useState > serves the same state across render calls', 'useState > can initialize the state via a function', 'useState > does not rerender on equal state', 'useState > rerenders when setting the state', 'useState > can be set by another component', 'useState > should correctly initialize', 'useState > should correctly re-initialize when first run threw an error', 'useState > should handle queued useState', 'useState > should render a second time when the render function updates state', 'useState > correctly updates with multiple state updates', 'useState > ensure we iterate over all hooks', 'useState > does not loop when states are equal after batches'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for preactjs__preact-3739: resolved: True
+2026-09-08 13:31:27,429 - INFO - Attempting to stop container sweb.eval.preactjs__preact-3739.genai-expo-cloud-fp-web30...
+2026-09-08 13:31:42,587 - INFO - Container sweb.eval.preactjs__preact-3739.genai-expo-cloud-fp-web30 stopped successfully.
+2026-09-08 13:31:42,587 - INFO - Attempting to remove container sweb.eval.preactjs__preact-3739.genai-expo-cloud-fp-web30...
+2026-09-08 13:31:42,615 - INFO - Container sweb.eval.preactjs__preact-3739.genai-expo-cloud-fp-web30 removed successfully.

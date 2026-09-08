@@ -1,0 +1,165 @@
+2026-09-08 13:36:45,460 - INFO - Image not found locally, attempting to pull...
+2026-09-08 13:37:43,570 - INFO - Creating container for preactjs__preact-4436...
+2026-09-08 13:37:46,632 - INFO - Container for preactjs__preact-4436 created: 55736b825e633f04a0333134be9c6a3f00b3c6684b96aa5e05002c2b114ac61b
+2026-09-08 13:37:46,756 - INFO - Container for preactjs__preact-4436 started: 55736b825e633f04a0333134be9c6a3f00b3c6684b96aa5e05002c2b114ac61b
+2026-09-08 13:37:46,756 - INFO - Intermediate patch for preactjs__preact-4436 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-4436/patch.diff, now applying to container...
+2026-09-08 13:37:46,851 - INFO - >>>>> Applied Patch:
+Checking patch src/diff/index.js...
+Checking patch src/internal.d.ts...
+Checking patch test/browser/refs.test.js...
+Applied patch src/diff/index.js cleanly.
+Applied patch src/internal.d.ts cleanly.
+Applied patch test/browser/refs.test.js cleanly.
+
+2026-09-08 13:37:46,931 - INFO - Git diff before:
+diff --git a/src/diff/index.js b/src/diff/index.js
+index 34d38028..9f11a182 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -554,14 +554,25 @@ function diffElementNodes(
+ 
+ /**
+  * Invoke or update a ref, depending on whether it is a function or object ref.
+- * @param {Ref<any>} ref
++ * @param {Ref<any> & { _unmount?: unknown }} ref
+  * @param {any} value
+  * @param {VNode} vnode
+  */
+ export function applyRef(ref, value, vnode) {
+ 	try {
+-		if (typeof ref == 'function') ref(value);
+-		else ref.current = value;
++		if (typeof ref == 'function') {
++			let hasRefUnmount = typeof ref._unmount == 'function';
++			if (hasRefUnmount) {
++				ref._unmount();
++			}
++
++			if (!hasRefUnmount || value != null) {
++				// Store the cleanup function on the function
++				// instance object itself to avoid shape
++				// transitioning vnode
++				ref._unmount = ref(value);
++			}
++		} else ref.current = value;
+ 	} catch (e) {
+ 		options._catchError(e, vnode);
+ 	}
+diff --git a/src/internal.d.ts b/src/internal.d.ts
+index ab03abc6..cbf23b38 100644
+--- a/src/internal.d.ts
++++ b/src/internal.d.ts
+@@ -126,7 +126,10 @@ declare global {
+ 	// We use the `current` property to differentiate between the two kinds of Refs so
+ 	// internally we'll define `current` on both to make TypeScript happy
+ 	type RefObject<T> = { current: T | null };
+-	type RefCallback<T> = { (instance: T | null): void; current: undefined };
++	type RefCallback<T> = {
++		(instance: T | null): void | (() => void);
++		current: undefined;
++	};
+ 	type Ref<T> = RefObject<T> | RefCallback<T>;
+ 
+ 	export interface VNode<P = {}> extends preact.VNode<P> {
+diff --git a/test/browser/refs.test.js b/test/browser/refs.test.js
+index 7e4224af..b096955c 100644
+--- a/test/browser/refs.test.js
++++ b/test/browser/refs.test.js
+@@ -715,4 +715,36 @@ describe('refs', () => {
+ 		render(<App />, scratch);
+ 		render(<App show />, scratch);
+ 	});
++
++	it('should call ref cleanup on unmount', () => {
++		const cleanup = sinon.spy();
++		const ref = sinon.spy(() => cleanup);
++
++		function App({ show = false }) {
++			return <div>{show && <p ref={ref}>hello</p>}</div>;
++		}
++
++		render(<App show />, scratch);
++		render(<App />, scratch);
++
++		expect(cleanup).to.be.calledOnce;
++
++		// Ref should not be called with `null` when cleanup is present
++		expect(ref).to.be.calledOnce;
++		expect(ref).not.to.be.calledWith(null);
++	});
++
++	it('should call ref cleanup when ref changes', () => {
++		const cleanup = sinon.spy();
++
++		function App({ show = false, count = 0 }) {
++			return <div>{show && <p ref={() => cleanup}>hello {count}</p>}</div>;
++		}
++
++		render(<App show />, scratch);
++		render(<App show count={1} />, scratch);
++
++		// Cleanup should be invoked whenever ref function changes
++		expect(cleanup).to.be.calledOnce;
++	});
+ });
+2026-09-08 13:37:46,932 - INFO - Eval script for preactjs__preact-4436 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-4436/eval.sh; copying to container...
+2026-09-08 13:37:49,302 - INFO - Test runtime: 2.32 seconds
+2026-09-08 13:37:49,302 - INFO - Test output for preactjs__preact-4436 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-4436/test_output.txt
+2026-09-08 13:37:49,336 - INFO - Git diff after:
+diff --git a/src/diff/index.js b/src/diff/index.js
+index 34d38028..9f11a182 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -554,14 +554,25 @@ function diffElementNodes(
+ 
+ /**
+  * Invoke or update a ref, depending on whether it is a function or object ref.
+- * @param {Ref<any>} ref
++ * @param {Ref<any> & { _unmount?: unknown }} ref
+  * @param {any} value
+  * @param {VNode} vnode
+  */
+ export function applyRef(ref, value, vnode) {
+ 	try {
+-		if (typeof ref == 'function') ref(value);
+-		else ref.current = value;
++		if (typeof ref == 'function') {
++			let hasRefUnmount = typeof ref._unmount == 'function';
++			if (hasRefUnmount) {
++				ref._unmount();
++			}
++
++			if (!hasRefUnmount || value != null) {
++				// Store the cleanup function on the function
++				// instance object itself to avoid shape
++				// transitioning vnode
++				ref._unmount = ref(value);
++			}
++		} else ref.current = value;
+ 	} catch (e) {
+ 		options._catchError(e, vnode);
+ 	}
+diff --git a/src/internal.d.ts b/src/internal.d.ts
+index ab03abc6..cbf23b38 100644
+--- a/src/internal.d.ts
++++ b/src/internal.d.ts
+@@ -126,7 +126,10 @@ declare global {
+ 	// We use the `current` property to differentiate between the two kinds of Refs so
+ 	// internally we'll define `current` on both to make TypeScript happy
+ 	type RefObject<T> = { current: T | null };
+-	type RefCallback<T> = { (instance: T | null): void; current: undefined };
++	type RefCallback<T> = {
++		(instance: T | null): void | (() => void);
++		current: undefined;
++	};
+ 	type Ref<T> = RefObject<T> | RefCallback<T>;
+ 
+ 	export interface VNode<P = {}> extends preact.VNode<P> {
+2026-09-08 13:37:49,336 - INFO - Git diff changed after running eval script
+2026-09-08 13:37:49,336 - INFO - Grading answer for preactjs__preact-4436...
+2026-09-08 13:37:49,336 - INFO - report: {'preactjs__preact-4436': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['refs > should call ref cleanup on unmount', 'refs > should call ref cleanup when ref changes'], 'failure': []}, 'PASS_TO_PASS': {'success': ['refs > should invoke refs in render()', 'refs > should not call stale refs', 'refs > should support createRef', 'refs > should invoke refs in Component.render()', 'refs > should pass components to ref functions', 'refs > should have a consistent order', 'refs > should pass rendered DOM from functional components to ref functions', 'refs > should pass children to ref functions', 'refs > should pass high-order children to ref functions', 'refs > should not pass ref into component as a prop', 'refs > should only null refs after unmount', 'refs > should null and re-invoke refs when swapping component root element type', 'refs > should add refs to components representing DOM nodes with no attributes if they have been pre-rendered', 'refs > should call ref after children are rendered', 'refs > should correctly set nested child refs', 'refs > should correctly call child refs for un-keyed children on re-render', 'refs > should not remove refs for memoized components keyed', 'refs > should not remove refs for memoized components unkeyed', 'refs > should properly call null for memoized components keyed', 'refs > should properly call null for memoized components unkeyed', 'refs > should first clean-up refs and after apply them', 'refs > should bind refs before componentDidMount', 'refs > should call refs after element is added to document on initial mount', 'refs > should call refs after element is added to document on update'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for preactjs__preact-4436: resolved: True
+2026-09-08 13:37:49,337 - INFO - Attempting to stop container sweb.eval.preactjs__preact-4436.genai-expo-cloud-fp-web30...
+2026-09-08 13:38:04,487 - INFO - Container sweb.eval.preactjs__preact-4436.genai-expo-cloud-fp-web30 stopped successfully.
+2026-09-08 13:38:04,487 - INFO - Attempting to remove container sweb.eval.preactjs__preact-4436.genai-expo-cloud-fp-web30...
+2026-09-08 13:38:04,515 - INFO - Container sweb.eval.preactjs__preact-4436.genai-expo-cloud-fp-web30 removed successfully.

@@ -1,0 +1,42 @@
+{
+    "preactjs__preact-4245": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "infra_failure": false,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "useId > should return a unique id across invocations of render"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "useId > keeps the id consistent after an update",
+                    "useId > ids are unique according to dom-depth",
+                    "useId > ids are unique across siblings",
+                    "useId > correctly handles new elements",
+                    "useId > matches with rts",
+                    "useId > matches with rts after hydration",
+                    "useId > should be unique across Fragments",
+                    "useId > should match implicite Fragments with RTS",
+                    "useId > should skip component top level Fragment child",
+                    "useId > should skip over HTML",
+                    "useId > should reset for each renderToString roots",
+                    "useId > should work with conditional components"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

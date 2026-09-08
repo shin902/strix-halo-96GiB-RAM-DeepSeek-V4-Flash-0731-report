@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "benchmark": "SWE-bench Multilingual JS/TS Web 30",
+  "variant": "cloud-fp",
+  "provider": "OpenCode Zen",
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://opencode.ai/zen/v1",
+  "attemptPolicy": "one run per instance; no blanket retries",
+  "limits": {
+    "maxTurns": 100,
+    "timeoutMs": 3600000
+  },
+  "dataset": {
+    "name": "SWE-bench/SWE-bench_Multilingual",
+    "revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+    "split": "test",
+    "instances": 30
+  },
+  "grader": {
+    "package": "swebench 5.0.2",
+    "report": "cloud-fp/grader/cloud-fp.genai-expo-cloud-fp-web30.json",
+    "completedWithPatch": 20,
+    "resolved": 20,
+    "scoredRateIncludingEmptyPatches": 0.6666666666666666
+  },
+  "totals": {
+    "instances": 30,
+    "resolved": 20,
+    "patches": 20,
+    "statuses": {
+      "completed": 29,
+      "turn-limit": 1
+    },
+    "wallClockMs": 5683632,
+    "turns": 958,
+    "inputTokens": 883910,
+    "outputTokens": 331726,
+    "cacheReadTokens": 25093042
+  },
+  "instances": [
+    {
+      "instance_id": "facebook__docusaurus-10130",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 5069,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "facebook__docusaurus-10309",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 3215,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "facebook__docusaurus-8927",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 4166,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "facebook__docusaurus-9183",
+      "status": "completed",
+      "turns": 64,
+      "durationMs": 365534,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 51596,
+      "outputTokens": 20380,
+      "cacheReadTokens": 1397332
+    },
+    {
+      "instance_id": "facebook__docusaurus-9897",
+      "status": "completed",
+      "turns": 39,
+      "durationMs": 226461,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 48781,
+      "outputTokens": 10226,
+      "cacheReadTokens": 679808
+    },
+    {
+      "instance_id": "mrdoob__three.js-25687",
+      "status": "completed",
+      "turns": 30,
+      "durationMs": 91103,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 38225,
+      "outputTokens": 5996,
+      "cacheReadTokens": 227703
+    },
+    {
+      "instance_id": "mrdoob__three.js-26589",
+      "status": "completed",
+      "turns": 29,
+      "durationMs": 127941,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 23200,
+      "outputTokens": 8846,
+      "cacheReadTokens": 443904
+    },
+    {
+      "instance_id": "mrdoob__three.js-27395",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 6943,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "preactjs__preact-2757",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 2103,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "preactjs__preact-2896",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 2069,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "preactjs__preact-2927",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 2113,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "preactjs__preact-3010",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 2678,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "preactjs__preact-3062",
+      "status": "completed",
+      "turns": 1,
+      "durationMs": 3236,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0
+    },
+    {
+      "instance_id": "preactjs__preact-3345",
+      "status": "completed",
+      "turns": 80,
+      "durationMs": 487708,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 62857,
+      "outputTokens": 34839,
+      "cacheReadTokens": 2765056
+    },
+    {
+      "instance_id": "preactjs__preact-3454",
+      "status": "completed",
+      "turns": 37,
+      "durationMs": 110150,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 65174,
+      "outputTokens": 6186,
+      "cacheReadTokens": 413981
+    },
+    {
+      "instance_id": "preactjs__preact-3562",
+      "status": "completed",
+      "turns": 30,
+      "durationMs": 73477,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 21396,
+      "outputTokens": 6976,
+      "cacheReadTokens": 294144
+    },
+    {
+      "instance_id": "preactjs__preact-3567",
+      "status": "completed",
+      "turns": 77,
+      "durationMs": 533493,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 75850,
+      "outputTokens": 39795,
+      "cacheReadTokens": 3180028
+    },
+    {
+      "instance_id": "preactjs__preact-3689",
+      "status": "completed",
+      "turns": 37,
+      "durationMs": 179814,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 27435,
+      "outputTokens": 8785,
+      "cacheReadTokens": 507392
+    },
+    {
+      "instance_id": "preactjs__preact-3739",
+      "status": "completed",
+      "turns": 39,
+      "durationMs": 231364,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 56262,
+      "outputTokens": 18022,
+      "cacheReadTokens": 1160038
+    },
+    {
+      "instance_id": "preactjs__preact-3763",
+      "status": "completed",
+      "turns": 24,
+      "durationMs": 85769,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 22157,
+      "outputTokens": 6046,
+      "cacheReadTokens": 208498
+    },
+    {
+      "instance_id": "preactjs__preact-4152",
+      "status": "completed",
+      "turns": 33,
+      "durationMs": 261776,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 26776,
+      "outputTokens": 13930,
+      "cacheReadTokens": 765952
+    },
+    {
+      "instance_id": "preactjs__preact-4182",
+      "status": "completed",
+      "turns": 48,
+      "durationMs": 329427,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 49833,
+      "outputTokens": 26775,
+      "cacheReadTokens": 1352380
+    },
+    {
+      "instance_id": "preactjs__preact-4245",
+      "status": "completed",
+      "turns": 45,
+      "durationMs": 222559,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 34092,
+      "outputTokens": 13151,
+      "cacheReadTokens": 1031592
+    },
+    {
+      "instance_id": "preactjs__preact-4316",
+      "status": "completed",
+      "turns": 20,
+      "durationMs": 80162,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 13474,
+      "outputTokens": 4784,
+      "cacheReadTokens": 169728
+    },
+    {
+      "instance_id": "preactjs__preact-4436",
+      "status": "completed",
+      "turns": 49,
+      "durationMs": 291148,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 34597,
+      "outputTokens": 16029,
+      "cacheReadTokens": 1249042
+    },
+    {
+      "instance_id": "vuejs__core-11589",
+      "status": "completed",
+      "turns": 36,
+      "durationMs": 476599,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 57006,
+      "outputTokens": 16476,
+      "cacheReadTokens": 1167872
+    },
+    {
+      "instance_id": "vuejs__core-11739",
+      "status": "turn-limit",
+      "turns": 101,
+      "durationMs": 276449,
+      "patchGenerated": false,
+      "resolved": false,
+      "inputTokens": 79923,
+      "outputTokens": 21585,
+      "cacheReadTokens": 3801088
+    },
+    {
+      "instance_id": "vuejs__core-11870",
+      "status": "completed",
+      "turns": 31,
+      "durationMs": 246634,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 23502,
+      "outputTokens": 9585,
+      "cacheReadTokens": 595968
+    },
+    {
+      "instance_id": "vuejs__core-11899",
+      "status": "completed",
+      "turns": 26,
+      "durationMs": 128648,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 17372,
+      "outputTokens": 9417,
+      "cacheReadTokens": 353792
+    },
+    {
+      "instance_id": "vuejs__core-11915",
+      "status": "completed",
+      "turns": 74,
+      "durationMs": 825824,
+      "patchGenerated": true,
+      "resolved": true,
+      "inputTokens": 54402,
+      "outputTokens": 33897,
+      "cacheReadTokens": 3327744
+    }
+  ]
+}

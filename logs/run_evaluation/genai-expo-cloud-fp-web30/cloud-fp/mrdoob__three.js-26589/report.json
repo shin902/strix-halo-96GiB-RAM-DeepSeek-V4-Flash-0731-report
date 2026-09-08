@@ -1,0 +1,45 @@
+{
+    "mrdoob__three.js-26589": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "infra_failure": false,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "Objects > Line > copy/material",
+                    "Objects > Mesh > copy/material",
+                    "Objects > Points > copy/material"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "Objects > Line > Extending",
+                    "Objects > Line > Instancing",
+                    "Objects > Line > type",
+                    "Objects > Line > isLine",
+                    "Objects > Mesh > Extending",
+                    "Objects > Mesh > Instancing",
+                    "Objects > Mesh > type",
+                    "Objects > Mesh > isMesh",
+                    "Objects > Mesh > raycast/range",
+                    "Objects > Points > Extending",
+                    "Objects > Points > Instancing",
+                    "Objects > Points > type",
+                    "Objects > Points > isPoints"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

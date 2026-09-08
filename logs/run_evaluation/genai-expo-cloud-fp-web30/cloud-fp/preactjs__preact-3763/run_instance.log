@@ -1,0 +1,73 @@
+2026-09-08 13:31:42,618 - INFO - Image not found locally, attempting to pull...
+2026-09-08 13:32:21,168 - INFO - Creating container for preactjs__preact-3763...
+2026-09-08 13:32:21,442 - INFO - Container for preactjs__preact-3763 created: 52496e5c24c93adabe32dca5d5c12a50aefa9e6d88c4733ed639710e33c889b2
+2026-09-08 13:32:21,538 - INFO - Container for preactjs__preact-3763 started: 52496e5c24c93adabe32dca5d5c12a50aefa9e6d88c4733ed639710e33c889b2
+2026-09-08 13:32:21,538 - INFO - Intermediate patch for preactjs__preact-3763 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-3763/patch.diff, now applying to container...
+2026-09-08 13:32:21,615 - INFO - >>>>> Applied Patch:
+Checking patch src/diff/index.js...
+Applied patch src/diff/index.js cleanly.
+
+2026-09-08 13:32:21,677 - INFO - Git diff before:
+diff --git a/package-lock.json b/package-lock.json
+index f8dae7b2..de441a32 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -5,6 +5,7 @@
+ 	"requires": true,
+ 	"packages": {
+ 		"": {
++			"name": "preact",
+ 			"version": "10.11.1",
+ 			"license": "MIT",
+ 			"devDependencies": {
+diff --git a/src/diff/index.js b/src/diff/index.js
+index fc564d3b..d47e85c2 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -112,8 +112,8 @@ export function diff(
+ 
+ 			for (tmp = 0; tmp < c._stateCallbacks.length; tmp++) {
+ 				c._renderCallbacks.push(c._stateCallbacks[tmp]);
+-				c._stateCallbacks = [];
+ 			}
++			c._stateCallbacks = [];
+ 
+ 			// Invoke pre-render lifecycle methods
+ 			if (isNew) {
+2026-09-08 13:32:21,678 - INFO - Eval script for preactjs__preact-3763 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-3763/eval.sh; copying to container...
+2026-09-08 13:32:23,435 - INFO - Test runtime: 1.71 seconds
+2026-09-08 13:32:23,435 - INFO - Test output for preactjs__preact-3763 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-3763/test_output.txt
+2026-09-08 13:32:23,478 - INFO - Git diff after:
+diff --git a/package-lock.json b/package-lock.json
+index f8dae7b2..de441a32 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -5,6 +5,7 @@
+ 	"requires": true,
+ 	"packages": {
+ 		"": {
++			"name": "preact",
+ 			"version": "10.11.1",
+ 			"license": "MIT",
+ 			"devDependencies": {
+diff --git a/src/diff/index.js b/src/diff/index.js
+index fc564d3b..d47e85c2 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -112,8 +112,8 @@ export function diff(
+ 
+ 			for (tmp = 0; tmp < c._stateCallbacks.length; tmp++) {
+ 				c._renderCallbacks.push(c._stateCallbacks[tmp]);
+-				c._stateCallbacks = [];
+ 			}
++			c._stateCallbacks = [];
+ 
+ 			// Invoke pre-render lifecycle methods
+ 			if (isNew) {
+2026-09-08 13:32:23,478 - INFO - Grading answer for preactjs__preact-3763...
+2026-09-08 13:32:23,479 - INFO - report: {'preactjs__preact-3763': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['Lifecycle methods > #componentDidMount > supports multiple setState callbacks'], 'failure': []}, 'PASS_TO_PASS': {'success': ['Lifecycle methods > #componentDidMount > is invoked after refs are set'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for preactjs__preact-3763: resolved: True
+2026-09-08 13:32:23,479 - INFO - Attempting to stop container sweb.eval.preactjs__preact-3763.genai-expo-cloud-fp-web30...
+2026-09-08 13:32:38,633 - INFO - Container sweb.eval.preactjs__preact-3763.genai-expo-cloud-fp-web30 stopped successfully.
+2026-09-08 13:32:38,633 - INFO - Attempting to remove container sweb.eval.preactjs__preact-3763.genai-expo-cloud-fp-web30...
+2026-09-08 13:32:38,662 - INFO - Container sweb.eval.preactjs__preact-3763.genai-expo-cloud-fp-web30 removed successfully.

@@ -1,0 +1,14 @@
+diff --git a/src/diff/index.js b/src/diff/index.js
+index fc564d3b..d47e85c2 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -112,8 +112,8 @@ export function diff(
+ 
+ 			for (tmp = 0; tmp < c._stateCallbacks.length; tmp++) {
+ 				c._renderCallbacks.push(c._stateCallbacks[tmp]);
+-				c._stateCallbacks = [];
+ 			}
++			c._stateCallbacks = [];
+ 
+ 			// Invoke pre-render lifecycle methods
+ 			if (isNew) {

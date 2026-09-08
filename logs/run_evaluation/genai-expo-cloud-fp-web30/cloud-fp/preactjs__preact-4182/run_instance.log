@@ -1,0 +1,147 @@
+2026-09-08 13:33:42,106 - INFO - Image not found locally, attempting to pull...
+2026-09-08 13:34:27,170 - INFO - Creating container for preactjs__preact-4182...
+2026-09-08 13:34:27,471 - INFO - Container for preactjs__preact-4182 created: bddd1e06b563e1bf3ad67fff0608511b38a6bee271963e45071d87d7e281080a
+2026-09-08 13:34:27,566 - INFO - Container for preactjs__preact-4182 started: bddd1e06b563e1bf3ad67fff0608511b38a6bee271963e45071d87d7e281080a
+2026-09-08 13:34:27,566 - INFO - Intermediate patch for preactjs__preact-4182 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-4182/patch.diff, now applying to container...
+2026-09-08 13:34:27,652 - INFO - >>>>> Applied Patch:
+Checking patch hooks/test/browser/errorBoundary.test.js...
+Checking patch src/diff/index.js...
+Applied patch hooks/test/browser/errorBoundary.test.js cleanly.
+Applied patch src/diff/index.js cleanly.
+
+2026-09-08 13:34:27,715 - INFO - Git diff before:
+diff --git a/hooks/test/browser/errorBoundary.test.js b/hooks/test/browser/errorBoundary.test.js
+index 0e7de2f6..415d76cc 100644
+--- a/hooks/test/browser/errorBoundary.test.js
++++ b/hooks/test/browser/errorBoundary.test.js
+@@ -1,6 +1,6 @@
+-import { createElement, render } from 'preact';
++import { Fragment, createElement, render } from 'preact';
+ import { setupScratch, teardown } from '../../../test/_util/helpers';
+-import { useErrorBoundary, useLayoutEffect } from 'preact/hooks';
++import { useErrorBoundary, useLayoutEffect, useState } from 'preact/hooks';
+ import { setupRerender } from 'preact/test-utils';
+ 
+ /** @jsx createElement */
+@@ -152,4 +152,81 @@ describe('errorBoundary', () => {
+ 		expect(badEffect).to.be.calledOnce;
+ 		expect(goodEffect).to.be.calledOnce;
+ 	});
++
++	it('should not duplicate in lists where an item throws and the parent catches and returns a differing type', () => {
++		const baseTodos = [
++			{ text: 'first item', completed: false },
++			{ text: 'Test the feature', completed: false },
++			{ text: 'another item', completed: false }
++		];
++
++		function TodoList() {
++			const [todos, setTodos] = useState([...baseTodos]);
++
++			return (
++				<Fragment>
++					<ul>
++						{todos.map((todo, index) => (
++							<TodoItem
++								key={index}
++								toggleTodo={() => {
++									todos[index] = {
++										...todos[index],
++										completed: !todos[index].completed
++									};
++									setTodos([...todos]);
++								}}
++								todo={todo}
++								index={index}
++							/>
++						))}
++					</ul>
++				</Fragment>
++			);
++		}
++
++		function TodoItem(props) {
++			const [error] = useErrorBoundary();
++
++			if (error) {
++				return <li>An error occurred: {error}</li>;
++			}
++
++			return <TodoItemInner {...props} />;
++		}
++		let set;
++		function TodoItemInner({ todo, index, toggleTodo }) {
++			if (todo.completed) {
++				throw new Error('Todo completed!');
++			}
++
++			if (index === 1) {
++				set = toggleTodo;
++			}
++
++			return (
++				<li>
++					<label>
++						<input
++							type="checkbox"
++							checked={todo.completed}
++							onInput={toggleTodo}
++						/>
++						{todo.completed ? <s>{todo.text}</s> : todo.text}
++					</label>
++				</li>
++			);
++		}
++
++		render(<TodoList />, scratch);
++		expect(scratch.innerHTML).to.equal(
++			'<ul><li><label><input type="checkbox">first item</label></li><li><label><input type="checkbox">Test the feature</label></li><li><label><input type="checkbox">another item</label></li></ul>'
++		);
++
++		set();
++		rerender();
++		expect(scratch.innerHTML).to.equal(
++			'<ul><li><label><input type="checkbox">first item</label></li><li>An error occurred: </li><li><label><input type="checkbox">another item</label></li></ul>'
++		);
++	});
+ });
+diff --git a/src/diff/index.js b/src/diff/index.js
+index a76c1f62..17254a32 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -271,6 +271,9 @@ export function diff(
+ 				excessDomChildren[excessDomChildren.indexOf(oldDom)] = null;
+ 				// ^ could possibly be simplified to:
+ 				// excessDomChildren.length = 0;
++			} else {
++				newVNode._dom = oldVNode._dom;
++				newVNode._children = oldVNode._children;
+ 			}
+ 			options._catchError(e, newVNode, oldVNode);
+ 		}
+2026-09-08 13:34:27,715 - INFO - Eval script for preactjs__preact-4182 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-4182/eval.sh; copying to container...
+2026-09-08 13:34:29,630 - INFO - Test runtime: 1.87 seconds
+2026-09-08 13:34:29,630 - INFO - Test output for preactjs__preact-4182 written to logs/run_evaluation/genai-expo-cloud-fp-web30/cloud-fp/preactjs__preact-4182/test_output.txt
+2026-09-08 13:34:29,664 - INFO - Git diff after:
+diff --git a/src/diff/index.js b/src/diff/index.js
+index a76c1f62..17254a32 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -271,6 +271,9 @@ export function diff(
+ 				excessDomChildren[excessDomChildren.indexOf(oldDom)] = null;
+ 				// ^ could possibly be simplified to:
+ 				// excessDomChildren.length = 0;
++			} else {
++				newVNode._dom = oldVNode._dom;
++				newVNode._children = oldVNode._children;
+ 			}
+ 			options._catchError(e, newVNode, oldVNode);
+ 		}
+2026-09-08 13:34:29,664 - INFO - Git diff changed after running eval script
+2026-09-08 13:34:29,664 - INFO - Grading answer for preactjs__preact-4182...
+2026-09-08 13:34:29,664 - INFO - report: {'preactjs__preact-4182': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['errorBoundary > should not duplicate in lists where an item throws and the parent catches and returns a differing type'], 'failure': []}, 'PASS_TO_PASS': {'success': ['errorBoundary > catches errors', 'errorBoundary > calls the errorBoundary callback', 'errorBoundary > returns error', 'errorBoundary > does not leave a stale closure', 'errorBoundary > does not invoke old effects when a cleanup callback throws an error and is handled'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for preactjs__preact-4182: resolved: True
+2026-09-08 13:34:29,664 - INFO - Attempting to stop container sweb.eval.preactjs__preact-4182.genai-expo-cloud-fp-web30...
+2026-09-08 13:34:44,808 - INFO - Container sweb.eval.preactjs__preact-4182.genai-expo-cloud-fp-web30 stopped successfully.
+2026-09-08 13:34:44,808 - INFO - Attempting to remove container sweb.eval.preactjs__preact-4182.genai-expo-cloud-fp-web30...
+2026-09-08 13:34:44,837 - INFO - Container sweb.eval.preactjs__preact-4182.genai-expo-cloud-fp-web30 removed successfully.

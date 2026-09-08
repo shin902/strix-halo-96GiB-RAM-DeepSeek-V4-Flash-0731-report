@@ -1,0 +1,417 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   packages/reactivity/src/effect.ts
+	modified:   packages/runtime-core/__tests__/apiWatch.spec.ts
+	modified:   packages/runtime-core/src/apiWatch.ts
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 3653bc0f45d6fedf84e29b64ca52584359c383c0
+Author: btea <2356281422@qq.com>
+Date:   Tue Aug 13 22:07:35 2024 +0800
+
+    fix(keep-alive): ensure include/exclude regexp work with global flag (#11595)
+
+diff --git a/packages/runtime-core/__tests__/components/KeepAlive.spec.ts b/packages/runtime-core/__tests__/components/KeepAlive.spec.ts
+index 6d3f6a9b..0b761972 100644
+--- a/packages/runtime-core/__tests__/components/KeepAlive.spec.ts
++++ b/packages/runtime-core/__tests__/components/KeepAlive.spec.ts
+@@ -32,6 +32,7 @@ const timeout = (n: number = 0) => new Promise(r => setTimeout(r, n))
+ describe('KeepAlive', () => {
+   let one: ComponentOptions
+   let two: ComponentOptions
++  let oneTest: ComponentOptions
+   let views: Record<string, ComponentOptions>
+   let root: TestElement
+ 
+@@ -49,6 +50,18 @@ describe('KeepAlive', () => {
+       deactivated: vi.fn(),
+       unmounted: vi.fn(),
+     }
++    oneTest = {
++      name: 'oneTest',
++      data: () => ({ msg: 'oneTest' }),
++      render(this: any) {
++        return h('div', this.msg)
++      },
++      created: vi.fn(),
++      mounted: vi.fn(),
++      activated: vi.fn(),
++      deactivated: vi.fn(),
++      unmounted: vi.fn(),
++    }
+     two = {
+       name: 'two',
+       data: () => ({ msg: 'two' }),
+@@ -63,6 +76,7 @@ describe('KeepAlive', () => {
+     }
+     views = {
+       one,
++      oneTest,
+       two,
+     }
+   })
+@@ -369,6 +383,128 @@ describe('KeepAlive', () => {
+     assertHookCalls(two, [2, 2, 0, 0, 2])
+   }
+ 
++  async function assertNameMatchWithFlag(props: KeepAliveProps) {
++    const outerRef = ref(true)
++    const viewRef = ref('one')
++    const App = {
++      render() {
++        return outerRef.value
++          ? h(KeepAlive, props, () => h(views[viewRef.value]))
++          : null
++      },
++    }
++    render(h(App), root)
++
++    expect(serializeInner(root)).toBe(`<div>one</div>`)
++    assertHookCalls(one, [1, 1, 1, 0, 0])
++    assertHookCalls(oneTest, [0, 0, 0, 0, 0])
++    assertHookCalls(two, [0, 0, 0, 0, 0])
++
++    viewRef.value = 'oneTest'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>oneTest</div>`)
++    assertHookCalls(one, [1, 1, 1, 1, 0])
++    assertHookCalls(oneTest, [1, 1, 1, 0, 0])
++    assertHookCalls(two, [0, 0, 0, 0, 0])
++
++    viewRef.value = 'two'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>two</div>`)
++    assertHookCalls(one, [1, 1, 1, 1, 0])
++    assertHookCalls(oneTest, [1, 1, 1, 1, 0])
++    assertHookCalls(two, [1, 1, 0, 0, 0])
++
++    viewRef.value = 'one'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>one</div>`)
++    assertHookCalls(one, [1, 1, 2, 1, 0])
++    assertHookCalls(oneTest, [1, 1, 1, 1, 0])
++    assertHookCalls(two, [1, 1, 0, 0, 1])
++
++    viewRef.value = 'oneTest'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>oneTest</div>`)
++    assertHookCalls(one, [1, 1, 2, 2, 0])
++    assertHookCalls(oneTest, [1, 1, 2, 1, 0])
++    assertHookCalls(two, [1, 1, 0, 0, 1])
++
++    viewRef.value = 'two'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>two</div>`)
++    assertHookCalls(one, [1, 1, 2, 2, 0])
++    assertHookCalls(oneTest, [1, 1, 2, 2, 0])
++    assertHookCalls(two, [2, 2, 0, 0, 1])
++
++    // teardown
++    outerRef.value = false
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<!---->`)
++    assertHookCalls(one, [1, 1, 2, 2, 1])
++    assertHookCalls(oneTest, [1, 1, 2, 2, 1])
++    assertHookCalls(two, [2, 2, 0, 0, 2])
++  }
++
++  async function assertNameMatchWithFlagExclude(props: KeepAliveProps) {
++    const outerRef = ref(true)
++    const viewRef = ref('one')
++    const App = {
++      render() {
++        return outerRef.value
++          ? h(KeepAlive, props, () => h(views[viewRef.value]))
++          : null
++      },
++    }
++    render(h(App), root)
++
++    expect(serializeInner(root)).toBe(`<div>one</div>`)
++    assertHookCalls(one, [1, 1, 0, 0, 0])
++    assertHookCalls(oneTest, [0, 0, 0, 0, 0])
++    assertHookCalls(two, [0, 0, 0, 0, 0])
++
++    viewRef.value = 'oneTest'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>oneTest</div>`)
++    assertHookCalls(one, [1, 1, 0, 0, 1])
++    assertHookCalls(oneTest, [1, 1, 0, 0, 0])
++    assertHookCalls(two, [0, 0, 0, 0, 0])
++
++    viewRef.value = 'two'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>two</div>`)
++    assertHookCalls(one, [1, 1, 0, 0, 1])
++    assertHookCalls(oneTest, [1, 1, 0, 0, 1])
++    assertHookCalls(two, [1, 1, 1, 0, 0])
++
++    viewRef.value = 'one'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>one</div>`)
++    assertHookCalls(one, [2, 2, 0, 0, 1])
++    assertHookCalls(oneTest, [1, 1, 0, 0, 1])
++    assertHookCalls(two, [1, 1, 1, 1, 0])
++
++    viewRef.value = 'oneTest'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>oneTest</div>`)
++    assertHookCalls(one, [2, 2, 0, 0, 2])
++    assertHookCalls(oneTest, [2, 2, 0, 0, 1])
++    assertHookCalls(two, [1, 1, 1, 1, 0])
++
++    viewRef.value = 'two'
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<div>two</div>`)
++    assertHookCalls(one, [2, 2, 0, 0, 2])
++    assertHookCalls(oneTest, [2, 2, 0, 0, 2])
++    assertHookCalls(two, [1, 1, 2, 1, 0])
++
++    // teardown
++    outerRef.value = false
++    await nextTick()
++    expect(serializeInner(root)).toBe(`<!---->`)
++    assertHookCalls(one, [2, 2, 0, 0, 2])
++    assertHookCalls(oneTest, [2, 2, 0, 0, 2])
++    assertHookCalls(two, [1, 1, 2, 2, 1])
++  }
++
+   describe('props', () => {
+     test('include (string)', async () => {
+       await assertNameMatch({ include: 'one' })
+@@ -378,6 +514,10 @@ describe('KeepAlive', () => {
+       await assertNameMatch({ include: /^one$/ })
+     })
+ 
++    test('include (regex with g flag)', async () => {
++      await assertNameMatchWithFlag({ include: /one/g })
++    })
++
+     test('include (array)', async () => {
+       await assertNameMatch({ include: ['one'] })
+     })
+@@ -390,6 +530,10 @@ describe('KeepAlive', () => {
+       await assertNameMatch({ exclude: /^two$/ })
+     })
+ 
++    test('exclude (regex with a flag)', async () => {
++      await assertNameMatchWithFlagExclude({ exclude: /one/g })
++    })
++
+     test('exclude (array)', async () => {
+       await assertNameMatch({ exclude: ['two'] })
+     })
+diff --git a/packages/runtime-core/src/components/KeepAlive.ts b/packages/runtime-core/src/components/KeepAlive.ts
+index e9c8cce5..11be59ff 100644
+--- a/packages/runtime-core/src/components/KeepAlive.ts
++++ b/packages/runtime-core/src/components/KeepAlive.ts
+@@ -382,6 +382,7 @@ function matches(pattern: MatchPattern, name: string): boolean {
+   } else if (isString(pattern)) {
+     return pattern.split(',').includes(name)
+   } else if (isRegExp(pattern)) {
++    pattern.lastIndex = 0
+     return pattern.test(name)
+   }
+   /* istanbul ignore next */
++ git -c core.fileMode=false diff 3653bc0f45d6fedf84e29b64ca52584359c383c0
+diff --git a/packages/reactivity/src/effect.ts b/packages/reactivity/src/effect.ts
+index 6b18318d..c769ba57 100644
+--- a/packages/reactivity/src/effect.ts
++++ b/packages/reactivity/src/effect.ts
+@@ -45,8 +45,7 @@ export enum EffectFlags {
+   NOTIFIED = 1 << 3,
+   DIRTY = 1 << 4,
+   ALLOW_RECURSE = 1 << 5,
+-  NO_BATCH = 1 << 6,
+-  PAUSED = 1 << 7,
++  PAUSED = 1 << 6,
+ }
+ 
+ /**
+@@ -169,9 +168,6 @@ export class ReactiveEffect<T = any>
+     ) {
+       return
+     }
+-    if (this.flags & EffectFlags.NO_BATCH) {
+-      return this.trigger()
+-    }
+     if (!(this.flags & EffectFlags.NOTIFIED)) {
+       this.flags |= EffectFlags.NOTIFIED
+       this.nextEffect = batchedEffect
+@@ -267,6 +263,7 @@ export function endBatch(): void {
+     return
+   }
+ 
++  batchDepth--
+   let error: unknown
+   while (batchedEffect) {
+     let e: ReactiveEffect | undefined = batchedEffect
+@@ -286,7 +283,6 @@ export function endBatch(): void {
+     }
+   }
+ 
+-  batchDepth--
+   if (error) throw error
+ }
+ 
+diff --git a/packages/runtime-core/__tests__/apiWatch.spec.ts b/packages/runtime-core/__tests__/apiWatch.spec.ts
+index 85afec24..67f0bc16 100644
+--- a/packages/runtime-core/__tests__/apiWatch.spec.ts
++++ b/packages/runtime-core/__tests__/apiWatch.spec.ts
+@@ -1856,4 +1856,32 @@ describe('api: watch', () => {
+ 
+     warn.mockRestore()
+   })
++
++  it('should be executed correctly', () => {
++    const v = ref(1)
++    let foo = ''
++
++    watch(
++      v,
++      () => {
++        foo += '1'
++      },
++      {
++        flush: 'sync',
++      },
++    )
++    watch(
++      v,
++      () => {
++        foo += '2'
++      },
++      {
++        flush: 'sync',
++      },
++    )
++
++    expect(foo).toBe('')
++    v.value++
++    expect(foo).toBe('12')
++  })
+ })
+diff --git a/packages/runtime-core/src/apiWatch.ts b/packages/runtime-core/src/apiWatch.ts
+index 2ad887a3..479a263b 100644
+--- a/packages/runtime-core/src/apiWatch.ts
++++ b/packages/runtime-core/src/apiWatch.ts
+@@ -394,7 +394,6 @@ function doWatch(
+ 
+   let scheduler: EffectScheduler
+   if (flush === 'sync') {
+-    effect.flags |= EffectFlags.NO_BATCH
+     scheduler = job as any // the scheduler function gets called directly
+   } else if (flush === 'post') {
+     scheduler = () => queuePostRenderEffect(job, instance && instance.suspense)
++ git checkout 3653bc0f45d6fedf84e29b64ca52584359c383c0 packages/runtime-core/__tests__/apiWatch.spec.ts
+Updated 1 path from c192989d
++ git apply -v -
+Checking patch packages/runtime-core/__tests__/apiWatch.spec.ts...
+Applied patch packages/runtime-core/__tests__/apiWatch.spec.ts cleanly.
++ : '>>>>> Start Test Output'
++ pnpm run test packages/runtime-core/__tests__/apiWatch.spec.ts --no-watch --reporter=verbose
++ cat
+
+> @3.5.0-beta.1 test /testbed
+> vitest "packages/runtime-core/__tests__/apiWatch.spec.ts" "--no-watch" "--reporter=verbose"
+
+
+ RUN  v2.0.5 /testbed
+
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > effect
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching single source: getter
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching single source: ref
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching single source: array
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not call functions inside a reactive source array
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not unwrap refs in a reactive source array
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not fire if watched getter result did not change
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching single source: computed ref
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching primitive with deep: true
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > directly watching reactive object (with automatic deep: true)
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > directly watching reactive object with explicit deep: false
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > directly watching reactive array with explicit deep: false
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching shallow reactive array with deep: false
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should still respect deep: true on shallowReactive source
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources: undefined initial values and immediate: true
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources: readonly array
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources: reactive object (with automatic deep: true)
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > warn invalid watch source
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > warn invalid watch source: multiple sources
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > stopping the watcher (effect)
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > stopping the watcher (with source)
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > cleanup registration (effect)
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > cleanup registration (with source)
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush timing: pre (default)
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush timing: post
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchPostEffect
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush timing: sync
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchSyncEffect
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not fire on component unmount w/ flush: post
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not fire on component unmount w/ flush: pre
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not fire on child component unmount w/ flush: pre
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush: pre watcher in child component should not fire before parent update
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush: pre watcher watching props should fire before child update
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush: pre triggered in component setup should be buffered and called before mounted
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > flush: post watcher should fire after template refs updated
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > deep
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching deep ref
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > deep with symbols
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > immediate
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > immediate: triggers when initial value is null
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > immediate: triggers when initial value is undefined
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > warn immediate option when using effect
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > warn and not respect deep option when using effect
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > onTrack
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > onTrigger
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should work sync
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should force trigger on triggerRef when watching a shallow ref
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should force trigger on triggerRef when watching multiple sources: shallow ref array
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should force trigger on triggerRef with toRef from reactive
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchEffect should not recursively trigger itself
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > computed refs should not trigger watch if value has no change
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > $watch should always register its effects with its own instance
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > this.$watch should pass `this.proxy` to watch source as the first argument 
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should not leak `this.proxy` to setup()
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > pre watcher callbacks should not track dependencies
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching keypath
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching sources: ref<any[]>
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching multiple sources: computed
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watch should not register in owner component if created inside detached scope
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchEffect should keep running if created in a detached scope
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch'
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch with deep'
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch with flush: s…'
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch with flush: p…'
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > 'only trigger once watch with immediate'
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > OnCleanup also needs to be cleaned，
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching reactive depth
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching ref depth
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching array depth
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > pause / resume
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > shallowReactive
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watching reactive with deep: false
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > effect should be removed from scope's effects after it is stopped
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > sync watcher should not be batched
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watchEffect should not fire on computed deps that did not change
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > circular reference
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > watch immediate error in effect scope should be catched by onErrorCaptured
+ ✓ packages/runtime-core/__tests__/apiWatch.spec.ts > api: watch > should be executed correctly
+
+ Test Files  1 passed (1)
+      Tests  79 passed (79)
+   Start at  04:40:39
+   Duration  1.16s (transform 681ms, setup 16ms, collect 683ms, tests 54ms, environment 0ms, prepare 197ms)
+
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
++ git checkout 3653bc0f45d6fedf84e29b64ca52584359c383c0 packages/runtime-core/__tests__/apiWatch.spec.ts
+>>>>> Test Exit Code: 0
+Updated 1 path from c192989d

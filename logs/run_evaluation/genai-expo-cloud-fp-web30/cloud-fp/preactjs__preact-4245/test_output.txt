@@ -1,0 +1,181 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   hooks/src/index.js
+	modified:   hooks/test/browser/useId.test.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 13b0afb7a28adb3149d7125fb2b9c16edbcf8e94
+Author: Jovi De Croock <decroockjovi@gmail.com>
+Date:   Tue Jan 2 10:53:00 2024 +0100
+
+    ensure we are able to support capture events from compat (#4243)
+
+diff --git a/compat/test/browser/events.test.js b/compat/test/browser/events.test.js
+index b7a9d1d7..d59dbef8 100644
+--- a/compat/test/browser/events.test.js
++++ b/compat/test/browser/events.test.js
+@@ -2,7 +2,8 @@ import { render } from 'preact';
+ import {
+ 	setupScratch,
+ 	teardown,
+-	createEvent
++	createEvent,
++	supportsPassiveEvents
+ } from '../../../test/_util/helpers';
+ 
+ import React, { createElement } from 'preact/compat';
+@@ -309,4 +310,24 @@ describe('preact/compat events', () => {
+ 		scratch.firstChild.dispatchEvent(createEvent('focusout'));
+ 		expect(spy).to.be.calledOnce;
+ 	});
++
++	if (supportsPassiveEvents()) {
++		it('should use capturing for event props ending with *Capture', () => {
++			let click = sinon.spy();
++
++			render(
++				<div onTouchMoveCapture={click}>
++					<button type="button">Click me</button>
++				</div>,
++				scratch
++			);
++
++			expect(proto.addEventListener).to.have.been.calledOnce;
++			expect(proto.addEventListener).to.have.been.calledWithExactly(
++				'touchmove',
++				sinon.match.func,
++				true
++			);
++		});
++	}
+ });
+diff --git a/src/diff/props.js b/src/diff/props.js
+index 6421330b..3ec7e911 100644
+--- a/src/diff/props.js
++++ b/src/diff/props.js
+@@ -52,7 +52,7 @@ export function setProperty(dom, name, value, oldValue, isSvg) {
+ 	// Benchmark for comparison: https://esbench.com/bench/574c954bdb965b9a00965ac6
+ 	else if (name[0] === 'o' && name[1] === 'n') {
+ 		useCapture =
+-			name !== (name = name.replace(/(PointerCapture)$|Capture$/, '$1'));
++			name !== (name = name.replace(/(PointerCapture)$|Capture$/i, '$1'));
+ 
+ 		// Infer correct casing for DOM built-in events:
+ 		if (name.toLowerCase() in dom) name = name.toLowerCase().slice(2);
++ git -c core.fileMode=false diff 13b0afb7a28adb3149d7125fb2b9c16edbcf8e94
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index eadbd86c..92eb1e11 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -25,6 +25,7 @@ let oldBeforeRender = options._render;
+ let oldAfterDiff = options.diffed;
+ let oldCommit = options._commit;
+ let oldBeforeUnmount = options.unmount;
++let oldRoot = options._root;
+ 
+ const RAF_TIMEOUT = 100;
+ let prevRaf;
+@@ -35,6 +36,14 @@ options._diff = vnode => {
+ 	if (oldBeforeDiff) oldBeforeDiff(vnode);
+ };
+ 
++options._root = (vnode, parentDom) => {
++	if (parentDom._children && parentDom._children._mask) {
++		vnode._mask = parentDom._children._mask;
++	}
++
++	if (oldRoot) oldRoot(vnode, parentDom);
++};
++
+ /** @type {(vnode: import('./internal').VNode) => void} */
+ options._render = vnode => {
+ 	if (oldBeforeRender) oldBeforeRender(vnode);
+diff --git a/hooks/test/browser/useId.test.js b/hooks/test/browser/useId.test.js
+index e7fc7f94..fe2546fd 100644
+--- a/hooks/test/browser/useId.test.js
++++ b/hooks/test/browser/useId.test.js
+@@ -433,4 +433,27 @@ describe('useId', () => {
+ 		rerender();
+ 		expect(first).not.to.equal(scratch.innerHTML);
+ 	});
++
++	it('should return a unique id across invocations of render', () => {
++		const Id = () => {
++			const id = useId();
++			return <div>My id is {id}</div>;
++		};
++
++		const App = props => {
++			return (
++				<div>
++					<Id />
++					{props.secondId ? <Id /> : null}
++				</div>
++			);
++		};
++
++		render(createElement(App, { secondId: false }), scratch);
++		expect(scratch.innerHTML).to.equal('<div><div>My id is P0-0</div></div>');
++		render(createElement(App, { secondId: true }), scratch);
++		expect(scratch.innerHTML).to.equal(
++			'<div><div>My id is P0-0</div><div>My id is P0-1</div></div>'
++		);
++	});
+ });
++ git checkout 13b0afb7a28adb3149d7125fb2b9c16edbcf8e94 hooks/test/browser/useId.test.js
+Updated 1 path from 7da03394
++ git apply -v -
+Checking patch hooks/test/browser/useId.test.js...
+Applied patch hooks/test/browser/useId.test.js cleanly.
++ : '>>>>> Start Test Output'
++ COVERAGE=false
++ BABEL_NO_MODULES=true
++ npx karma start karma.conf.js --single-run --grep=hooks/test/browser/useId.test.js
++ cat
+
+START:
+[32m08 09 2026 04:35:27.117:INFO [esbuild]: [39mCompiling...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[32m08 09 2026 04:35:27.920:INFO [esbuild]: [39mCompiling done (803ms)
+[32m08 09 2026 04:35:27.923:INFO [karma-server]: [39mKarma v6.3.16 server started at http://localhost:9876/
+[32m08 09 2026 04:35:27.924:INFO [launcher]: [39mLaunching browsers ChromeNoSandboxHeadless with concurrency 2
+[32m08 09 2026 04:35:27.927:INFO [launcher]: [39mStarting browser Chrome
+[32m08 09 2026 04:35:28.151:INFO [Chrome Headless 151.0.0.0 (Linux x86_64)]: [39mConnected on socket OjLRURcOIRNwrZUuAAAB with id 91325499
+  useId
+    ✔ keeps the id consistent after an update
+    ✔ ids are unique according to dom-depth
+    ✔ ids are unique across siblings
+    ✔ correctly handles new elements
+    ✔ matches with rts
+    ✔ matches with rts after hydration
+    ✔ should be unique across Fragments
+    ✔ should match implicite Fragments with RTS
+    ✔ should skip component top level Fragment child
+    ✔ should skip over HTML
+    ✔ should reset for each renderToString roots
+    ✔ should work with conditional components
+    ✔ should return a unique id across invocations of render
+
+Finished in 0.013 secs / 0.007 secs @ 04:35:28 GMT+0000 (Coordinated Universal Time)
+
+SUMMARY:
+✔ 13 tests completed
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
++ git checkout 13b0afb7a28adb3149d7125fb2b9c16edbcf8e94 hooks/test/browser/useId.test.js
+>>>>> Test Exit Code: 0
+Updated 1 path from 7da03394

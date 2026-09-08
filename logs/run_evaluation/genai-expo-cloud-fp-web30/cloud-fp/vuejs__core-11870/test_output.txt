@@ -1,0 +1,147 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   packages/runtime-core/__tests__/helpers/renderList.spec.ts
+	modified:   packages/runtime-core/src/helpers/renderList.ts
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 67d6596d40b1807b9cd8eb0d9282932ea77be3c0
+Author: Konv Suu <2583695112@qq.com>
+Date:   Tue Sep 10 15:40:43 2024 +0800
+
+    fix(reactivity): fix markRaw error on already marked object (#11864)
+    
+    close #11862
+
+diff --git a/packages/reactivity/__tests__/reactive.spec.ts b/packages/reactivity/__tests__/reactive.spec.ts
+index a90ea27f..3b3baa19 100644
+--- a/packages/reactivity/__tests__/reactive.spec.ts
++++ b/packages/reactivity/__tests__/reactive.spec.ts
+@@ -293,6 +293,13 @@ describe('reactivity/reactive', () => {
+     expect(() => markRaw(obj)).not.toThrowError()
+   })
+ 
++  test('markRaw should not redefine on an marked object', () => {
++    const obj = markRaw({ foo: 1 })
++    const raw = markRaw(obj)
++    expect(raw).toBe(obj)
++    expect(() => markRaw(obj)).not.toThrowError()
++  })
++
+   test('should not observe non-extensible objects', () => {
+     const obj = reactive({
+       foo: Object.preventExtensions({ a: 1 }),
+diff --git a/packages/reactivity/src/reactive.ts b/packages/reactivity/src/reactive.ts
+index cdcc7759..7d9c33aa 100644
+--- a/packages/reactivity/src/reactive.ts
++++ b/packages/reactivity/src/reactive.ts
+@@ -1,4 +1,4 @@
+-import { def, isObject, toRawType } from '@vue/shared'
++import { def, hasOwn, isObject, toRawType } from '@vue/shared'
+ import {
+   mutableHandlers,
+   readonlyHandlers,
+@@ -405,7 +405,7 @@ export type Raw<T> = T & { [RawSymbol]?: true }
+  * @see {@link https://vuejs.org/api/reactivity-advanced.html#markraw}
+  */
+ export function markRaw<T extends object>(value: T): Raw<T> {
+-  if (Object.isExtensible(value)) {
++  if (!hasOwn(value, ReactiveFlags.SKIP) && Object.isExtensible(value)) {
+     def(value, ReactiveFlags.SKIP, true)
+   }
+   return value
++ git -c core.fileMode=false diff 67d6596d40b1807b9cd8eb0d9282932ea77be3c0
+diff --git a/packages/runtime-core/__tests__/helpers/renderList.spec.ts b/packages/runtime-core/__tests__/helpers/renderList.spec.ts
+index d23a63cc..2b6d7183 100644
+--- a/packages/runtime-core/__tests__/helpers/renderList.spec.ts
++++ b/packages/runtime-core/__tests__/helpers/renderList.spec.ts
+@@ -1,3 +1,4 @@
++import { isReactive, reactive, shallowReactive } from '@vue/reactivity'
+ import { renderList } from '../../src/helpers/renderList'
+ 
+ describe('renderList', () => {
+@@ -7,6 +8,18 @@ describe('renderList', () => {
+     ).toEqual(['node 0: 1', 'node 1: 2', 'node 2: 3'])
+   })
+ 
++  it('should render items in a reactive array', () => {
++    const arr = reactive([{ a: 1 }])
++    const result = renderList(arr, item => item as any)
++    expect(isReactive(result[0])).toBe(true)
++  })
++
++  it('should not convert items to reactive when source is shallowReactive', () => {
++    const arr = shallowReactive([{ a: 1 }])
++    const result = renderList(arr, item => item as any)
++    expect(isReactive(result[0])).toBe(false)
++  })
++
+   it('should render characters of a string', () => {
+     expect(
+       renderList('123', (item, index) => `node ${index}: ${item}`),
+diff --git a/packages/runtime-core/src/helpers/renderList.ts b/packages/runtime-core/src/helpers/renderList.ts
+index 12b0317b..afcc61cf 100644
+--- a/packages/runtime-core/src/helpers/renderList.ts
++++ b/packages/runtime-core/src/helpers/renderList.ts
+@@ -1,5 +1,5 @@
+ import type { VNode, VNodeChild } from '../vnode'
+-import { isReactive, shallowReadArray, toReactive } from '@vue/reactivity'
++import { isReactive, reactiveReadArray } from '@vue/reactivity'
+ import { isArray, isObject, isString } from '@vue/shared'
+ import { warn } from '../warning'
+ 
+@@ -64,12 +64,12 @@ export function renderList(
+   if (sourceIsArray || isString(source)) {
+     const sourceIsReactiveArray = sourceIsArray && isReactive(source)
+     if (sourceIsReactiveArray) {
+-      source = shallowReadArray(source)
++      source = reactiveReadArray(source)
+     }
+     ret = new Array(source.length)
+     for (let i = 0, l = source.length; i < l; i++) {
+       ret[i] = renderItem(
+-        sourceIsReactiveArray ? toReactive(source[i]) : source[i],
++        source[i],
+         i,
+         undefined,
+         cached && cached[i],
++ git checkout 67d6596d40b1807b9cd8eb0d9282932ea77be3c0 packages/runtime-core/__tests__/helpers/renderList.spec.ts
+Updated 1 path from 1fdc2d89
++ git apply -v -
+Checking patch packages/runtime-core/__tests__/helpers/renderList.spec.ts...
+Applied patch packages/runtime-core/__tests__/helpers/renderList.spec.ts cleanly.
++ : '>>>>> Start Test Output'
++ pnpm run test packages/runtime-core/__tests__/helpers/renderList.spec.ts --no-watch --reporter=verbose
++ cat
+
+> @3.5.3 test /testbed
+> vitest "packages/runtime-core/__tests__/helpers/renderList.spec.ts" "--no-watch" "--reporter=verbose"
+
+
+ RUN  v2.0.5 /testbed
+
+ ✓ packages/runtime-core/__tests__/helpers/renderList.spec.ts > renderList > should render items in an array
+ ✓ packages/runtime-core/__tests__/helpers/renderList.spec.ts > renderList > should render characters of a string
+ ✓ packages/runtime-core/__tests__/helpers/renderList.spec.ts > renderList > should render integers 1 through N when given a number N
+ ✓ packages/runtime-core/__tests__/helpers/renderList.spec.ts > renderList > should warn when given a non-integer N
+ ✓ packages/runtime-core/__tests__/helpers/renderList.spec.ts > renderList > should render properties in an object
+ ✓ packages/runtime-core/__tests__/helpers/renderList.spec.ts > renderList > should render an item for entry in an iterable
+ ✓ packages/runtime-core/__tests__/helpers/renderList.spec.ts > renderList > should return empty array when source is undefined
+ ✓ packages/runtime-core/__tests__/helpers/renderList.spec.ts > renderList > should render items in a reactive array correctly
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  04:43:31
+   Duration  1.06s (transform 596ms, setup 12ms, collect 635ms, tests 6ms, environment 0ms, prepare 203ms)
+
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
+>>>>> Test Exit Code: 0
++ git checkout 67d6596d40b1807b9cd8eb0d9282932ea77be3c0 packages/runtime-core/__tests__/helpers/renderList.spec.ts
+Updated 1 path from 1fdc2d89

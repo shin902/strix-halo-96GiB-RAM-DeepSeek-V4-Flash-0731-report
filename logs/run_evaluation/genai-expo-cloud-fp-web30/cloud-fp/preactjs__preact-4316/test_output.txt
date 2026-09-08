@@ -1,0 +1,152 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   src/diff/props.js
+	modified:   test/browser/events.test.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit b820d8b73eade8bc5b3fbf7e5fe0dd5150de80e2
+Author: Jovi De Croock <decroockjovi@gmail.com>
+Date:   Wed Mar 20 07:45:35 2024 +0100
+
+    10.20.0 (#4313)
+    
+    * 10.19.8
+    
+    * 10.20.0
+
+diff --git a/devtools/src/devtools.js b/devtools/src/devtools.js
+index 9126e904..ef30f482 100644
+--- a/devtools/src/devtools.js
++++ b/devtools/src/devtools.js
+@@ -2,7 +2,7 @@ import { options, Fragment, Component } from 'preact';
+ 
+ export function initDevTools() {
+ 	if (typeof window != 'undefined' && window.__PREACT_DEVTOOLS__) {
+-		window.__PREACT_DEVTOOLS__.attachPreact('10.19.7', options, {
++		window.__PREACT_DEVTOOLS__.attachPreact('10.20.0', options, {
+ 			Fragment,
+ 			Component
+ 		});
+diff --git a/package-lock.json b/package-lock.json
+index 340a34fc..29e49d78 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "preact",
+-  "version": "10.19.7",
++  "version": "10.20.0",
+   "lockfileVersion": 2,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "preact",
+-      "version": "10.19.7",
++      "version": "10.20.0",
+       "license": "MIT",
+       "devDependencies": {
+         "@actions/github": "^5.0.0",
+diff --git a/package.json b/package.json
+index c78a5cf8..46db7c19 100644
+--- a/package.json
++++ b/package.json
+@@ -1,7 +1,7 @@
+ {
+   "name": "preact",
+   "amdName": "preact",
+-  "version": "10.19.7",
++  "version": "10.20.0",
+   "private": false,
+   "description": "Fast 3kb React-compatible Virtual DOM library.",
+   "main": "dist/preact.js",
++ git -c core.fileMode=false diff b820d8b73eade8bc5b3fbf7e5fe0dd5150de80e2
+diff --git a/src/diff/props.js b/src/diff/props.js
+index 75016c40..142e1444 100644
+--- a/src/diff/props.js
++++ b/src/diff/props.js
+@@ -55,7 +55,12 @@ export function setProperty(dom, name, value, oldValue, isSvg) {
+ 			name !== (name = name.replace(/(PointerCapture)$|Capture$/i, '$1'));
+ 
+ 		// Infer correct casing for DOM built-in events:
+-		if (name.toLowerCase() in dom) name = name.toLowerCase().slice(2);
++		if (
++			name.toLowerCase() in dom ||
++			name === 'onFocusOut' ||
++			name === 'onFocusIn'
++		)
++			name = name.toLowerCase().slice(2);
+ 		else name = name.slice(2);
+ 
+ 		if (!dom._listeners) dom._listeners = {};
+diff --git a/test/browser/events.test.js b/test/browser/events.test.js
+index 8a2732ad..ef4f990e 100644
+--- a/test/browser/events.test.js
++++ b/test/browser/events.test.js
+@@ -227,4 +227,12 @@ describe('event handling', () => {
+ 			.to.have.been.calledTwice.and.to.have.been.calledWith('gotpointercapture')
+ 			.and.calledWith('lostpointercapture');
+ 	});
++
++	it('should support camel-case focus event names', () => {
++		render(<div onFocusIn={() => {}} onFocusOut={() => {}} />, scratch);
++
++		expect(proto.addEventListener)
++			.to.have.been.calledTwice.and.to.have.been.calledWith('focusin')
++			.and.calledWith('focusout');
++	});
+ });
++ git checkout b820d8b73eade8bc5b3fbf7e5fe0dd5150de80e2 test/browser/events.test.js
+Updated 1 path from a6ed2cc5
++ git apply -v -
+Checking patch test/browser/events.test.js...
+Applied patch test/browser/events.test.js cleanly.
++ : '>>>>> Start Test Output'
++ COVERAGE=false
++ cat
++ BABEL_NO_MODULES=true
++ npx karma start karma.conf.js --single-run --grep=test/browser/events.test.js
+
+START:
+[32m08 09 2026 04:36:29.173:INFO [esbuild]: [39mCompiling...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[32m08 09 2026 04:36:29.841:INFO [esbuild]: [39mCompiling done (668ms)
+[32m08 09 2026 04:36:29.843:INFO [karma-server]: [39mKarma v6.3.16 server started at http://localhost:9876/
+[32m08 09 2026 04:36:29.843:INFO [launcher]: [39mLaunching browsers ChromeNoSandboxHeadless with concurrency 2
+[32m08 09 2026 04:36:29.846:INFO [launcher]: [39mStarting browser Chrome
+[32m08 09 2026 04:36:30.081:INFO [Chrome Headless 151.0.0.0 (Linux x86_64)]: [39mConnected on socket F7VDzQJIZkFcHmx5AAAB with id 34780465
+  event handling
+    ✔ should only register on* functions as handlers
+    ✔ should only register truthy values as handlers
+    ✔ should support native event names
+    ✔ should support camel-case event names
+    ✔ should update event handlers
+    ✔ should remove event handlers
+    ✔ should register events not appearing on dom nodes
+    ✔ should use capturing for event props ending with *Capture
+    ✔ should support both capturing and non-capturing events on the same element
+    ✔ should support (got|lost)PointerCapture events
+    ✔ should support camel-case focus event names
+
+Finished in 0.013 secs / 0.005 secs @ 04:36:30 GMT+0000 (Coordinated Universal Time)
+
+SUMMARY:
+✔ 11 tests completed
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
++ git checkout b820d8b73eade8bc5b3fbf7e5fe0dd5150de80e2 test/browser/events.test.js
+>>>>> Test Exit Code: 0
+Updated 1 path from a6ed2cc5

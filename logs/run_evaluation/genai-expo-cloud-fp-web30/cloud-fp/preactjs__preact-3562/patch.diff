@@ -1,0 +1,54 @@
+diff --git a/compat/src/render.js b/compat/src/render.js
+index fa1544bb..625f8033 100644
+--- a/compat/src/render.js
++++ b/compat/src/render.js
+@@ -161,6 +161,15 @@ options.vnode = vnode => {
+ 				value = undefined;
+ 			}
+ 
++			// Add support for onInput and onChange, see #3561
++			// if we have an oninput prop already change it to oninputCapture
++			if (/^oninput/i.test(i)) {
++				i = i.toLowerCase();
++				if (normalizedProps[i]) {
++					i = 'oninputCapture';
++				}
++			}
++
+ 			normalizedProps[i] = value;
+ 		}
+ 
+diff --git a/compat/test/browser/render.test.js b/compat/test/browser/render.test.js
+index 15461f16..ec76d70c 100644
+--- a/compat/test/browser/render.test.js
++++ b/compat/test/browser/render.test.js
+@@ -158,6 +158,29 @@ describe('compat render', () => {
+ 		expect(scratch.firstElementChild.value).to.equal('0');
+ 	});
+ 
++	it('should call onChange and onInput when input event is dispatched', () => {
++		const onChange = sinon.spy();
++		const onInput = sinon.spy();
++
++		render(<input onChange={onChange} onInput={onInput} />, scratch);
++
++		scratch.firstChild.dispatchEvent(createEvent('input'));
++
++		expect(onChange).to.be.calledOnce;
++		expect(onInput).to.be.calledOnce;
++
++		onChange.resetHistory();
++		onInput.resetHistory();
++
++		// change props order
++		render(<input onInput={onInput} onChange={onChange} />, scratch);
++
++		scratch.firstChild.dispatchEvent(createEvent('input'));
++
++		expect(onChange).to.be.calledOnce;
++		expect(onInput).to.be.calledOnce;
++	});
++
+ 	it('should keep value of uncontrolled inputs using defaultValue', () => {
+ 		// See https://github.com/preactjs/preact/issues/2391
+ 

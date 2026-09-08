@@ -1,0 +1,264 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   hooks/test/browser/errorBoundary.test.js
+	modified:   src/diff/index.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 66cb6a78776b263a2fe4d1283426e699961095d2
+Author: Andre Wiggins <459878+andrewiggins@users.noreply.github.com>
+Date:   Tue Oct 31 02:58:58 2023 -0700
+
+    Upgrade workflow actions (#4184)
+
+diff --git a/.github/workflows/benchmarks.yml b/.github/workflows/benchmarks.yml
+index cdc3a9f1..9c6624f6 100644
+--- a/.github/workflows/benchmarks.yml
++++ b/.github/workflows/benchmarks.yml
+@@ -36,7 +36,7 @@ jobs:
+           name: bench-environment
+           path: preact-local.tgz
+       - name: Download base package
+-        uses: andrewiggins/download-base-artifact@v2
++        uses: andrewiggins/download-base-artifact@v3
+         with:
+           artifact: npm-package
+           workflow: ci.yml
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 6790d7c4..f0a81e53 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -16,8 +16,8 @@ jobs:
+     name: Build & Test
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v3
+-      - uses: actions/setup-node@v3
++      - uses: actions/checkout@v4
++      - uses: actions/setup-node@v4
+         with:
+           node-version-file: 'package.json'
+           cache: 'npm'
+diff --git a/.github/workflows/release.yml b/.github/workflows/release.yml
+index 5bab739e..bdacd280 100644
+--- a/.github/workflows/release.yml
++++ b/.github/workflows/release.yml
+@@ -10,7 +10,7 @@ jobs:
+     runs-on: ubuntu-latest
+     needs: build
+     steps:
+-      - uses: actions/checkout@v3
++      - uses: actions/checkout@v4
+       - uses: actions/download-artifact@v3
+         with:
+           name: npm-package
+diff --git a/.github/workflows/run-bench.yml b/.github/workflows/run-bench.yml
+index de8f096b..97a0ddbf 100644
+--- a/.github/workflows/run-bench.yml
++++ b/.github/workflows/run-bench.yml
+@@ -1,4 +1,4 @@
+-name: Run Benchmark
++name: Benchmark Worker
+ 
+ # Expectations:
+ #
+@@ -31,8 +31,8 @@ jobs:
+     runs-on: ubuntu-latest
+     timeout-minutes: ${{ inputs.timeout }}
+     steps:
+-      - uses: actions/checkout@v3
+-      - uses: actions/setup-node@v3
++      - uses: actions/checkout@v4
++      - uses: actions/setup-node@v4
+         with:
+           node-version-file: 'package.json'
+           cache: 'npm'
+diff --git a/.github/workflows/saucelabs.yml b/.github/workflows/saucelabs.yml
+index ec92294d..72748b85 100644
+--- a/.github/workflows/saucelabs.yml
++++ b/.github/workflows/saucelabs.yml
+@@ -11,8 +11,8 @@ jobs:
+     name: Build & Test
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v3
+-      - uses: actions/setup-node@v3
++      - uses: actions/checkout@v4
++      - uses: actions/setup-node@v4
+         with:
+           node-version-file: 'package.json'
+           cache: 'npm'
+diff --git a/.github/workflows/size.yml b/.github/workflows/size.yml
+index 2ffa2a88..09ba8e20 100644
+--- a/.github/workflows/size.yml
++++ b/.github/workflows/size.yml
+@@ -11,8 +11,8 @@ jobs:
+   build:
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v3
+-      - uses: actions/setup-node@v3
++      - uses: actions/checkout@v4
++      - uses: actions/setup-node@v4
+         with:
+           node-version-file: 'package.json'
+           cache: 'npm'
++ git -c core.fileMode=false diff 66cb6a78776b263a2fe4d1283426e699961095d2
+diff --git a/hooks/test/browser/errorBoundary.test.js b/hooks/test/browser/errorBoundary.test.js
+index 0e7de2f6..415d76cc 100644
+--- a/hooks/test/browser/errorBoundary.test.js
++++ b/hooks/test/browser/errorBoundary.test.js
+@@ -1,6 +1,6 @@
+-import { createElement, render } from 'preact';
++import { Fragment, createElement, render } from 'preact';
+ import { setupScratch, teardown } from '../../../test/_util/helpers';
+-import { useErrorBoundary, useLayoutEffect } from 'preact/hooks';
++import { useErrorBoundary, useLayoutEffect, useState } from 'preact/hooks';
+ import { setupRerender } from 'preact/test-utils';
+ 
+ /** @jsx createElement */
+@@ -152,4 +152,81 @@ describe('errorBoundary', () => {
+ 		expect(badEffect).to.be.calledOnce;
+ 		expect(goodEffect).to.be.calledOnce;
+ 	});
++
++	it('should not duplicate in lists where an item throws and the parent catches and returns a differing type', () => {
++		const baseTodos = [
++			{ text: 'first item', completed: false },
++			{ text: 'Test the feature', completed: false },
++			{ text: 'another item', completed: false }
++		];
++
++		function TodoList() {
++			const [todos, setTodos] = useState([...baseTodos]);
++
++			return (
++				<Fragment>
++					<ul>
++						{todos.map((todo, index) => (
++							<TodoItem
++								key={index}
++								toggleTodo={() => {
++									todos[index] = {
++										...todos[index],
++										completed: !todos[index].completed
++									};
++									setTodos([...todos]);
++								}}
++								todo={todo}
++								index={index}
++							/>
++						))}
++					</ul>
++				</Fragment>
++			);
++		}
++
++		function TodoItem(props) {
++			const [error] = useErrorBoundary();
++
++			if (error) {
++				return <li>An error occurred: {error}</li>;
++			}
++
++			return <TodoItemInner {...props} />;
++		}
++		let set;
++		function TodoItemInner({ todo, index, toggleTodo }) {
++			if (todo.completed) {
++				throw new Error('Todo completed!');
++			}
++
++			if (index === 1) {
++				set = toggleTodo;
++			}
++
++			return (
++				<li>
++					<label>
++						<input
++							type="checkbox"
++							checked={todo.completed}
++							onInput={toggleTodo}
++						/>
++						{todo.completed ? <s>{todo.text}</s> : todo.text}
++					</label>
++				</li>
++			);
++		}
++
++		render(<TodoList />, scratch);
++		expect(scratch.innerHTML).to.equal(
++			'<ul><li><label><input type="checkbox">first item</label></li><li><label><input type="checkbox">Test the feature</label></li><li><label><input type="checkbox">another item</label></li></ul>'
++		);
++
++		set();
++		rerender();
++		expect(scratch.innerHTML).to.equal(
++			'<ul><li><label><input type="checkbox">first item</label></li><li>An error occurred: </li><li><label><input type="checkbox">another item</label></li></ul>'
++		);
++	});
+ });
+diff --git a/src/diff/index.js b/src/diff/index.js
+index a76c1f62..17254a32 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -271,6 +271,9 @@ export function diff(
+ 				excessDomChildren[excessDomChildren.indexOf(oldDom)] = null;
+ 				// ^ could possibly be simplified to:
+ 				// excessDomChildren.length = 0;
++			} else {
++				newVNode._dom = oldVNode._dom;
++				newVNode._children = oldVNode._children;
+ 			}
+ 			options._catchError(e, newVNode, oldVNode);
+ 		}
++ git checkout 66cb6a78776b263a2fe4d1283426e699961095d2 hooks/test/browser/errorBoundary.test.js
+Updated 1 path from 56f1c98b
++ git apply -v -
+Checking patch hooks/test/browser/errorBoundary.test.js...
+Applied patch hooks/test/browser/errorBoundary.test.js cleanly.
++ : '>>>>> Start Test Output'
++ COVERAGE=false
++ BABEL_NO_MODULES=true
++ npx karma start karma.conf.js --single-run --grep=hooks/test/browser/errorBoundary.test.js
++ cat
+
+START:
+[32m08 09 2026 04:34:28.520:INFO [esbuild]: [39mCompiling...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[32m08 09 2026 04:34:29.203:INFO [esbuild]: [39mCompiling done (683ms)
+[32m08 09 2026 04:34:29.205:INFO [karma-server]: [39mKarma v6.3.16 server started at http://localhost:9876/
+[32m08 09 2026 04:34:29.206:INFO [launcher]: [39mLaunching browsers ChromeNoSandboxHeadless with concurrency 2
+[32m08 09 2026 04:34:29.208:INFO [launcher]: [39mStarting browser Chrome
+[32m08 09 2026 04:34:29.443:INFO [Chrome Headless 151.0.0.0 (Linux x86_64)]: [39mConnected on socket E_hApznnJNz6F2s2AAAB with id 28656916
+  errorBoundary
+    ✔ catches errors
+    ✔ calls the errorBoundary callback
+    ✔ returns error
+    ✔ does not leave a stale closure
+    ✔ does not invoke old effects when a cleanup callback throws an error and is handled
+    ✔ should not duplicate in lists where an item throws and the parent catches and returns a differing type
+
+Finished in 0.013 secs / 0.008 secs @ 04:34:29 GMT+0000 (Coordinated Universal Time)
+
+SUMMARY:
+✔ 6 tests completed
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
+>>>>> Test Exit Code: 0
++ git checkout 66cb6a78776b263a2fe4d1283426e699961095d2 hooks/test/browser/errorBoundary.test.js
+Updated 1 path from 56f1c98b
