@@ -71,7 +71,7 @@ npm run bench -- \
 - variant比較ではresolved率に加え、patch生成率、`timeout` / `turn-limit`率、wall-clock、turn数、input/output token数を保存・報告する。速度指標を出す場合は算出方法を明記し、少なくともoutput tokens / wall-clockを実効値として区別する。
 - 公式graderの出力はagent artifactと同じrun IDへ紐づけ、instance単位のresolved判定と集計結果を残す。grader未実行のrunをresolved扱いしない。
 
-実行条件は各instanceの`run.json`、終了状態とwall-clock・turn数は`timing.json`、token数は`usage.json`へ自動保存されます。公式grader結果と最終比較表・グラフは別途生成して紐づけます。
+実行条件は各instanceの`run.json`、終了状態とwall-clock・turn数は`timing.json`、token数は`usage.json`へ自動保存されます。variantに`runtime`を設定した場合は、外部runtimeのrepository、commit、実行ファイル、起動コマンドなども`run.json`へ保存されます（現行q2設定は暫定値）。公式grader結果と最終比較表・グラフは別途生成して紐づけます。
 
 ## 旧セット（正式スコアには使用しない）
 

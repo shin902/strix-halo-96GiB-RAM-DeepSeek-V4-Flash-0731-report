@@ -40,6 +40,15 @@
         "supportsDeveloperRole": false,
         "supportsReasoningEffort": false,
         "maxTokensField": "max_tokens"
+      },
+      "runtime": {
+        "provisional": true,
+        "repository": "/home/shi/ghq/github.com/Nathanw1014/strix-halo-llamacpp",
+        "branch": "master",
+        "commit": "b11bc40545b679549250482a79f4f10a08b7960a",
+        "executable": "/home/shi/ghq/github.com/Nathanw1014/strix-halo-llamacpp/vulkan/bin/llama-server",
+        "modelPath": "/mnt/data/DeepSeek-V4-Flash-0731-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-imatrix.gguf",
+        "command": "/home/shi/ghq/github.com/Nathanw1014/strix-halo-llamacpp/vulkan/bin/llama-server -m /mnt/data/DeepSeek-V4-Flash-0731-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-imatrix.gguf -ngl 99 -fa on -c 100000 -b 2048 -ub 512 -ctk q8_0 -ctv q8_0"
       }
     },
     "q2-reap": {

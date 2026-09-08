@@ -103,6 +103,8 @@ function parseVariant(name: string, raw: unknown): ModelVariantConfig {
   if (samplingParams !== undefined) variant.samplingParams = samplingParams;
   const compat = optionalRecord(raw.compat, `variants.${name}.compat`);
   if (compat !== undefined) variant.compat = compat;
+  const runtime = optionalRecord(raw.runtime, `variants.${name}.runtime`);
+  if (runtime !== undefined) variant.runtime = runtime;
   return variant;
 }
 

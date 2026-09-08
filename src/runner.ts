@@ -92,6 +92,7 @@ function artifactMetadata(context: RunContext, instance: BenchmarkInstance, work
     api: context.variant.api ?? "openai-completions",
     samplingParams: context.variant.samplingParams ?? null,
     compat: context.variant.compat ?? null,
+    runtime: context.variant.runtime ?? null,
     instance_id: instance.instance_id,
     repo: instance.repo ?? null,
     base_commit: instance.base_commit ?? null,

@@ -2,6 +2,9 @@ export type ThinkingLevel = "off" | "minimal" | "low" | "medium" | "high" | "xhi
 
 export type RunMode = "run" | "dry-run";
 
+/** Provisional metadata for an externally managed inference runtime. */
+export type RuntimeMetadata = Record<string, unknown>;
+
 export interface ModelVariantConfig {
   /** Human-readable/provider-side model id sent to the endpoint. */
   model: string;
@@ -18,6 +21,7 @@ export interface ModelVariantConfig {
   maxTokens?: number;
   samplingParams?: Record<string, unknown>;
   compat?: Record<string, unknown>;
+  runtime?: RuntimeMetadata;
 }
 
 export interface AgentConfig {

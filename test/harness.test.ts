@@ -18,7 +18,12 @@ function fixtureConfig(root: string, repositories: Record<string, string> = {}) 
       repositories,
       variants: {
         "cloud-fp": { baseUrl: "https://example.invalid/v1", model: "cloud-model", apiKey: "dummy" },
-        q2: { baseUrl: "http://127.0.0.1:8101/v1", model: "q2-model", apiKey: "dummy" },
+        q2: {
+          baseUrl: "http://127.0.0.1:8101/v1",
+          model: "q2-model",
+          apiKey: "dummy",
+          runtime: { provisional: true, commit: "fixture-commit" },
+        },
         "q2-reap": { baseUrl: "http://127.0.0.1:8000/v1", model: "deepseek-v4-flash", apiKey: "dummy" },
         "reap-a": { baseUrl: "http://127.0.0.1:8102/v1", model: "reap-a", apiKey: "dummy" },
       },
@@ -217,6 +222,10 @@ test("dry-run creates per-variant artifacts and grader predictions", async () =>
 
   assert.equal(summary.results.length, 2);
   assert.equal(summary.results[0]?.status, "dry-run");
+  const q2Run = JSON.parse(await readFile(join(root, "runs", "q2", "repo__project-1", "run.json"), "utf8")) as {
+    runtime?: { provisional?: boolean; commit?: string };
+  };
+  assert.deepEqual(q2Run.runtime, { provisional: true, commit: "fixture-commit" });
   for (const variant of ["cloud-fp", "q2"]) {
     const artifactRoot = join(root, "runs", variant, "repo__project-1");
     assert.equal(await readFile(join(artifactRoot, "timing.json"), "utf8").then((text) => JSON.parse(text).status), "dry-run");
