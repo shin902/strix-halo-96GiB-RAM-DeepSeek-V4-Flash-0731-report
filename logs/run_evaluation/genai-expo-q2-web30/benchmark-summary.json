@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "benchmark": "SWE-bench Multilingual JS/TS Web 30",
+  "variant": "q2",
+  "runtime": "Full256 asymmetric Q2 + Vulkan",
+  "attemptPolicy": "one run per instance; one authorized retry for timeout vuejs__core-11589",
+  "limits": {
+    "maxTurns": 100,
+    "timeoutMs": 3600000
+  },
+  "dataset": {
+    "name": "SWE-bench/SWE-bench_Multilingual",
+    "revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+    "split": "test",
+    "instances": 30
+  },
+  "grader": {
+    "package": "swebench 5.0.2",
+    "report": "q2-final-grader-report.json",
+    "completedWithPatch": 24,
+    "resolved": 20,
+    "scoredRateIncludingEmptyPatches": 0.6666666666666666
+  },
+  "totals": {
+    "instances": 30,
+    "resolved": 20,
+    "patches": 24,
+    "statuses": {
+      "completed": 28,
+      "timeout": 1,
+      "turn-limit": 1,
+      "retryCompleted": 1
+    },
+    "emptyPatches": 6,
+    "infraFailures": 0
+  },
+  "comparison": {
+    "cloudFp8Resolved": 20,
+    "cloudFp8Rate": 0.6666666666666666,
+    "q2PreRetryResolved": 19,
+    "q2PreRetryRate": 0.6333333333333333,
+    "q2FinalResolved": 20,
+    "q2FinalRate": 0.6666666666666666
+  },
+  "artifacts": {
+    "original": "runs/swebench-multilingual-web-30/q2/",
+    "retry": "runs/swebench-multilingual-web-30/q2-retry/",
+    "mergedPredictions": "runs/swebench-multilingual-web-30/q2/predictions-vuejs-11589-retry.jsonl"
+  }
+}
