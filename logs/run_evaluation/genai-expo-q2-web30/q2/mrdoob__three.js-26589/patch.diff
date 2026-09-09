@@ -1,0 +1,87 @@
+diff --git a/src/objects/Line.js b/src/objects/Line.js
+index e359bcfb29..3e6cd10466 100644
+--- a/src/objects/Line.js
++++ b/src/objects/Line.js
+@@ -34,7 +34,16 @@ class Line extends Object3D {
+ 
+ 		super.copy( source, recursive );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Mesh.js b/src/objects/Mesh.js
+index 03f5290243..5bcb78120c 100644
+--- a/src/objects/Mesh.js
++++ b/src/objects/Mesh.js
+@@ -65,7 +65,16 @@ class Mesh extends Object3D {
+ 
+ 		}
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Points.js b/src/objects/Points.js
+index 8da688140b..c2359b827c 100644
+--- a/src/objects/Points.js
++++ b/src/objects/Points.js
+@@ -32,7 +32,16 @@ class Points extends Object3D {
+ 
+ 		super.copy( source, recursive );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Sprite.js b/src/objects/Sprite.js
+index 31e797811f..7a072562e2 100644
+--- a/src/objects/Sprite.js
++++ b/src/objects/Sprite.js
+@@ -143,7 +143,15 @@ class Sprite extends Object3D {
+ 
+ 		if ( source.center !== undefined ) this.center.copy( source.center );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
+ 
+ 		return this;
+ 

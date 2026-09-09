@@ -1,0 +1,40 @@
+{
+    "preactjs__preact-4316": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "infra_failure": false,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "event handling > should support camel-case focus event names"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "event handling > should only register on* functions as handlers",
+                    "event handling > should only register truthy values as handlers",
+                    "event handling > should support native event names",
+                    "event handling > should support camel-case event names",
+                    "event handling > should update event handlers",
+                    "event handling > should remove event handlers",
+                    "event handling > should register events not appearing on dom nodes",
+                    "event handling > should use capturing for event props ending with *Capture",
+                    "event handling > should support both capturing and non-capturing events on the same element",
+                    "event handling > should support (got|lost)PointerCapture events"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

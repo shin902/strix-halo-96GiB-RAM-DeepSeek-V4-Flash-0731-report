@@ -1,0 +1,69 @@
+2026-09-09 02:11:07,197 - INFO - Image not found locally, attempting to pull...
+2026-09-09 02:13:50,214 - INFO - Creating container for vuejs__core-11915...
+2026-09-09 02:13:56,236 - INFO - Container for vuejs__core-11915 created: 56eb5a32a3dfe059be1b474713302727f6e5efeb534dfe8c3584d375ac489f00
+2026-09-09 02:13:56,391 - INFO - Container for vuejs__core-11915 started: 56eb5a32a3dfe059be1b474713302727f6e5efeb534dfe8c3584d375ac489f00
+2026-09-09 02:13:56,392 - INFO - Intermediate patch for vuejs__core-11915 written to logs/run_evaluation/genai-expo-q2-web30/q2/vuejs__core-11915/patch.diff, now applying to container...
+2026-09-09 02:13:56,507 - INFO - >>>>> Applied Patch:
+Checking patch packages/compiler-core/__tests__/parse.spec.ts...
+Checking patch packages/compiler-core/src/tokenizer.ts...
+Applied patch packages/compiler-core/__tests__/parse.spec.ts cleanly.
+Applied patch packages/compiler-core/src/tokenizer.ts cleanly.
+
+2026-09-09 02:13:56,652 - INFO - Git diff before:
+diff --git a/packages/compiler-core/__tests__/parse.spec.ts b/packages/compiler-core/__tests__/parse.spec.ts
+index 37e81e64..2a11b1dd 100644
+--- a/packages/compiler-core/__tests__/parse.spec.ts
++++ b/packages/compiler-core/__tests__/parse.spec.ts
+@@ -2021,6 +2021,14 @@ describe('compiler: parse', () => {
+       ])
+     })
+ 
++    // https://github.com/vuejs/core/issues/11915
++    test('v-pre should ignore interpolation inside textarea', () => {
++      const ast = baseParse(`<textarea v-pre>{{ foo }}</textarea>`)
++      expect((ast.children[0] as ElementNode).children).toMatchObject([
++        { type: NodeTypes.TEXT, content: `{{ foo }}` },
++      ])
++    })
++
+     test('self-closing v-pre', () => {
+       const ast = baseParse(
+         `<div v-pre/>\n<div :id="foo"><Comp/>{{ bar }}</div>`,
+diff --git a/packages/compiler-core/src/tokenizer.ts b/packages/compiler-core/src/tokenizer.ts
+index 35c49fa6..329e8b48 100644
+--- a/packages/compiler-core/src/tokenizer.ts
++++ b/packages/compiler-core/src/tokenizer.ts
+@@ -438,7 +438,7 @@ export default class Tokenizer {
+         // We have to parse entities in <title> and <textarea> tags.
+         if (!__BROWSER__ && c === CharCodes.Amp) {
+           this.startEntity()
+-        } else if (c === this.delimiterOpen[0]) {
++        } else if (!this.inVPre && c === this.delimiterOpen[0]) {
+           // We also need to handle interpolation
+           this.state = State.InterpolationOpen
+           this.delimiterIndex = 0
+2026-09-09 02:13:56,652 - INFO - Eval script for vuejs__core-11915 written to logs/run_evaluation/genai-expo-q2-web30/q2/vuejs__core-11915/eval.sh; copying to container...
+2026-09-09 02:13:59,342 - INFO - Test runtime: 2.63 seconds
+2026-09-09 02:13:59,343 - INFO - Test output for vuejs__core-11915 written to logs/run_evaluation/genai-expo-q2-web30/q2/vuejs__core-11915/test_output.txt
+2026-09-09 02:13:59,398 - INFO - Git diff after:
+diff --git a/packages/compiler-core/src/tokenizer.ts b/packages/compiler-core/src/tokenizer.ts
+index 35c49fa6..329e8b48 100644
+--- a/packages/compiler-core/src/tokenizer.ts
++++ b/packages/compiler-core/src/tokenizer.ts
+@@ -438,7 +438,7 @@ export default class Tokenizer {
+         // We have to parse entities in <title> and <textarea> tags.
+         if (!__BROWSER__ && c === CharCodes.Amp) {
+           this.startEntity()
+-        } else if (c === this.delimiterOpen[0]) {
++        } else if (!this.inVPre && c === this.delimiterOpen[0]) {
+           // We also need to handle interpolation
+           this.state = State.InterpolationOpen
+           this.delimiterIndex = 0
+2026-09-09 02:13:59,398 - INFO - Git diff changed after running eval script
+2026-09-09 02:13:59,398 - INFO - Grading answer for vuejs__core-11915...
+2026-09-09 02:13:59,400 - INFO - report: {'vuejs__core-11915': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-pre with half-open interpolation', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > self-closing v-pre'], 'failure': []}, 'PASS_TO_PASS': {'success': ['packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > simple div', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > empty', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > self closing', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > void element', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > self-closing void element', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > template element with directives', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > template element without directives', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > native element with `isNativeTag`', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > native element without `isNativeTag`', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > is casting with `isNativeTag`', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > is casting without `isNativeTag`', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > custom element', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > built-in component', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > slot element', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > attribute with no value', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > attribute with empty value, double quote', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > attribute with empty value, single quote', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > attribute with value, double quote', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > attribute with value, single quote', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > attribute with value, unquoted', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > attribute value with >', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > multiple attributes', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > class attribute should ignore whitespace when parsed', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with no value', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with value', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with argument', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive argument edge case', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive argument edge case (2)', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with dynamic argument', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with a modifier', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with two modifiers', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with argument and modifiers', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with dynamic argument and modifiers', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > directive with no name', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-bind shorthand', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-bind .prop shorthand', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-bind shorthand with modifier', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-on shorthand', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-on shorthand with modifier', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-slot shorthand', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-slot arg containing dots', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > v-pre', 'packages/compiler-core/__tests__/parse.spec.ts > compiler: parse > Element > end tags are case-insensitive.'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for vuejs__core-11915: resolved: True
+2026-09-09 02:13:59,400 - INFO - Attempting to stop container sweb.eval.vuejs__core-11915.genai-expo-q2-web30...
+2026-09-09 02:14:14,550 - INFO - Container sweb.eval.vuejs__core-11915.genai-expo-q2-web30 stopped successfully.
+2026-09-09 02:14:14,551 - INFO - Attempting to remove container sweb.eval.vuejs__core-11915.genai-expo-q2-web30...
+2026-09-09 02:14:14,582 - INFO - Container sweb.eval.vuejs__core-11915.genai-expo-q2-web30 removed successfully.

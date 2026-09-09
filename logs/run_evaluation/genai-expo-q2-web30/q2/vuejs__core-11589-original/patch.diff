@@ -1,0 +1,34 @@
+diff --git a/packages/runtime-core/__tests__/repro.spec.ts b/packages/runtime-core/__tests__/repro.spec.ts
+new file mode 100644
+index 000000000..2ca02c21e
+--- /dev/null
++++ b/packages/runtime-core/__tests__/repro.spec.ts
+@@ -0,0 +1,28 @@
++import { ref, computed, watch } from '../vue/src'
++
++describe('repro', () => {
++  it('ref sync watchers', () => {
++    const n = ref(0)
++    const calls: number[] = []
++    for (let i = 0; i < 5; i++) {
++      watch(n, (v) => {
++        calls.push(i)
++      }, { flush: 'sync' })
++    }
++    n.value++
++    console.log('ref calls:', calls)
++  })
++
++  it('computed sync watchers', () => {
++    const n = ref(0)
++    const compN = computed(() => n.value)
++    const calls: number[] = []
++    for (let i = 0; i < 5; i++) {
++      watch(compN, (v) => {
++        calls.push(i)
++      }, { flush: 'sync' })
++    }
++    n.value++
++    console.log('computed calls:', calls)
++  })
++})

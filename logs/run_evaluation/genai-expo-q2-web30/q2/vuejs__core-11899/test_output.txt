@@ -1,0 +1,162 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	packages/compiler-sfc/__tests__/repro.spec.ts
+
+nothing added to commit but untracked files present (use "git add" to track)
++ git show
+commit 706d4ac1d0210b2d9134b3228280187fe02fc971
+Author: edison <daiwei521@126.com>
+Date:   Fri Sep 13 16:46:01 2024 +0800
+
+    fix(compiler-core): fix handling of delimiterOpen in VPre (#11915)
+    
+    close #11913
+
+diff --git a/packages/compiler-core/__tests__/parse.spec.ts b/packages/compiler-core/__tests__/parse.spec.ts
+index 37e81e64..77211b2f 100644
+--- a/packages/compiler-core/__tests__/parse.spec.ts
++++ b/packages/compiler-core/__tests__/parse.spec.ts
+@@ -2019,6 +2019,21 @@ describe('compiler: parse', () => {
+           children: [{ type: NodeTypes.TEXT, content: `{{ number ` }],
+         },
+       ])
++
++      const ast3 = baseParse(`<div v-pre><textarea>{{ foo </textarea></div>`, {
++        parseMode: 'html',
++      })
++      expect((ast3.children[0] as ElementNode).children).toMatchObject([
++        {
++          type: NodeTypes.ELEMENT,
++          children: [
++            {
++              type: NodeTypes.TEXT,
++              content: `{{ foo `,
++            },
++          ],
++        },
++      ])
+     })
+ 
+     test('self-closing v-pre', () => {
+diff --git a/packages/compiler-core/src/tokenizer.ts b/packages/compiler-core/src/tokenizer.ts
+index 35c49fa6..329e8b48 100644
+--- a/packages/compiler-core/src/tokenizer.ts
++++ b/packages/compiler-core/src/tokenizer.ts
+@@ -438,7 +438,7 @@ export default class Tokenizer {
+         // We have to parse entities in <title> and <textarea> tags.
+         if (!__BROWSER__ && c === CharCodes.Amp) {
+           this.startEntity()
+-        } else if (c === this.delimiterOpen[0]) {
++        } else if (!this.inVPre && c === this.delimiterOpen[0]) {
+           // We also need to handle interpolation
+           this.state = State.InterpolationOpen
+           this.delimiterIndex = 0
++ git -c core.fileMode=false diff 706d4ac1d0210b2d9134b3228280187fe02fc971
++ git checkout 706d4ac1d0210b2d9134b3228280187fe02fc971 packages/compiler-sfc/__tests__/compileStyle.spec.ts
+Updated 0 paths from 89a8df40
++ git apply -v -
+Checking patch packages/compiler-sfc/__tests__/compileStyle.spec.ts...
+Applied patch packages/compiler-sfc/__tests__/compileStyle.spec.ts cleanly.
++ pnpm run build compiler-sfc
+
+> @3.5.4 build /testbed
+> node scripts/build.js "compiler-sfc"
+
+[36m
+[1m/testbed/packages/compiler-sfc/src/index.ts[22m → [1mpackages/compiler-sfc/dist/compiler-sfc.cjs.js[22m...[39m
+[32mcreated [1mpackages/compiler-sfc/dist/compiler-sfc.cjs.js[22m in [1m904ms[22m[39m
+[36m
+[1m/testbed/packages/compiler-sfc/src/index.ts[22m → [1mpackages/compiler-sfc/dist/compiler-sfc.esm-browser.js[22m...[39m
+[32mcreated [1mpackages/compiler-sfc/dist/compiler-sfc.esm-browser.js[22m in [1m2.4s[22m[39m
+
+
++ : '>>>>> Start Test Output'
++ pnpm run test packages/compiler-sfc/__tests__/compileStyle.spec.ts --no-watch --reporter=verbose
++ cat
+
+> @3.5.4 test /testbed
+> vitest "packages/compiler-sfc/__tests__/compileStyle.spec.ts" "--no-watch" "--reporter=verbose"
+
+
+ RUN  v2.0.5 /testbed
+
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > simple selectors
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > descendent selector
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > nesting selector
+ × packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > nesting selector with atrule and comment
+   → expected 'h1 {\n&[data-v-test] {\ncolor: red\n}…' to match 'h1 {\n&[data-v-test] {\ncolor: red\n/…'
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > multiple selectors
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > pseudo class
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > pseudo element
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > spaces before pseudo element
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > ::v-deep
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > ::v-slotted
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > ::v-global
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > :is() and :where() with multiple selectors
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > :is() and :where() in compound selectors
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > media query
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > supports query
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > scoped keyframes
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > spaces after selector
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > deprecated syntax > ::v-deep as combinator
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > deprecated syntax > >>> (deprecated syntax)
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > deprecated syntax > /deep/ (deprecated syntax)
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC CSS modules > should include resulting classes object in result
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC CSS modules > postcss-modules options
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC style preprocessors > scss @import
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC style preprocessors > scss respect user-defined string options.additionalData
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC style preprocessors > scss respect user-defined function options.additionalData
+ ✓ packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC style preprocessors > should mount scope on correct selector when have universal selector
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/compiler-sfc/__tests__/compileStyle.spec.ts > SFC scoped CSS > nesting selector with atrule and comment
+AssertionError: expected 'h1 {\n&[data-v-test] {\ncolor: red\n}…' to match 'h1 {\n&[data-v-test] {\ncolor: red\n/…'
+
+- Expected
++ Received
+
+  h1 {
+  &[data-v-test] {
+  color: red
++ }
+  /*background-color: pink;*/
+- }
+  @media only screen and (max-width: 800px) {
+- &[data-v-test] {
+-   background-color: green
+- }
++   background-color: green;
+  .bar[data-v-test] { color: white
+  }
+  }
+  .foo[data-v-test] { color: red;
+  }
+  }
+
+ ❯ packages/compiler-sfc/__tests__/compileStyle.spec.ts:63:7
+     61| }`,
+     62|       ),
+     63|     ).toMatch(
+       |       ^
+     64|       `h1 {
+     65| &[data-v-test] {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 25 passed (26)
+   Start at  17:10:45
+   Duration  1.60s (transform 754ms, setup 14ms, collect 850ms, tests 228ms, environment 0ms, prepare 208ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
++ SWEBENCH_TEST_EXIT_CODE=1
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 1'
+>>>>> Test Exit Code: 1
++ git checkout 706d4ac1d0210b2d9134b3228280187fe02fc971 packages/compiler-sfc/__tests__/compileStyle.spec.ts
+Updated 1 path from 89a8df40

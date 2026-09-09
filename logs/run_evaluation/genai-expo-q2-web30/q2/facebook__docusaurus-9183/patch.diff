@@ -1,0 +1,26 @@
+diff --git a/packages/docusaurus-theme-classic/src/index.ts b/packages/docusaurus-theme-classic/src/index.ts
+index 48a80606ac..2349994ab8 100644
+--- a/packages/docusaurus-theme-classic/src/index.ts
++++ b/packages/docusaurus-theme-classic/src/index.ts
+@@ -176,7 +176,7 @@ export default function themeClassic(
+ 
+     configureWebpack() {
+       const prismLanguages = additionalLanguages
+-        .map((lang) => `prism-${lang}`)
++        .map((lang) => `prism-${lang.toLowerCase()}`)
+         .join('|');
+ 
+       return {
+diff --git a/packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts b/packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts
+index 31dc8889ff..629e1130d5 100644
+--- a/packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts
++++ b/packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts
+@@ -27,7 +27,7 @@ export default function prismIncludeLanguages(
+ 
+   additionalLanguages.forEach((lang) => {
+     // eslint-disable-next-line global-require, import/no-dynamic-require
+-    require(`prismjs/components/prism-${lang}`);
++    require(`prismjs/components/prism-${lang.toLowerCase()}`);
+   });
+ 
+   delete (globalThis as Optional<typeof globalThis, 'Prism'>).Prism;

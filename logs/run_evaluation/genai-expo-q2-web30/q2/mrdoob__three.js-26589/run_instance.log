@@ -1,0 +1,199 @@
+2026-09-09 01:31:45,394 - INFO - Image not found locally, attempting to pull...
+2026-09-09 01:35:37,462 - INFO - Creating container for mrdoob__three.js-26589...
+2026-09-09 01:35:38,309 - INFO - Container for mrdoob__three.js-26589 created: 69a169bfaad38a6f751c4e6d5471d54ddf6142b1da601c87cbc654810edf6c36
+2026-09-09 01:35:38,412 - INFO - Container for mrdoob__three.js-26589 started: 69a169bfaad38a6f751c4e6d5471d54ddf6142b1da601c87cbc654810edf6c36
+2026-09-09 01:35:38,412 - INFO - Intermediate patch for mrdoob__three.js-26589 written to logs/run_evaluation/genai-expo-q2-web30/q2/mrdoob__three.js-26589/patch.diff, now applying to container...
+2026-09-09 01:35:38,501 - INFO - >>>>> Applied Patch:
+Checking patch src/objects/Line.js...
+Checking patch src/objects/Mesh.js...
+Checking patch src/objects/Points.js...
+Checking patch src/objects/Sprite.js...
+Applied patch src/objects/Line.js cleanly.
+Applied patch src/objects/Mesh.js cleanly.
+Applied patch src/objects/Points.js cleanly.
+Applied patch src/objects/Sprite.js cleanly.
+
+2026-09-09 01:35:44,790 - INFO - Git diff before:
+diff --git a/src/objects/Line.js b/src/objects/Line.js
+index e359bcfb29..3e6cd10466 100644
+--- a/src/objects/Line.js
++++ b/src/objects/Line.js
+@@ -34,7 +34,16 @@ class Line extends Object3D {
+ 
+ 		super.copy( source, recursive );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Mesh.js b/src/objects/Mesh.js
+index 03f5290243..5bcb78120c 100644
+--- a/src/objects/Mesh.js
++++ b/src/objects/Mesh.js
+@@ -65,7 +65,16 @@ class Mesh extends Object3D {
+ 
+ 		}
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Points.js b/src/objects/Points.js
+index 8da688140b..c2359b827c 100644
+--- a/src/objects/Points.js
++++ b/src/objects/Points.js
+@@ -32,7 +32,16 @@ class Points extends Object3D {
+ 
+ 		super.copy( source, recursive );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Sprite.js b/src/objects/Sprite.js
+index 31e797811f..7a072562e2 100644
+--- a/src/objects/Sprite.js
++++ b/src/objects/Sprite.js
+@@ -143,7 +143,15 @@ class Sprite extends Object3D {
+ 
+ 		if ( source.center !== undefined ) this.center.copy( source.center );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
+ 
+ 		return this;
+2026-09-09 01:35:44,790 - INFO - Eval script for mrdoob__three.js-26589 written to logs/run_evaluation/genai-expo-q2-web30/q2/mrdoob__three.js-26589/eval.sh; copying to container...
+2026-09-09 01:35:45,262 - INFO - Test runtime: 0.43 seconds
+2026-09-09 01:35:45,262 - INFO - Test output for mrdoob__three.js-26589 written to logs/run_evaluation/genai-expo-q2-web30/q2/mrdoob__three.js-26589/test_output.txt
+2026-09-09 01:35:45,311 - INFO - Git diff after:
+diff --git a/src/objects/Line.js b/src/objects/Line.js
+index e359bcfb29..3e6cd10466 100644
+--- a/src/objects/Line.js
++++ b/src/objects/Line.js
+@@ -34,7 +34,16 @@ class Line extends Object3D {
+ 
+ 		super.copy( source, recursive );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Mesh.js b/src/objects/Mesh.js
+index 03f5290243..5bcb78120c 100644
+--- a/src/objects/Mesh.js
++++ b/src/objects/Mesh.js
+@@ -65,7 +65,16 @@ class Mesh extends Object3D {
+ 
+ 		}
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Points.js b/src/objects/Points.js
+index 8da688140b..c2359b827c 100644
+--- a/src/objects/Points.js
++++ b/src/objects/Points.js
+@@ -32,7 +32,16 @@ class Points extends Object3D {
+ 
+ 		super.copy( source, recursive );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
++
+ 		this.geometry = source.geometry;
+ 
+ 		return this;
+diff --git a/src/objects/Sprite.js b/src/objects/Sprite.js
+index 31e797811f..7a072562e2 100644
+--- a/src/objects/Sprite.js
++++ b/src/objects/Sprite.js
+@@ -143,7 +143,15 @@ class Sprite extends Object3D {
+ 
+ 		if ( source.center !== undefined ) this.center.copy( source.center );
+ 
+-		this.material = source.material;
++		if ( Array.isArray( source.material ) ) {
++
++			this.material = source.material.slice();
++
++		} else {
++
++			this.material = source.material;
++
++		}
+ 
+ 		return this;
+2026-09-09 01:35:45,312 - INFO - Grading answer for mrdoob__three.js-26589...
+2026-09-09 01:35:45,312 - INFO - report: {'mrdoob__three.js-26589': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['Objects > Line > copy/material', 'Objects > Mesh > copy/material', 'Objects > Points > copy/material'], 'failure': []}, 'PASS_TO_PASS': {'success': ['Objects > Line > Extending', 'Objects > Line > Instancing', 'Objects > Line > type', 'Objects > Line > isLine', 'Objects > Mesh > Extending', 'Objects > Mesh > Instancing', 'Objects > Mesh > type', 'Objects > Mesh > isMesh', 'Objects > Mesh > raycast/range', 'Objects > Points > Extending', 'Objects > Points > Instancing', 'Objects > Points > type', 'Objects > Points > isPoints'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for mrdoob__three.js-26589: resolved: True
+2026-09-09 01:35:45,312 - INFO - Attempting to stop container sweb.eval.mrdoob__three.js-26589.genai-expo-q2-web30...
+2026-09-09 01:36:00,476 - INFO - Container sweb.eval.mrdoob__three.js-26589.genai-expo-q2-web30 stopped successfully.
+2026-09-09 01:36:00,476 - INFO - Attempting to remove container sweb.eval.mrdoob__three.js-26589.genai-expo-q2-web30...
+2026-09-09 01:36:00,503 - INFO - Container sweb.eval.mrdoob__three.js-26589.genai-expo-q2-web30 removed successfully.

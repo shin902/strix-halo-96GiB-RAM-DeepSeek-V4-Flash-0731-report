@@ -1,0 +1,52 @@
+diff --git a/src/core/Object3D.js b/src/core/Object3D.js
+index d22e714c5e..ce82fce8fe 100644
+--- a/src/core/Object3D.js
++++ b/src/core/Object3D.js
+@@ -720,6 +720,7 @@ class Object3D extends EventDispatcher {
+ 		object.matrix = this.matrix.toArray();
+ 
+ 		if ( this.matrixAutoUpdate === false ) object.matrixAutoUpdate = false;
++		if ( this.up.isVector3 ) object.up = this.up.toArray();
+ 
+ 		// object specific properties
+ 
+diff --git a/src/loaders/ObjectLoader.js b/src/loaders/ObjectLoader.js
+index 64ba5d4680..80ac46d3ac 100644
+--- a/src/loaders/ObjectLoader.js
++++ b/src/loaders/ObjectLoader.js
+@@ -963,6 +963,8 @@ class ObjectLoader extends Loader {
+ 
+ 		}
+ 
++		if ( data.up !== undefined ) object.up.fromArray( data.up );
++
+ 		if ( data.castShadow !== undefined ) object.castShadow = data.castShadow;
+ 		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
+ 
+diff --git a/test/unit/src/core/Object3D.tests.js b/test/unit/src/core/Object3D.tests.js
+index 3d77072af0..189a7099a8 100644
+--- a/test/unit/src/core/Object3D.tests.js
++++ b/test/unit/src/core/Object3D.tests.js
+@@ -1283,18 +1283,21 @@ export default QUnit.module( 'Core', () => {
+ 					'userData': { 'foo': 'bar' },
+ 					'layers': 1,
+ 					'matrix': [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
++					'up': [ 0, 1, 0 ],
+ 					'children': [
+ 						{
+ 							'uuid': '5D4E9AE8-DA61-4912-A575-71A5BE3D72CD',
+ 							'type': 'Object3D',
+ 							'layers': 1,
+ 							'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ],
++							'up': [ 0, 1, 0 ],
+ 							'children': [
+ 								{
+ 									'uuid': 'B43854B3-E970-4E85-BD41-AAF8D7BFA189',
+ 									'type': 'Object3D',
+ 									'layers': 1,
+-									'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ]
++									'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ],
++									'up': [ 0, 1, 0 ]
+ 								}
+ 							]
+ 						}

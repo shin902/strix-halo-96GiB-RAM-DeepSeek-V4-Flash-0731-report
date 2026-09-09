@@ -1,0 +1,222 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   src/diff/children.js
+	modified:   test/browser/render.test.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 9c5a82efcc3dcbd0035c694817a3022d81264687
+Author: Jovi De Croock <decroockjovi@gmail.com>
+Date:   Sun Oct 1 11:17:06 2023 +0200
+
+    10.18.1 (#4148)
+
+diff --git a/devtools/src/devtools.js b/devtools/src/devtools.js
+index 4072abcc..d0eafe47 100644
+--- a/devtools/src/devtools.js
++++ b/devtools/src/devtools.js
+@@ -2,7 +2,7 @@ import { options, Fragment, Component } from 'preact';
+ 
+ export function initDevTools() {
+ 	if (typeof window != 'undefined' && window.__PREACT_DEVTOOLS__) {
+-		window.__PREACT_DEVTOOLS__.attachPreact('10.18.0', options, {
++		window.__PREACT_DEVTOOLS__.attachPreact('10.18.1', options, {
+ 			Fragment,
+ 			Component
+ 		});
+diff --git a/package-lock.json b/package-lock.json
+index 4fcd30f2..adf1104c 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "preact",
+-  "version": "10.18.0",
++  "version": "10.18.1",
+   "lockfileVersion": 2,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "preact",
+-      "version": "10.18.0",
++      "version": "10.18.1",
+       "license": "MIT",
+       "devDependencies": {
+         "@actions/github": "^5.0.0",
+diff --git a/package.json b/package.json
+index 83883c68..7b1c3926 100644
+--- a/package.json
++++ b/package.json
+@@ -1,7 +1,7 @@
+ {
+   "name": "preact",
+   "amdName": "preact",
+-  "version": "10.18.0",
++  "version": "10.18.1",
+   "private": false,
+   "description": "Fast 3kb React-compatible Virtual DOM library.",
+   "main": "dist/preact.js",
++ git -c core.fileMode=false diff 9c5a82efcc3dcbd0035c694817a3022d81264687
+diff --git a/src/diff/children.js b/src/diff/children.js
+index 35874a64..9dc88b4d 100644
+--- a/src/diff/children.js
++++ b/src/diff/children.js
+@@ -81,6 +81,14 @@ export function diffChildren(
+ 				null,
+ 				childVNode
+ 			);
++		} else if (childVNode instanceof String) {
++			childVNode = newParentVNode._children[i] = createVNode(
++				null,
++				childVNode.valueOf(),
++				null,
++				null,
++				childVNode.valueOf()
++			);
+ 		} else if (isArray(childVNode)) {
+ 			childVNode = newParentVNode._children[i] = createVNode(
+ 				Fragment,
+diff --git a/test/browser/render.test.js b/test/browser/render.test.js
+index 6dab0019..fd6ff21f 100644
+--- a/test/browser/render.test.js
++++ b/test/browser/render.test.js
+@@ -295,6 +295,11 @@ describe('render()', () => {
+ 		expect(scratch.innerHTML).to.equal('Testing, huh! How is it going?');
+ 	});
+ 
++	it('should render String objects as text content', () => {
++		render(<div>{new String('Testing, huh! How is it going?')}</div>, scratch);
++		expect(scratch.firstChild.textContent).to.equal('Testing, huh! How is it going?');
++	});
++
+ 	it('should render arrays of mixed elements', () => {
+ 		render(getMixedArray(), scratch);
+ 		expect(scratch.innerHTML).to.equal(mixedArrayHTML);
++ git checkout 9c5a82efcc3dcbd0035c694817a3022d81264687 test/browser/components.test.js
+Updated 0 paths from eb6ec1b1
++ git apply -v -
+Checking patch test/browser/components.test.js...
+Applied patch test/browser/components.test.js cleanly.
++ : '>>>>> Start Test Output'
++ cat
++ COVERAGE=false
++ BABEL_NO_MODULES=true
++ npx karma start karma.conf.js --single-run --grep=test/browser/components.test.js
+
+START:
+[32m08 09 2026 16:59:09.481:INFO [esbuild]: [39mCompiling...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[32m08 09 2026 16:59:10.399:INFO [esbuild]: [39mCompiling done (918ms)
+[32m08 09 2026 16:59:10.402:INFO [karma-server]: [39mKarma v6.3.16 server started at http://localhost:9876/
+[32m08 09 2026 16:59:10.402:INFO [launcher]: [39mLaunching browsers ChromeNoSandboxHeadless with concurrency 2
+[32m08 09 2026 16:59:10.405:INFO [launcher]: [39mStarting browser Chrome
+[32m08 09 2026 16:59:10.665:INFO [Chrome Headless 151.0.0.0 (Linux x86_64)]: [39mConnected on socket BJpNoF1T55wNQMbAAAAB with id 28046724
+  Components
+    ✔ should render string
+    ✔ should render number as string
+    ✔ should render a new String()
+    ✔ should render null as empty string
+    ✔ should remove orphaned elements replaced by Components
+    ✔ should remove children when root changes to text node
+    ✔ should maintain order when setting state (that inserts dom-elements)
+    ✔ should not recycle common class children with different keys
+    ✔ should set component._vnode._dom when sCU returns false
+    ✔ should handle hoisted component vnodes without DOM
+    Component construction
+      ✔ should render components
+      ✔ should render functional components
+      ✔ should render components with props
+      ✔ should not crash when setting state in constructor
+      ✔ should not crash when setting state with cb in constructor
+      ✔ should not crash when calling forceUpdate with cb in constructor
+      ✔ should accurately call nested setState callbacks
+      ✔ should initialize props & context but not state in Component constructor
+      ✔ should render Component classes that don't pass args into the Component constructor
+      ✔ should also update the current dom
+      ✔ should not orphan children
+      ✔ should render components that don't pass args into the Component constructor (unistore pattern)
+      ✔ should render components that don't call Component constructor
+      ✔ should render components that don't call Component constructor and don't initialize state
+      ✔ should render components that don't inherit from Component
+      ✔ should render components that don't inherit from Component (unistore pattern)
+      ✔ should render components that don't inherit from Component and don't initialize state
+      ✔ should render class components that inherit from Component without a render method
+    array children
+      ✔ should render DOM element's array children
+      ✔ should render Component's array children
+      ✔ should render Fragment's array children
+      ✔ should render sibling array children
+    props.children
+      ✔ should support passing children as a prop
+      ✔ should be ignored when explicit children exist
+      ✔ should be undefined with no child
+      ✔ should be null with null as a child
+      ✔ should be false with false as a child
+      ✔ should be true with true as a child
+      ✔ should be a string with a text child
+      ✔ should be a string with a number child
+      ✔ should be a VNode with a DOM node child
+      ✔ should be a VNode with a Component child
+      ✔ should be a function with a function child
+      ✔ should be an array with multiple children
+      ✔ should be an array with an array as children
+      ✔ should not flatten sibling and nested arrays
+    High-Order Components
+      ✔ should render wrapper HOCs
+      ✔ should render HOCs with generic children
+      ✔ should render nested functional components
+      ✔ should re-render nested functional components
+      ✔ should re-render nested components
+      ✔ should resolve intermediary functional component
+      ✔ should unmount children of high-order components without unmounting parent
+      ✔ should remount when swapping between HOC child types
+    Component Nesting
+      ✔ should handle lifecycle for no intermediary in component tree
+      ✔ should handle lifecycle for nested intermediary functional components
+      ✔ should render components by depth
+      ✔ should handle lifecycle for nested intermediary elements
+    c.base
+      ✔ should keep c.base up to date if a nested child component changes DOM nodes
+      ✔ should not update sibling c.base if child component changes DOM nodes
+      ✔ should not update parent c.base if child component changes DOM nodes and it is not first child component
+      ✔ should update parent c.base if child component changes DOM nodes and it is first non-null child component
+      ✔ should not update parent c.base if child component changes DOM nodes and a parent is not first child component
+      ✔ should update parent c.base if first child becomes null
+      ✔ should update parent c.base if first child becomes non-null
+      ✔ should update parent c.base if first non-null child becomes null with multiple null siblings
+      ✔ should update parent c.base if a null child returns DOM with multiple null siblings
+      ✔ should update parent c.base to null if last child becomes null
+      ✔ should update parent c.base if last child returns dom
+      ✔ should not update parent if it is a DOM node
+    setState
+      ✔ should not error if called on an unmounted component
+      ✔ setState callbacks should have latest state, even when called in render
+      ✔ should work with readonly state
+    forceUpdate
+      ✔ should not error if called on an unmounted component
+      ✔ should update old dom on forceUpdate in a lifecycle
+      ✔ should skip shouldComponentUpdate when called during render
+      ✔ should break through strict equality optimization
+
+Finished in 0.005 secs / 0.021 secs @ 16:59:10 GMT+0000 (Coordinated Universal Time)
+
+SUMMARY:
+✔ 77 tests completed
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
++ git checkout 9c5a82efcc3dcbd0035c694817a3022d81264687 test/browser/components.test.js
+>>>>> Test Exit Code: 0
+Updated 1 path from eb6ec1b1

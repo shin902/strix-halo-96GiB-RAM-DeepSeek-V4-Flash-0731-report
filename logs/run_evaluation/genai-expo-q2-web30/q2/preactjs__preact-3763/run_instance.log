@@ -1,0 +1,135 @@
+2026-09-09 01:56:11,326 - INFO - Image not found locally, attempting to pull...
+2026-09-09 01:57:31,033 - INFO - Creating container for preactjs__preact-3763...
+2026-09-09 01:57:31,751 - INFO - Container for preactjs__preact-3763 created: b13f3ec669a9b29a91d326b954b4326a9c06f0574522a86d452d32765c2c6c60
+2026-09-09 01:57:31,850 - INFO - Container for preactjs__preact-3763 started: b13f3ec669a9b29a91d326b954b4326a9c06f0574522a86d452d32765c2c6c60
+2026-09-09 01:57:31,850 - INFO - Intermediate patch for preactjs__preact-3763 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3763/patch.diff, now applying to container...
+2026-09-09 01:57:31,931 - INFO - >>>>> Applied Patch:
+Checking patch src/diff/index.js...
+Checking patch test/browser/lifecycles/componentDidUpdate.test.js...
+Applied patch src/diff/index.js cleanly.
+Applied patch test/browser/lifecycles/componentDidUpdate.test.js cleanly.
+
+2026-09-09 01:57:32,004 - INFO - Git diff before:
+diff --git a/package-lock.json b/package-lock.json
+index f8dae7b2..de441a32 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -5,6 +5,7 @@
+ 	"requires": true,
+ 	"packages": {
+ 		"": {
++			"name": "preact",
+ 			"version": "10.11.1",
+ 			"license": "MIT",
+ 			"devDependencies": {
+diff --git a/src/diff/index.js b/src/diff/index.js
+index fc564d3b..d47e85c2 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -112,8 +112,8 @@ export function diff(
+ 
+ 			for (tmp = 0; tmp < c._stateCallbacks.length; tmp++) {
+ 				c._renderCallbacks.push(c._stateCallbacks[tmp]);
+-				c._stateCallbacks = [];
+ 			}
++			c._stateCallbacks = [];
+ 
+ 			// Invoke pre-render lifecycle methods
+ 			if (isNew) {
+diff --git a/test/browser/lifecycles/componentDidUpdate.test.js b/test/browser/lifecycles/componentDidUpdate.test.js
+index 41bae1bf..2c6f4f75 100644
+--- a/test/browser/lifecycles/componentDidUpdate.test.js
++++ b/test/browser/lifecycles/componentDidUpdate.test.js
+@@ -431,5 +431,25 @@ describe('Lifecycle methods', () => {
+ 			rerender();
+ 			expect(invocation.count).to.equal(10);
+ 		});
++
++		it('should call all setState callbacks', () => {
++			let calls = [];
++
++			class App extends Component {
++				componentDidMount() {
++					this.setState({ a: 1 }, () => calls.push('a'));
++					this.setState({ b: 2 }, () => calls.push('b'));
++					this.setState({ c: 3 }, () => calls.push('c'));
++				}
++				render() {
++					return <p>Hello world</p>;
++				}
++			}
++
++			render(<App />, scratch);
++
++			rerender();
++			expect(calls).to.deep.equal(['a', 'b', 'c']);
++		});
+ 	});
+ });
+2026-09-09 01:57:32,004 - INFO - Eval script for preactjs__preact-3763 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3763/eval.sh; copying to container...
+2026-09-09 01:57:33,702 - INFO - Test runtime: 1.66 seconds
+2026-09-09 01:57:33,703 - INFO - Test output for preactjs__preact-3763 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3763/test_output.txt
+2026-09-09 01:57:33,749 - INFO - Git diff after:
+diff --git a/package-lock.json b/package-lock.json
+index f8dae7b2..de441a32 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -5,6 +5,7 @@
+ 	"requires": true,
+ 	"packages": {
+ 		"": {
++			"name": "preact",
+ 			"version": "10.11.1",
+ 			"license": "MIT",
+ 			"devDependencies": {
+diff --git a/src/diff/index.js b/src/diff/index.js
+index fc564d3b..d47e85c2 100644
+--- a/src/diff/index.js
++++ b/src/diff/index.js
+@@ -112,8 +112,8 @@ export function diff(
+ 
+ 			for (tmp = 0; tmp < c._stateCallbacks.length; tmp++) {
+ 				c._renderCallbacks.push(c._stateCallbacks[tmp]);
+-				c._stateCallbacks = [];
+ 			}
++			c._stateCallbacks = [];
+ 
+ 			// Invoke pre-render lifecycle methods
+ 			if (isNew) {
+diff --git a/test/browser/lifecycles/componentDidUpdate.test.js b/test/browser/lifecycles/componentDidUpdate.test.js
+index 41bae1bf..2c6f4f75 100644
+--- a/test/browser/lifecycles/componentDidUpdate.test.js
++++ b/test/browser/lifecycles/componentDidUpdate.test.js
+@@ -431,5 +431,25 @@ describe('Lifecycle methods', () => {
+ 			rerender();
+ 			expect(invocation.count).to.equal(10);
+ 		});
++
++		it('should call all setState callbacks', () => {
++			let calls = [];
++
++			class App extends Component {
++				componentDidMount() {
++					this.setState({ a: 1 }, () => calls.push('a'));
++					this.setState({ b: 2 }, () => calls.push('b'));
++					this.setState({ c: 3 }, () => calls.push('c'));
++				}
++				render() {
++					return <p>Hello world</p>;
++				}
++			}
++
++			render(<App />, scratch);
++
++			rerender();
++			expect(calls).to.deep.equal(['a', 'b', 'c']);
++		});
+ 	});
+ });
+2026-09-09 01:57:33,750 - INFO - Grading answer for preactjs__preact-3763...
+2026-09-09 01:57:33,750 - INFO - report: {'preactjs__preact-3763': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['Lifecycle methods > #componentDidMount > supports multiple setState callbacks'], 'failure': []}, 'PASS_TO_PASS': {'success': ['Lifecycle methods > #componentDidMount > is invoked after refs are set'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for preactjs__preact-3763: resolved: True
+2026-09-09 01:57:33,750 - INFO - Attempting to stop container sweb.eval.preactjs__preact-3763.genai-expo-q2-web30...
+2026-09-09 01:57:48,890 - INFO - Container sweb.eval.preactjs__preact-3763.genai-expo-q2-web30 stopped successfully.
+2026-09-09 01:57:48,890 - INFO - Attempting to remove container sweb.eval.preactjs__preact-3763.genai-expo-q2-web30...
+2026-09-09 01:57:48,918 - INFO - Container sweb.eval.preactjs__preact-3763.genai-expo-q2-web30 removed successfully.

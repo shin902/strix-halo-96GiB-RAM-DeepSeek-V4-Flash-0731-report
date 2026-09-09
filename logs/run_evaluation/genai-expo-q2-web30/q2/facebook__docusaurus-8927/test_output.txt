@@ -1,0 +1,170 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   package.json
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	packages/docusaurus-mdx-loader/src/remark/transformImage/__tests__/__fixtures__/img.md__static_image_assets__/
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 41f1c1e3c26ad1e24acd3306077e2534dd8fa0db
+Author: John Cao <jhcao23@gmail.com>
+Date:   Wed Apr 26 11:57:37 2023 -0400
+
+    docs: mdx-js is using v2 for next edition (#8920)
+
+diff --git a/website/docs/guides/markdown-features/markdown-features-react.mdx b/website/docs/guides/markdown-features/markdown-features-react.mdx
+index aa8e93c03..bce7d6747 100644
+--- a/website/docs/guides/markdown-features/markdown-features-react.mdx
++++ b/website/docs/guides/markdown-features/markdown-features-react.mdx
+@@ -15,7 +15,7 @@ import styles from './markdown-features-react.module.css';
+ 
+ ## Using JSX in Markdown {#using-jsx-in-markdown}
+ 
+-Docusaurus has built-in support for [MDX v1](https://mdxjs.com/), which allows you to write JSX within your Markdown files and render them as React components.
++Docusaurus has built-in support for [MDX v2](https://mdxjs.com/), which allows you to write JSX within your Markdown files and render them as React components.
+ 
+ :::note
+ 
++ git -c core.fileMode=false diff 41f1c1e3c26ad1e24acd3306077e2534dd8fa0db
+diff --git a/package.json b/package.json
+index eca4027a4..beaeb9743 100644
+--- a/package.json
++++ b/package.json
+@@ -114,5 +114,6 @@
+     "stylelint-config-prettier": "^9.0.5",
+     "stylelint-config-standard": "^29.0.0",
+     "typescript": "~5.0.4"
+-  }
++  },
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
++ git checkout 41f1c1e3c26ad1e24acd3306077e2534dd8fa0db packages/docusaurus-utils/src/__tests__/__snapshots__/markdownLinks.test.ts.snap packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts
+Updated 0 paths from ca8a5105b
++ git apply -v -
+Checking patch packages/docusaurus-utils/src/__tests__/__snapshots__/markdownLinks.test.ts.snap...
+Checking patch packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts...
+Applied patch packages/docusaurus-utils/src/__tests__/__snapshots__/markdownLinks.test.ts.snap cleanly.
+Applied patch packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts cleanly.
++ : '>>>>> Start Test Output'
++ cat
++ yarn test packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts --verbose
+yarn run v1.22.22
+$ jest packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts --verbose
+jest-haste-map: duplicate manual mock found: chalk
+  The following files share their name; please delete one of them:
+    * <rootDir>/packages/docusaurus-logger/lib/__mocks__/chalk.js
+    * <rootDir>/packages/docusaurus-logger/src/__mocks__/chalk.js
+
+jest-haste-map: Haste module naming collision: docusaurus-1-website
+  The following files share their name; please adjust your hasteImpl:
+    * <rootDir>/packages/docusaurus-migrate/src/__tests__/__fixtures__/simple_website/website/package.json
+    * <rootDir>/packages/docusaurus-migrate/src/__tests__/__fixtures__/missing_version_website/website/package.json
+
+FAIL packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts
+  replaceMarkdownLinks
+    ✓ does basic replace (4 ms)
+    ✓ replaces two links on the same line
+    ✓ replaces reference style Markdown links
+    ✓ resolves absolute and relative links differently (1 ms)
+    ✓ ignores links in HTML comments (1 ms)
+    ✓ ignores links in fenced blocks (1 ms)
+    ✓ ignores links in inline code
+    ✓ replaces links with same title as URL
+    ✓ replaces multiple links on same line (1 ms)
+    ✓ replaces Markdown links with spaces (1 ms)
+    ✕ does not replace non-Markdown links (3 ms)
+    ✕ handles stray spaces (1 ms)
+    ✓ handles link titles
+    ✓ preserves query/hash (1 ms)
+
+  ● replaceMarkdownLinks › does not replace non-Markdown links
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  2
+    + Received  + 11
+
+    @@ -1,9 +1,18 @@
+      Object {
+    -   "brokenMarkdownLinks": Array [],
+    +   "brokenMarkdownLinks": Array [
+    +     Object {
+    +       "contentPaths": Object {
+    +         "contentPath": "docs",
+    +         "contentPathLocalized": "i18n/docs-localized",
+    +       },
+    +       "filePath": "docs/file.md",
+    +       "link": "https://example.com/file_(1).md",
+    +     },
+    +   ],
+        "newContent": "
+    - [asset](./file.md_asset/1.png)
+    + [asset](/docs/file_asset/1.png)
+      [URL](<https://example.com/file_(1).md>)
+      [not a link]((foo)
+      [not a link](foo bar)
+      [not a link]: foo bar
+      [not a link]: (foo
+
+      309 |         fileString: input,
+      310 |       }),
+    > 311 |     ).toEqual({
+          |       ^
+      312 |       newContent: input,
+      313 |       brokenMarkdownLinks: [],
+      314 |     });
+
+      at Object.toEqual (packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts:311:7)
+
+  ● replaceMarkdownLinks › handles stray spaces
+
+    expect(received).toMatchSnapshot()
+
+    Snapshot name: `replaceMarkdownLinks handles stray spaces 1`
+
+    - Snapshot  - 1
+    + Received  + 1
+
+      {
+        "brokenMarkdownLinks": [],
+        "newContent": "
+    - [URL]( /docs/file )
+    + [URL]( ./file.md )
+      [ref]:  /docs/file
+      ",
+      }
+
+      332 | `,
+      333 |       }),
+    > 334 |     ).toMatchSnapshot();
+          |       ^
+      335 |   });
+      336 |
+      337 |   it('handles link titles', () => {
+
+      at Object.toMatchSnapshot (packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts:334:7)
+
+ › 1 snapshot failed.
+Snapshot Summary
+ › 1 snapshot failed from 1 test suite. Inspect your code changes or run `yarn test -u` to update them.
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 12 passed, 14 total
+Snapshots:   1 failed, 12 passed, 13 total
+Time:        0.377 s
+Ran all test suites matching /packages\/docusaurus-utils\/src\/__tests__\/markdownLinks.test.ts/i.
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
++ SWEBENCH_TEST_EXIT_CODE=1
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 1'
++ git checkout 41f1c1e3c26ad1e24acd3306077e2534dd8fa0db packages/docusaurus-utils/src/__tests__/__snapshots__/markdownLinks.test.ts.snap packages/docusaurus-utils/src/__tests__/markdownLinks.test.ts
+>>>>> Test Exit Code: 1
+Updated 2 paths from ca8a5105b

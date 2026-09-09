@@ -1,0 +1,43 @@
+{
+    "facebook__docusaurus-8927": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": false,
+        "infra_failure": false,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [],
+                "failure": [
+                    "does not replace non-Markdown links",
+                    "handles stray spaces"
+                ]
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "does basic replace",
+                    "replaces two links on the same line",
+                    "replaces reference style Markdown links",
+                    "resolves absolute and relative links differently",
+                    "ignores links in HTML comments",
+                    "ignores links in fenced blocks",
+                    "ignores links in inline code",
+                    "replaces links with same title as URL",
+                    "replaces multiple links on same line",
+                    "replaces Markdown links with spaces",
+                    "handles link titles",
+                    "preserves query/hash"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

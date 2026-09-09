@@ -1,0 +1,117 @@
+2026-09-09 01:13:08,983 - INFO - Image not found locally, attempting to pull...
+2026-09-09 01:16:22,646 - INFO - Creating container for facebook__docusaurus-10130...
+2026-09-09 01:16:23,994 - INFO - Container for facebook__docusaurus-10130 created: d6afd246439c36f9a6953941217b453dacc090e0a7a0a9e7e7608343130872fc
+2026-09-09 01:16:24,096 - INFO - Container for facebook__docusaurus-10130 started: d6afd246439c36f9a6953941217b453dacc090e0a7a0a9e7e7608343130872fc
+2026-09-09 01:16:24,096 - INFO - Intermediate patch for facebook__docusaurus-10130 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-10130/patch.diff, now applying to container...
+2026-09-09 01:16:24,179 - INFO - >>>>> Applied Patch:
+Checking patch packages/docusaurus/src/server/__tests__/brokenLinks.test.ts...
+Checking patch packages/docusaurus/src/server/brokenLinks.ts...
+Applied patch packages/docusaurus/src/server/__tests__/brokenLinks.test.ts cleanly.
+Applied patch packages/docusaurus/src/server/brokenLinks.ts cleanly.
+
+2026-09-09 01:16:24,642 - INFO - Git diff before:
+diff --git a/package.json b/package.json
+index c9abfeb19..c66ad61ef 100644
+--- a/package.json
++++ b/package.json
+@@ -116,5 +116,6 @@
+     "stylelint-config-prettier": "^9.0.5",
+     "stylelint-config-standard": "^29.0.0",
+     "typescript": "~5.4.5"
+-  }
++  },
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
+diff --git a/packages/docusaurus/src/server/__tests__/brokenLinks.test.ts b/packages/docusaurus/src/server/__tests__/brokenLinks.test.ts
+index 2f962db07..f316ffec8 100644
+--- a/packages/docusaurus/src/server/__tests__/brokenLinks.test.ts
++++ b/packages/docusaurus/src/server/__tests__/brokenLinks.test.ts
+@@ -148,6 +148,32 @@ describe('handleBrokenLinks', () => {
+     });
+   });
+ 
++  it('accepts valid link with anchor to page with trailing slash variant', async () => {
++    await testBrokenLinks({
++      routes: [{path: '/page1'}, {path: '/page2/'}],
++      collectedLinks: {
++        '/page1': {
++          links: ['/page2#page2anchor', '/page2/#page2anchor'],
++          anchors: [],
++        },
++        '/page2/': {links: [], anchors: ['page2anchor']},
++      },
++    });
++  });
++
++  it('accepts valid link with anchor to page without trailing slash variant', async () => {
++    await testBrokenLinks({
++      routes: [{path: '/page1'}, {path: '/page2'}],
++      collectedLinks: {
++        '/page1': {
++          links: ['/page2#page2anchor', '/page2/#page2anchor'],
++          anchors: [],
++        },
++        '/page2': {links: [], anchors: ['page2anchor']},
++      },
++    });
++  });
++
+   it('accepts valid links and anchors, sparse arrays', async () => {
+     await testBrokenLinks({
+       routes: [{path: '/page1'}, {path: '/page2'}],
+diff --git a/packages/docusaurus/src/server/brokenLinks.ts b/packages/docusaurus/src/server/brokenLinks.ts
+index 9e940f7b8..90a7fecaa 100644
+--- a/packages/docusaurus/src/server/brokenLinks.ts
++++ b/packages/docusaurus/src/server/brokenLinks.ts
+@@ -125,7 +125,10 @@ function createBrokenLinksHelper({
+       return false;
+     }
+     const targetPage =
+-      collectedLinks.get(pathname) || collectedLinks.get(decodeURI(pathname));
++      collectedLinks.get(pathname) ||
++      collectedLinks.get(decodeURI(pathname)) ||
++      collectedLinks.get(addTrailingSlash(pathname)) ||
++      collectedLinks.get(removeTrailingSlash(pathname));
+     // link with anchor to a page that does not exist (or did not collect any
+     // link/anchor) is considered as a broken anchor
+     if (!targetPage) {
+2026-09-09 01:16:24,642 - INFO - Eval script for facebook__docusaurus-10130 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-10130/eval.sh; copying to container...
+2026-09-09 01:16:26,378 - INFO - Test runtime: 1.69 seconds
+2026-09-09 01:16:26,378 - INFO - Test output for facebook__docusaurus-10130 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-10130/test_output.txt
+2026-09-09 01:16:26,413 - INFO - Git diff after:
+diff --git a/package.json b/package.json
+index c9abfeb19..c66ad61ef 100644
+--- a/package.json
++++ b/package.json
+@@ -116,5 +116,6 @@
+     "stylelint-config-prettier": "^9.0.5",
+     "stylelint-config-standard": "^29.0.0",
+     "typescript": "~5.4.5"
+-  }
++  },
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
+diff --git a/packages/docusaurus/src/server/brokenLinks.ts b/packages/docusaurus/src/server/brokenLinks.ts
+index 9e940f7b8..90a7fecaa 100644
+--- a/packages/docusaurus/src/server/brokenLinks.ts
++++ b/packages/docusaurus/src/server/brokenLinks.ts
+@@ -125,7 +125,10 @@ function createBrokenLinksHelper({
+       return false;
+     }
+     const targetPage =
+-      collectedLinks.get(pathname) || collectedLinks.get(decodeURI(pathname));
++      collectedLinks.get(pathname) ||
++      collectedLinks.get(decodeURI(pathname)) ||
++      collectedLinks.get(addTrailingSlash(pathname)) ||
++      collectedLinks.get(removeTrailingSlash(pathname));
+     // link with anchor to a page that does not exist (or did not collect any
+     // link/anchor) is considered as a broken anchor
+     if (!targetPage) {
+2026-09-09 01:16:26,413 - INFO - Git diff changed after running eval script
+2026-09-09 01:16:26,413 - INFO - Grading answer for facebook__docusaurus-10130...
+2026-09-09 01:16:26,414 - INFO - report: {'facebook__docusaurus-10130': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['accepts valid non-strict link with anchor'], 'failure': []}, 'PASS_TO_PASS': {'success': ['accepts valid link', 'accepts valid non-exact link', 'accepts valid non-strict link', 'accepts valid link to uncollected page', 'accepts valid link to nested route', 'accepts valid relative link', 'accepts valid link with anchor', 'accepts valid link with anchor reported with hash prefix', 'accepts valid links and anchors, sparse arrays', 'accepts valid link and anchor to collected pages that are not in routes', 'accepts valid link with querystring + anchor', 'accepts valid link to self', 'accepts valid link with spaces and encoding', 'accepts valid link with anchor with spaces and encoding', 'accepts valid link with empty anchor', 'rejects broken link', 'rejects broken link due to strict matching', 'rejects broken link due to strict exact matching', 'rejects broken link with anchor', 'rejects broken link with querystring + anchor', 'rejects valid link with broken anchor', 'rejects valid link with broken anchor + query-string', 'rejects valid link with broken anchor to self', 'rejects valid link with broken anchor to uncollected page', 'rejects broken anchor with query-string to uncollected page', 'can ignore broken links', 'can ignore broken anchors', 'can ignore broken anchors but report broken link', 'can ignore broken link but report broken anchors', 'can warn for broken links', 'can warn for broken anchors', 'can warn for both broken links and anchors', 'reports frequent broken links differently', 'is performant and minimize calls to matchRoutes'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for facebook__docusaurus-10130: resolved: True
+2026-09-09 01:16:26,414 - INFO - Attempting to stop container sweb.eval.facebook__docusaurus-10130.genai-expo-q2-web30...
+2026-09-09 01:16:41,577 - INFO - Container sweb.eval.facebook__docusaurus-10130.genai-expo-q2-web30 stopped successfully.
+2026-09-09 01:16:41,577 - INFO - Attempting to remove container sweb.eval.facebook__docusaurus-10130.genai-expo-q2-web30...
+2026-09-09 01:16:41,606 - INFO - Container sweb.eval.facebook__docusaurus-10130.genai-expo-q2-web30 removed successfully.

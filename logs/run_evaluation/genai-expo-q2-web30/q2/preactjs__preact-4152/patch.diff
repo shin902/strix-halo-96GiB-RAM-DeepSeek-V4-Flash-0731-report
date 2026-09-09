@@ -1,0 +1,35 @@
+diff --git a/src/diff/children.js b/src/diff/children.js
+index 35874a64..9dc88b4d 100644
+--- a/src/diff/children.js
++++ b/src/diff/children.js
+@@ -81,6 +81,14 @@ export function diffChildren(
+ 				null,
+ 				childVNode
+ 			);
++		} else if (childVNode instanceof String) {
++			childVNode = newParentVNode._children[i] = createVNode(
++				null,
++				childVNode.valueOf(),
++				null,
++				null,
++				childVNode.valueOf()
++			);
+ 		} else if (isArray(childVNode)) {
+ 			childVNode = newParentVNode._children[i] = createVNode(
+ 				Fragment,
+diff --git a/test/browser/render.test.js b/test/browser/render.test.js
+index 6dab0019..fd6ff21f 100644
+--- a/test/browser/render.test.js
++++ b/test/browser/render.test.js
+@@ -295,6 +295,11 @@ describe('render()', () => {
+ 		expect(scratch.innerHTML).to.equal('Testing, huh! How is it going?');
+ 	});
+ 
++	it('should render String objects as text content', () => {
++		render(<div>{new String('Testing, huh! How is it going?')}</div>, scratch);
++		expect(scratch.firstChild.textContent).to.equal('Testing, huh! How is it going?');
++	});
++
+ 	it('should render arrays of mixed elements', () => {
+ 		render(getMixedArray(), scratch);
+ 		expect(scratch.innerHTML).to.equal(mixedArrayHTML);

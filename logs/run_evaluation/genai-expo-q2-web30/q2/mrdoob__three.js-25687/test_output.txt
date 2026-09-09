@@ -1,0 +1,122 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch dev
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   src/core/Object3D.js
+	modified:   src/loaders/ObjectLoader.js
+	modified:   test/unit/src/core/Object3D.tests.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 114134e195a451fdbaa8d2e9492d869d5c853814
+Author: sunag <sunagbrasil@gmail.com>
+Date:   Thu Mar 16 21:57:42 2023 -0300
+
+    GLTFLoader: Prevents set data uri in texture.name. (#25682)
+    
+    * GLTFLoader: Prevents set data uri in texture.name.
+    
+    * cleanup
+    
+    * fix maybe optional value
+    
+    * cleanup
+
+diff --git a/examples/jsm/loaders/GLTFLoader.js b/examples/jsm/loaders/GLTFLoader.js
+index ada58ff7d0..b10a742580 100644
+--- a/examples/jsm/loaders/GLTFLoader.js
++++ b/examples/jsm/loaders/GLTFLoader.js
+@@ -2988,7 +2988,13 @@ class GLTFParser {
+ 
+ 			texture.flipY = false;
+ 
+-			texture.name = textureDef.name || sourceDef.name || sourceDef.uri || '';
++			texture.name = textureDef.name || sourceDef.name || '';
++
++			if ( texture.name === '' && typeof sourceDef.uri === 'string' && sourceDef.uri.startsWith( 'data:image/' ) === false ) {
++
++				texture.name = sourceDef.uri;
++
++			}
+ 
+ 			const samplers = json.samplers || {};
+ 			const sampler = samplers[ textureDef.sampler ] || {};
++ git -c core.fileMode=false diff 114134e195a451fdbaa8d2e9492d869d5c853814
+diff --git a/src/core/Object3D.js b/src/core/Object3D.js
+index d22e714c5e..ce82fce8fe 100644
+--- a/src/core/Object3D.js
++++ b/src/core/Object3D.js
+@@ -720,6 +720,7 @@ class Object3D extends EventDispatcher {
+ 		object.matrix = this.matrix.toArray();
+ 
+ 		if ( this.matrixAutoUpdate === false ) object.matrixAutoUpdate = false;
++		if ( this.up.isVector3 ) object.up = this.up.toArray();
+ 
+ 		// object specific properties
+ 
+diff --git a/src/loaders/ObjectLoader.js b/src/loaders/ObjectLoader.js
+index 64ba5d4680..80ac46d3ac 100644
+--- a/src/loaders/ObjectLoader.js
++++ b/src/loaders/ObjectLoader.js
+@@ -963,6 +963,8 @@ class ObjectLoader extends Loader {
+ 
+ 		}
+ 
++		if ( data.up !== undefined ) object.up.fromArray( data.up );
++
+ 		if ( data.castShadow !== undefined ) object.castShadow = data.castShadow;
+ 		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
+ 
+diff --git a/test/unit/src/core/Object3D.tests.js b/test/unit/src/core/Object3D.tests.js
+index 3d77072af0..189a7099a8 100644
+--- a/test/unit/src/core/Object3D.tests.js
++++ b/test/unit/src/core/Object3D.tests.js
+@@ -1283,18 +1283,21 @@ export default QUnit.module( 'Core', () => {
+ 					'userData': { 'foo': 'bar' },
+ 					'layers': 1,
+ 					'matrix': [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
++					'up': [ 0, 1, 0 ],
+ 					'children': [
+ 						{
+ 							'uuid': '5D4E9AE8-DA61-4912-A575-71A5BE3D72CD',
+ 							'type': 'Object3D',
+ 							'layers': 1,
+ 							'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ],
++							'up': [ 0, 1, 0 ],
+ 							'children': [
+ 								{
+ 									'uuid': 'B43854B3-E970-4E85-BD41-AAF8D7BFA189',
+ 									'type': 'Object3D',
+ 									'layers': 1,
+-									'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ]
++									'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ],
++									'up': [ 0, 1, 0 ]
+ 								}
+ 							]
+ 						}
++ git checkout 114134e195a451fdbaa8d2e9492d869d5c853814 test/unit/src/core/Object3D.tests.js
+Updated 1 path from 52f00b2955
++ git apply -v -
+Checking patch test/unit/src/core/Object3D.tests.js...
+Applied patch test/unit/src/core/Object3D.tests.js cleanly.
++ : '>>>>> Start Test Output'
++ cat
++ npx qunit test/unit/src/core/Object3D.tests.js -f '/json|clone|copy/i'
+TAP version 13
+ok 1 Core > Object3D > toJSON
+ok 2 Core > Object3D > clone
+ok 3 Core > Object3D > copy
+1..3
+# pass 3
+# skip 0
+# todo 0
+# fail 0
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
+>>>>> Test Exit Code: 0
++ git checkout 114134e195a451fdbaa8d2e9492d869d5c853814 test/unit/src/core/Object3D.tests.js
+Updated 1 path from 52f00b2955

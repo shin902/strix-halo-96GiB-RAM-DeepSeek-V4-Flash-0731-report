@@ -1,0 +1,45 @@
+2026-09-09 01:20:37,178 - INFO - Image not found locally, attempting to pull...
+2026-09-09 01:23:40,693 - INFO - Creating container for facebook__docusaurus-8927...
+2026-09-09 01:23:41,783 - INFO - Container for facebook__docusaurus-8927 created: 5baebcdfa02d27149295ab0fcfb5f00d198aa298be6f6d0ea9aeaa05b13ab13c
+2026-09-09 01:23:41,891 - INFO - Container for facebook__docusaurus-8927 started: 5baebcdfa02d27149295ab0fcfb5f00d198aa298be6f6d0ea9aeaa05b13ab13c
+2026-09-09 01:23:41,891 - INFO - Intermediate patch for facebook__docusaurus-8927 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-8927/patch.diff, now applying to container...
+2026-09-09 01:23:41,959 - INFO - >>>>> Applied Patch:
+Checking patch packages/docusaurus-mdx-loader/src/remark/transformImage/__tests__/__fixtures__/img.md__static_image_assets__/img.png...
+Applied patch packages/docusaurus-mdx-loader/src/remark/transformImage/__tests__/__fixtures__/img.md__static_image_assets__/img.png cleanly.
+
+2026-09-09 01:23:42,375 - INFO - Git diff before:
+diff --git a/package.json b/package.json
+index eca4027a4..beaeb9743 100644
+--- a/package.json
++++ b/package.json
+@@ -114,5 +114,6 @@
+     "stylelint-config-prettier": "^9.0.5",
+     "stylelint-config-standard": "^29.0.0",
+     "typescript": "~5.0.4"
+-  }
++  },
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
+2026-09-09 01:23:42,375 - INFO - Eval script for facebook__docusaurus-8927 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-8927/eval.sh; copying to container...
+2026-09-09 01:23:43,596 - INFO - Test runtime: 1.18 seconds
+2026-09-09 01:23:43,596 - INFO - Test output for facebook__docusaurus-8927 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-8927/test_output.txt
+2026-09-09 01:23:43,632 - INFO - Git diff after:
+diff --git a/package.json b/package.json
+index eca4027a4..beaeb9743 100644
+--- a/package.json
++++ b/package.json
+@@ -114,5 +114,6 @@
+     "stylelint-config-prettier": "^9.0.5",
+     "stylelint-config-standard": "^29.0.0",
+     "typescript": "~5.0.4"
+-  }
++  },
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
+2026-09-09 01:23:43,633 - INFO - Grading answer for facebook__docusaurus-8927...
+2026-09-09 01:23:43,633 - INFO - report: {'facebook__docusaurus-8927': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['does not replace non-Markdown links', 'handles stray spaces']}, 'PASS_TO_PASS': {'success': ['does basic replace', 'replaces two links on the same line', 'replaces reference style Markdown links', 'resolves absolute and relative links differently', 'ignores links in HTML comments', 'ignores links in fenced blocks', 'ignores links in inline code', 'replaces links with same title as URL', 'replaces multiple links on same line', 'replaces Markdown links with spaces', 'handles link titles', 'preserves query/hash'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for facebook__docusaurus-8927: resolved: False
+2026-09-09 01:23:43,633 - INFO - Attempting to stop container sweb.eval.facebook__docusaurus-8927.genai-expo-q2-web30...
+2026-09-09 01:23:58,788 - INFO - Container sweb.eval.facebook__docusaurus-8927.genai-expo-q2-web30 stopped successfully.
+2026-09-09 01:23:58,788 - INFO - Attempting to remove container sweb.eval.facebook__docusaurus-8927.genai-expo-q2-web30...
+2026-09-09 01:23:58,820 - INFO - Container sweb.eval.facebook__docusaurus-8927.genai-expo-q2-web30 removed successfully.

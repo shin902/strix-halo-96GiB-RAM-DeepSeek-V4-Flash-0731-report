@@ -1,0 +1,84 @@
+2026-09-09 01:54:25,286 - INFO - Image not found locally, attempting to pull...
+2026-09-09 01:55:41,600 - INFO - Creating container for preactjs__preact-3739...
+2026-09-09 01:55:48,953 - INFO - Container for preactjs__preact-3739 created: 59957f27fee1ee25de0f7b0ced5d6aee982dd4aa412f8135020303f73beb76c8
+2026-09-09 01:55:49,097 - INFO - Container for preactjs__preact-3739 started: 59957f27fee1ee25de0f7b0ced5d6aee982dd4aa412f8135020303f73beb76c8
+2026-09-09 01:55:49,097 - INFO - Intermediate patch for preactjs__preact-3739 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3739/patch.diff, now applying to container...
+2026-09-09 01:55:49,192 - INFO - >>>>> Applied Patch:
+Checking patch hooks/src/index.js...
+Checking patch hooks/test/browser/useState.test.js...
+Applied patch hooks/src/index.js cleanly.
+Applied patch hooks/test/browser/useState.test.js cleanly.
+
+2026-09-09 01:55:49,277 - INFO - Git diff before:
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index d51517f9..b120d0ad 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -233,7 +233,7 @@ export function useReducer(reducer, initialState, init) {
+ 					}
+ 				});
+ 
+-				return shouldUpdate
++				return shouldUpdate || hookState._component.props !== p
+ 					? prevScu
+ 						? prevScu.call(this, p, s, c)
+ 						: true
+diff --git a/hooks/test/browser/useState.test.js b/hooks/test/browser/useState.test.js
+index 64b5e59a..58b152af 100644
+--- a/hooks/test/browser/useState.test.js
++++ b/hooks/test/browser/useState.test.js
+@@ -346,4 +346,29 @@ describe('useState', () => {
+ 
+ 		expect(renderSpy).to.be.calledTwice;
+ 	});
++
++	// see preactjs/preact#3731
++	it('respects updates initiated from the parent', () => {
++		let setChild, setParent;
++		const Child = props => {
++			const [, setState] = useState(false);
++			setChild = setState;
++			return <p>{props.text}</p>;
++		};
++
++		const Parent = () => {
++			const [state, setState] = useState('hello world');
++			setParent = setState;
++			return <Child text={state} />;
++		};
++
++		render(<Parent />, scratch);
++		expect(scratch.innerHTML).to.equal('<p>hello world</p>');
++
++		setParent('hello world!!!');
++		setChild(true);
++		setChild(false);
++		rerender();
++		expect(scratch.innerHTML).to.equal('<p>hello world!!!</p>');
++	});
+ });
+2026-09-09 01:55:49,277 - INFO - Eval script for preactjs__preact-3739 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3739/eval.sh; copying to container...
+2026-09-09 01:55:51,501 - INFO - Test runtime: 2.18 seconds
+2026-09-09 01:55:51,502 - INFO - Test output for preactjs__preact-3739 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3739/test_output.txt
+2026-09-09 01:55:51,538 - INFO - Git diff after:
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index d51517f9..b120d0ad 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -233,7 +233,7 @@ export function useReducer(reducer, initialState, init) {
+ 					}
+ 				});
+ 
+-				return shouldUpdate
++				return shouldUpdate || hookState._component.props !== p
+ 					? prevScu
+ 						? prevScu.call(this, p, s, c)
+ 						: true
+2026-09-09 01:55:51,538 - INFO - Git diff changed after running eval script
+2026-09-09 01:55:51,538 - INFO - Grading answer for preactjs__preact-3739...
+2026-09-09 01:55:51,538 - INFO - report: {'preactjs__preact-3739': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['useState > respects updates initiated from the parent'], 'failure': []}, 'PASS_TO_PASS': {'success': ['useState > serves the same state across render calls', 'useState > can initialize the state via a function', 'useState > does not rerender on equal state', 'useState > rerenders when setting the state', 'useState > can be set by another component', 'useState > should correctly initialize', 'useState > should correctly re-initialize when first run threw an error', 'useState > should handle queued useState', 'useState > should render a second time when the render function updates state', 'useState > correctly updates with multiple state updates', 'useState > ensure we iterate over all hooks', 'useState > does not loop when states are equal after batches'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for preactjs__preact-3739: resolved: True
+2026-09-09 01:55:51,538 - INFO - Attempting to stop container sweb.eval.preactjs__preact-3739.genai-expo-q2-web30...
+2026-09-09 01:56:06,692 - INFO - Container sweb.eval.preactjs__preact-3739.genai-expo-q2-web30 stopped successfully.
+2026-09-09 01:56:06,692 - INFO - Attempting to remove container sweb.eval.preactjs__preact-3739.genai-expo-q2-web30...
+2026-09-09 01:56:06,720 - INFO - Container sweb.eval.preactjs__preact-3739.genai-expo-q2-web30 removed successfully.

@@ -1,0 +1,117 @@
+2026-09-09 01:16:47,357 - INFO - Image not found locally, attempting to pull...
+2026-09-09 01:20:13,236 - INFO - Creating container for facebook__docusaurus-10309...
+2026-09-09 01:20:14,328 - INFO - Container for facebook__docusaurus-10309 created: 24dc9e9e5009c9b75ad126e6d543dd7e4c62b7615a713f13a327f0b6343a3383
+2026-09-09 01:20:14,417 - INFO - Container for facebook__docusaurus-10309 started: 24dc9e9e5009c9b75ad126e6d543dd7e4c62b7615a713f13a327f0b6343a3383
+2026-09-09 01:20:14,418 - INFO - Intermediate patch for facebook__docusaurus-10309 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-10309/patch.diff, now applying to container...
+2026-09-09 01:20:14,486 - INFO - >>>>> Applied Patch:
+Checking patch packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts...
+Applied patch packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts cleanly.
+
+2026-09-09 01:20:14,949 - INFO - Git diff before:
+diff --git a/package.json b/package.json
+index 306e6e6c1..0eedf8544 100644
+--- a/package.json
++++ b/package.json
+@@ -117,5 +117,6 @@
+     "stylelint-config-prettier": "^9.0.5",
+     "stylelint-config-standard": "^29.0.0",
+     "typescript": "~5.5.2"
+-  }
++  },
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
+diff --git a/packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts b/packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts
+index f3229ac46..29bb9c0e0 100644
+--- a/packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts
++++ b/packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts
+@@ -63,14 +63,23 @@ export function getActiveVersion(
+   data: GlobalPluginData,
+   pathname: string,
+ ): GlobalVersion | undefined {
+-  const lastVersion = getLatestVersion(data);
+-  // Last version is a route like /docs/*,
+-  // we need to match it last or it would match /docs/version-1.0/* as well
+-  const orderedVersionsMetadata = [
+-    ...data.versions.filter((version) => version !== lastVersion),
+-    lastVersion,
+-  ];
+-  return orderedVersionsMetadata.find(
++  // Sort paths so that a match-all version like /docs/* is matched last
++  // Otherwise /docs/* would match /docs/1.0.0/* routes
++  // This is simplified but similar to the core sortRoutes() logic
++  const sortedVersions = [...data.versions].sort((a, b) => {
++    if (a.path === b.path) {
++      return 0;
++    }
++    if (a.path.includes(b.path)) {
++      return -1;
++    }
++    if (b.path.includes(a.path)) {
++      return 1;
++    }
++    return 0;
++  });
++
++  return sortedVersions.find(
+     (version) =>
+       !!matchPath(pathname, {
+         path: version.path,
+2026-09-09 01:20:14,949 - INFO - Eval script for facebook__docusaurus-10309 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-10309/eval.sh; copying to container...
+2026-09-09 01:20:16,157 - INFO - Test runtime: 1.17 seconds
+2026-09-09 01:20:16,157 - INFO - Test output for facebook__docusaurus-10309 written to logs/run_evaluation/genai-expo-q2-web30/q2/facebook__docusaurus-10309/test_output.txt
+2026-09-09 01:20:16,204 - INFO - Git diff after:
+diff --git a/package.json b/package.json
+index 306e6e6c1..0eedf8544 100644
+--- a/package.json
++++ b/package.json
+@@ -117,5 +117,6 @@
+     "stylelint-config-prettier": "^9.0.5",
+     "stylelint-config-standard": "^29.0.0",
+     "typescript": "~5.5.2"
+-  }
++  },
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
+diff --git a/packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts b/packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts
+index f3229ac46..29bb9c0e0 100644
+--- a/packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts
++++ b/packages/docusaurus-plugin-content-docs/src/client/docsClientUtils.ts
+@@ -63,14 +63,23 @@ export function getActiveVersion(
+   data: GlobalPluginData,
+   pathname: string,
+ ): GlobalVersion | undefined {
+-  const lastVersion = getLatestVersion(data);
+-  // Last version is a route like /docs/*,
+-  // we need to match it last or it would match /docs/version-1.0/* as well
+-  const orderedVersionsMetadata = [
+-    ...data.versions.filter((version) => version !== lastVersion),
+-    lastVersion,
+-  ];
+-  return orderedVersionsMetadata.find(
++  // Sort paths so that a match-all version like /docs/* is matched last
++  // Otherwise /docs/* would match /docs/1.0.0/* routes
++  // This is simplified but similar to the core sortRoutes() logic
++  const sortedVersions = [...data.versions].sort((a, b) => {
++    if (a.path === b.path) {
++      return 0;
++    }
++    if (a.path.includes(b.path)) {
++      return -1;
++    }
++    if (b.path.includes(a.path)) {
++      return 1;
++    }
++    return 0;
++  });
++
++  return sortedVersions.find(
+     (version) =>
+       !!matchPath(pathname, {
+         path: version.path,
+2026-09-09 01:20:16,205 - INFO - Grading answer for facebook__docusaurus-10309...
+2026-09-09 01:20:16,205 - INFO - report: {'facebook__docusaurus-10309': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['getActiveDocContext', 'getActiveVersion for regular docs versions', 'getActiveVersion is not sensitive to version order', 'getActiveVersion is not sensitive to isLast attribute'], 'failure': []}, 'PASS_TO_PASS': {'success': ['getActivePlugin', 'getLatestVersion', 'getDocVersionSuggestions', 'getActiveVersion matches first version when same paths', 'getActiveVersion without trailing slash', 'getActiveVersion with trailing slash', 'getActiveVersion - docs only without trailing slash', 'getActiveVersion - docs only with trailing slash'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for facebook__docusaurus-10309: resolved: True
+2026-09-09 01:20:16,206 - INFO - Attempting to stop container sweb.eval.facebook__docusaurus-10309.genai-expo-q2-web30...
+2026-09-09 01:20:31,365 - INFO - Container sweb.eval.facebook__docusaurus-10309.genai-expo-q2-web30 stopped successfully.
+2026-09-09 01:20:31,365 - INFO - Attempting to remove container sweb.eval.facebook__docusaurus-10309.genai-expo-q2-web30...
+2026-09-09 01:20:31,394 - INFO - Container sweb.eval.facebook__docusaurus-10309.genai-expo-q2-web30 removed successfully.

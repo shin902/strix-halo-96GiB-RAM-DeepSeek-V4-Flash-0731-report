@@ -1,0 +1,190 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   hooks/src/index.d.ts
+	modified:   hooks/src/index.js
+	modified:   hooks/src/internal.d.ts
+	modified:   hooks/test/browser/errorBoundary.test.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit 9457b221fdacd1052ffdb385918e1bab4b10e833
+Author: Jovi De Croock <decroockjovi@gmail.com>
+Date:   Fri Aug 19 19:14:13 2022 +0200
+
+    10.10.6 (#3684)
+
+diff --git a/devtools/src/devtools.js b/devtools/src/devtools.js
+index e2fc0299..15a84781 100644
+--- a/devtools/src/devtools.js
++++ b/devtools/src/devtools.js
+@@ -2,7 +2,7 @@ import { options, Fragment, Component } from 'preact';
+ 
+ export function initDevTools() {
+ 	if (typeof window != 'undefined' && window.__PREACT_DEVTOOLS__) {
+-		window.__PREACT_DEVTOOLS__.attachPreact('10.10.5', options, {
++		window.__PREACT_DEVTOOLS__.attachPreact('10.10.6', options, {
+ 			Fragment,
+ 			Component
+ 		});
+diff --git a/package-lock.json b/package-lock.json
+index 28d9fef7..a594489a 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+ 	"name": "preact",
+-	"version": "10.10.5",
++	"version": "10.10.6",
+ 	"lockfileVersion": 2,
+ 	"requires": true,
+ 	"packages": {
+ 		"": {
+ 			"name": "preact",
+-			"version": "10.10.5",
++			"version": "10.10.6",
+ 			"license": "MIT",
+ 			"devDependencies": {
+ 				"@actions/github": "^5.0.0",
+diff --git a/package.json b/package.json
+index 6d18d7ac..c937f785 100644
+--- a/package.json
++++ b/package.json
+@@ -1,7 +1,7 @@
+ {
+ 	"name": "preact",
+ 	"amdName": "preact",
+-	"version": "10.10.5",
++	"version": "10.10.6",
+ 	"private": false,
+ 	"description": "Fast 3kb React-compatible Virtual DOM library.",
+ 	"main": "dist/preact.js",
++ git -c core.fileMode=false diff 9457b221fdacd1052ffdb385918e1bab4b10e833
+diff --git a/hooks/src/index.d.ts b/hooks/src/index.d.ts
+index a33efeaf..72322bd4 100644
+--- a/hooks/src/index.d.ts
++++ b/hooks/src/index.d.ts
+@@ -1,4 +1,4 @@
+-import { PreactContext, Ref as PreactRef } from '../..';
++import { ErrorInfo, PreactContext, Ref as PreactRef } from '../..';
+ 
+ type Inputs = ReadonlyArray<unknown>;
+ 
+@@ -135,5 +135,5 @@ export function useContext<T>(context: PreactContext<T>): T;
+ export function useDebugValue<T>(value: T, formatter?: (value: T) => any): void;
+ 
+ export function useErrorBoundary(
+-	callback?: (error: any) => Promise<void> | void
++	callback?: (error: any, errorInfo: ErrorInfo) => Promise<void> | void
+ ): [any, () => void];
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index 81255112..031cd725 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -345,7 +345,7 @@ export function useDebugValue(value, formatter) {
+ }
+ 
+ /**
+- * @param {(error: any) => void} cb
++ * @param {(error: any, errorInfo: import('../..').ErrorInfo) => void} cb
+  */
+ export function useErrorBoundary(cb) {
+ 	/** @type {import('./internal').ErrorBoundaryHookState} */
+@@ -353,8 +353,8 @@ export function useErrorBoundary(cb) {
+ 	const errState = useState();
+ 	state._value = cb;
+ 	if (!currentComponent.componentDidCatch) {
+-		currentComponent.componentDidCatch = err => {
+-			if (state._value) state._value(err);
++		currentComponent.componentDidCatch = (err, errorInfo) => {
++			if (state._value) state._value(err, errorInfo);
+ 			errState[1](err);
+ 		};
+ 	}
+diff --git a/hooks/src/internal.d.ts b/hooks/src/internal.d.ts
+index 4fec7b06..7fff655b 100644
+--- a/hooks/src/internal.d.ts
++++ b/hooks/src/internal.d.ts
+@@ -75,5 +75,5 @@ export interface ContextHookState {
+ }
+ 
+ export interface ErrorBoundaryHookState {
+-	_value?: (error: any) => void;
++	_value?: (error: any, errorInfo: import('../..').ErrorInfo) => void;
+ }
+diff --git a/hooks/test/browser/errorBoundary.test.js b/hooks/test/browser/errorBoundary.test.js
+index 4c2f7f39..753bdb09 100644
+--- a/hooks/test/browser/errorBoundary.test.js
++++ b/hooks/test/browser/errorBoundary.test.js
+@@ -60,6 +60,25 @@ describe('errorBoundary', () => {
+ 		expect(spy).to.be.calledWith(error);
+ 	});
+ 
++	it('passes errorInfo to the errorBoundary callback', () => {
++		const spy = sinon.spy();
++		const error = new Error('test');
++		const Throws = () => {
++			throw error;
++		};
++
++		const App = props => {
++			const [err] = useErrorBoundary(spy);
++			return err ? <p>Error</p> : <Throws />;
++		};
++
++		render(<App />, scratch);
++		rerender();
++		expect(scratch.innerHTML).to.equal('<p>Error</p>');
++		expect(spy).to.be.calledOnce;
++		expect(spy).to.be.calledWith(error, {});
++	});
++
+ 	it('does not leave a stale closure', () => {
+ 		const spy = sinon.spy(),
+ 			spy2 = sinon.spy();
++ git checkout 9457b221fdacd1052ffdb385918e1bab4b10e833 hooks/test/browser/errorBoundary.test.js
+Updated 1 path from 7defd601
++ git apply -v -
+Checking patch hooks/test/browser/errorBoundary.test.js...
+Applied patch hooks/test/browser/errorBoundary.test.js cleanly.
++ : '>>>>> Start Test Output'
++ COVERAGE=false
++ BABEL_NO_MODULES=true
++ npx karma start karma.conf.js --single-run --grep=hooks/test/browser/errorBoundary.test.js
++ cat
+
+START:
+[32m08 09 2026 16:54:04.353:INFO [esbuild]: [39mCompiling...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+[32m08 09 2026 16:54:05.015:INFO [esbuild]: [39mCompiling done (662ms)
+[32m08 09 2026 16:54:05.017:INFO [karma-server]: [39mKarma v6.3.16 server started at http://localhost:9876/
+[32m08 09 2026 16:54:05.018:INFO [launcher]: [39mLaunching browsers ChromeNoSandboxHeadless with concurrency 2
+[32m08 09 2026 16:54:05.021:INFO [launcher]: [39mStarting browser Chrome
+[32m08 09 2026 16:54:05.251:INFO [Chrome Headless 151.0.0.0 (Linux x86_64)]: [39mConnected on socket Bm7_1nb3KfADm94RAAAB with id 88052611
+  errorBoundary
+    ✔ catches errors
+    ✔ calls the errorBoundary callback
+    ✔ returns error
+    ✔ does not leave a stale closure
+
+Finished in 0.01 secs / 0.004 secs @ 16:54:05 GMT+0000 (Coordinated Universal Time)
+
+SUMMARY:
+✔ 4 tests completed
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
++ SWEBENCH_TEST_EXIT_CODE=0
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 0'
++ git checkout 9457b221fdacd1052ffdb385918e1bab4b10e833 hooks/test/browser/errorBoundary.test.js
+>>>>> Test Exit Code: 0
+Updated 1 path from 7defd601

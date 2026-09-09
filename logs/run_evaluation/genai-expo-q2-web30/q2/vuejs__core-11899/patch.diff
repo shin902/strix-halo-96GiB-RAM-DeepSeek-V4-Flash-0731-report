@@ -1,0 +1,30 @@
+diff --git a/packages/compiler-sfc/__tests__/repro.spec.ts b/packages/compiler-sfc/__tests__/repro.spec.ts
+new file mode 100644
+index 000000000..25f0ccbaa
+--- /dev/null
++++ b/packages/compiler-sfc/__tests__/repro.spec.ts
+@@ -0,0 +1,24 @@
++import { compileStyle } from '../src/compileStyle'
++
++function compileScoped(source: string): string {
++  const res = compileStyle({
++    source,
++    filename: 'test.css',
++    id: 'data-v-test',
++    scoped: true,
++  })
++  return res.code
++}
++
++test('repro', () => {
++  const code = compileScoped(`.foo {
++  &[data-v-7ba5bd90] {
++    background-color: red;
++  }
++
++  @media only screen and (max-width: 800px) {
++    background-color: green;
++  }
++}`)
++  console.log('CODE:', code)
++})

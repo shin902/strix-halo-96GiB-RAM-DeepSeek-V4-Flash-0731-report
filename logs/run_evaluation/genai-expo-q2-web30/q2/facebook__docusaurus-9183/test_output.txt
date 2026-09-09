@@ -1,0 +1,219 @@
++ cd /testbed
++ git config --global --add safe.directory /testbed
++ git status
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   package.json
+	modified:   packages/docusaurus-theme-classic/src/index.ts
+	modified:   packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts
+
+no changes added to commit (use "git add" and/or "git commit -a")
++ git show
+commit b96004e77ebfb23e7349fa495d2177008186bd42
+Author: Sébastien Lorber <slorber@users.noreply.github.com>
+Date:   Thu Aug 10 16:30:07 2023 +0200
+
+    fix(create-docusaurus): increase Browserslist support query in dev (#9217)
+
+diff --git a/packages/create-docusaurus/templates/classic-typescript/package.json b/packages/create-docusaurus/templates/classic-typescript/package.json
+index 3f03ca17b..d2015c76f 100644
+--- a/packages/create-docusaurus/templates/classic-typescript/package.json
++++ b/packages/create-docusaurus/templates/classic-typescript/package.json
+@@ -35,9 +35,9 @@
+       "not op_mini all"
+     ],
+     "development": [
+-      "last 1 chrome version",
+-      "last 1 firefox version",
+-      "last 1 safari version"
++      "last 3 chrome version",
++      "last 3 firefox version",
++      "last 5 safari version"
+     ]
+   },
+   "engines": {
+diff --git a/packages/create-docusaurus/templates/classic/package.json b/packages/create-docusaurus/templates/classic/package.json
+index a7e8136cd..58e3fb50d 100644
+--- a/packages/create-docusaurus/templates/classic/package.json
++++ b/packages/create-docusaurus/templates/classic/package.json
+@@ -32,9 +32,9 @@
+       "not op_mini all"
+     ],
+     "development": [
+-      "last 1 chrome version",
+-      "last 1 firefox version",
+-      "last 1 safari version"
++      "last 3 chrome version",
++      "last 3 firefox version",
++      "last 5 safari version"
+     ]
+   },
+   "engines": {
++ git -c core.fileMode=false diff b96004e77ebfb23e7349fa495d2177008186bd42
+diff --git a/package.json b/package.json
+index 6bea57d6f..e6a0c4c4e 100644
+--- a/package.json
++++ b/package.json
+@@ -117,5 +117,6 @@
+     "stylelint-config-prettier": "^9.0.5",
+     "stylelint-config-standard": "^29.0.0",
+     "typescript": "~5.0.4"
+-  }
++  },
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
+diff --git a/packages/docusaurus-theme-classic/src/index.ts b/packages/docusaurus-theme-classic/src/index.ts
+index 48a80606a..2349994ab 100644
+--- a/packages/docusaurus-theme-classic/src/index.ts
++++ b/packages/docusaurus-theme-classic/src/index.ts
+@@ -176,7 +176,7 @@ export default function themeClassic(
+ 
+     configureWebpack() {
+       const prismLanguages = additionalLanguages
+-        .map((lang) => `prism-${lang}`)
++        .map((lang) => `prism-${lang.toLowerCase()}`)
+         .join('|');
+ 
+       return {
+diff --git a/packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts b/packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts
+index 31dc8889f..629e1130d 100644
+--- a/packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts
++++ b/packages/docusaurus-theme-classic/src/theme/prism-include-languages.ts
+@@ -27,7 +27,7 @@ export default function prismIncludeLanguages(
+ 
+   additionalLanguages.forEach((lang) => {
+     // eslint-disable-next-line global-require, import/no-dynamic-require
+-    require(`prismjs/components/prism-${lang}`);
++    require(`prismjs/components/prism-${lang.toLowerCase()}`);
+   });
+ 
+   delete (globalThis as Optional<typeof globalThis, 'Prism'>).Prism;
++ git checkout b96004e77ebfb23e7349fa495d2177008186bd42 packages/docusaurus-theme-classic/src/__tests__/options.test.ts website/_dogfooding/_pages tests/code-block-tests.mdx
+error: pathspec 'website/_dogfooding/_pages' did not match any file(s) known to git
+error: pathspec 'tests/code-block-tests.mdx' did not match any file(s) known to git
++ git apply -v -
+Checking patch packages/docusaurus-theme-classic/src/__tests__/options.test.ts...
+Checking patch website/_dogfooding/_pages tests/code-block-tests.mdx...
+Applied patch packages/docusaurus-theme-classic/src/__tests__/options.test.ts cleanly.
+Applied patch website/_dogfooding/_pages tests/code-block-tests.mdx cleanly.
++ : '>>>>> Start Test Output'
++ yarn test packages/docusaurus-theme-classic/src/__tests__/options.test.ts --verbose
++ cat
+yarn run v1.22.22
+$ jest packages/docusaurus-theme-classic/src/__tests__/options.test.ts --verbose
+jest-haste-map: duplicate manual mock found: chalk
+  The following files share their name; please delete one of them:
+    * <rootDir>/packages/docusaurus-logger/lib/__mocks__/chalk.js
+    * <rootDir>/packages/docusaurus-logger/src/__mocks__/chalk.js
+
+jest-haste-map: Haste module naming collision: docusaurus-1-website
+  The following files share their name; please adjust your hasteImpl:
+    * <rootDir>/packages/docusaurus-migrate/src/__tests__/__fixtures__/complex_website/website/package.json
+    * <rootDir>/packages/docusaurus-migrate/src/__tests__/__fixtures__/missing_version_website/website/package.json
+
+FAIL packages/docusaurus-theme-classic/src/__tests__/options.test.ts
+  themeConfig
+    ✕ accepts valid theme config (12 ms)
+    ✓ rejects outdated sidebar options (2 ms)
+    ✓ allows possible types of navbar items (25 ms)
+    ✓ accept "custom-" prefixed custom navbar item type (1 ms)
+    ✓ rejects unknown navbar item type (1 ms)
+    ✓ rejects nested dropdowns (1 ms)
+    ✓ rejects nested dropdowns 2 (1 ms)
+    ✓ rejects position attribute within dropdown (1 ms)
+    ✓ gives friendly error when href and to coexist (1 ms)
+    ✓ allows empty alt tags for the logo image in the header (1 ms)
+    ✓ allows empty alt tags for the logo image in the footer
+    ✓ allows simple links in footer (1 ms)
+    ✓ allows footer column with no title (1 ms)
+    ✓ rejects mix of simple and multi-column links in footer (1 ms)
+    ✓ allows width and height specification for logo (1 ms)
+    prism config
+      ✓ accepts a range of magic comments (1 ms)
+      ✓ rejects incomplete magic comments (2 ms)
+    color mode config
+      ✓ switch config
+      ✓ max config (1 ms)
+      ✓ undefined config (1 ms)
+      ✓ empty config
+    tableOfContents
+      ✓ accepts undefined (1 ms)
+      ✓ accepts empty (1 ms)
+      ✓ accepts min
+      ✓ accepts max (1 ms)
+      ✓ rejects min 2.5
+      ✓ rejects max 2.5 (1 ms)
+      ✓ rejects min 1 (1 ms)
+      ✓ rejects min 7
+      ✓ rejects max 1 (1 ms)
+      ✓ rejects max 7
+      ✓ rejects min 5 + max 3 (1 ms)
+  validateOptions
+    customCss config
+      ✓ accepts customCss undefined (1 ms)
+      ✓ accepts customCss string
+      ✓ accepts customCss string array
+      ✓ rejects customCss number (1 ms)
+
+  ● themeConfig › accepts valid theme config
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 3
+
+    @@ -75,12 +75,12 @@
+          "style": "primary",
+          "title": "Docusaurus",
+        },
+        "prism": Object {
+          "additionalLanguages": Array [
+    -       "kotlin",
+    -       "java",
+    +       "koTLin",
+    +       "jaVa",
+          ],
+          "darkTheme": Object {
+            "plain": Object {
+              "backgroundColor": "#282A36",
+              "color": "#F8F8F2",
+    @@ -167,11 +167,11 @@
+                  "attr-name",
+                ],
+              },
+            ],
+          },
+    -     "defaultLanguage": "javascript",
+    +     "defaultLanguage": "javaSCRIPT",
+          "magicComments": Array [
+            Object {
+              "block": Object {
+                "end": "highlight-end",
+                "start": "highlight-start",
+
+      124 |       },
+      125 |     };
+    > 126 |     expect(testValidateThemeConfig(userConfig)).toEqual({
+          |                                                 ^
+      127 |       ...DEFAULT_CONFIG,
+      128 |       ...userConfig,
+      129 |       prism: {
+
+      at Object.toEqual (packages/docusaurus-theme-classic/src/__tests__/options.test.ts:126:49)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 35 passed, 36 total
+Snapshots:   19 passed, 19 total
+Time:        0.49 s
+Ran all test suites matching /packages\/docusaurus-theme-classic\/src\/__tests__\/options.test.ts/i.
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
++ SWEBENCH_TEST_EXIT_CODE=1
++ : '>>>>> End Test Output'
++ echo '>>>>> Test Exit Code: 1'
+>>>>> Test Exit Code: 1
++ git checkout b96004e77ebfb23e7349fa495d2177008186bd42 packages/docusaurus-theme-classic/src/__tests__/options.test.ts website/_dogfooding/_pages tests/code-block-tests.mdx
+error: pathspec 'website/_dogfooding/_pages' did not match any file(s) known to git
+error: pathspec 'tests/code-block-tests.mdx' did not match any file(s) known to git

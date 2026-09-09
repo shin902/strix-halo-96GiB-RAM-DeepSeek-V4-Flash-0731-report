@@ -1,0 +1,77 @@
+2026-09-09 02:01:13,125 - INFO - Image not found locally, attempting to pull...
+2026-09-09 02:02:23,529 - INFO - Creating container for preactjs__preact-4316...
+2026-09-09 02:02:24,025 - INFO - Container for preactjs__preact-4316 created: a1844f0f10a342467df517650f4502d2552ef26f4ee036b5b241511a26114392
+2026-09-09 02:02:24,137 - INFO - Container for preactjs__preact-4316 started: a1844f0f10a342467df517650f4502d2552ef26f4ee036b5b241511a26114392
+2026-09-09 02:02:24,138 - INFO - Intermediate patch for preactjs__preact-4316 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-4316/patch.diff, now applying to container...
+2026-09-09 02:02:24,219 - INFO - >>>>> Applied Patch:
+Checking patch src/diff/props.js...
+Checking patch test/browser/events.test.js...
+Applied patch src/diff/props.js cleanly.
+Applied patch test/browser/events.test.js cleanly.
+
+2026-09-09 02:02:24,287 - INFO - Git diff before:
+diff --git a/src/diff/props.js b/src/diff/props.js
+index 75016c40..142e1444 100644
+--- a/src/diff/props.js
++++ b/src/diff/props.js
+@@ -55,7 +55,12 @@ export function setProperty(dom, name, value, oldValue, isSvg) {
+ 			name !== (name = name.replace(/(PointerCapture)$|Capture$/i, '$1'));
+ 
+ 		// Infer correct casing for DOM built-in events:
+-		if (name.toLowerCase() in dom) name = name.toLowerCase().slice(2);
++		if (
++			name.toLowerCase() in dom ||
++			name === 'onFocusOut' ||
++			name === 'onFocusIn'
++		)
++			name = name.toLowerCase().slice(2);
+ 		else name = name.slice(2);
+ 
+ 		if (!dom._listeners) dom._listeners = {};
+diff --git a/test/browser/events.test.js b/test/browser/events.test.js
+index 8a2732ad..ef4f990e 100644
+--- a/test/browser/events.test.js
++++ b/test/browser/events.test.js
+@@ -227,4 +227,12 @@ describe('event handling', () => {
+ 			.to.have.been.calledTwice.and.to.have.been.calledWith('gotpointercapture')
+ 			.and.calledWith('lostpointercapture');
+ 	});
++
++	it('should support camel-case focus event names', () => {
++		render(<div onFocusIn={() => {}} onFocusOut={() => {}} />, scratch);
++
++		expect(proto.addEventListener)
++			.to.have.been.calledTwice.and.to.have.been.calledWith('focusin')
++			.and.calledWith('focusout');
++	});
+ });
+2026-09-09 02:02:24,288 - INFO - Eval script for preactjs__preact-4316 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-4316/eval.sh; copying to container...
+2026-09-09 02:02:27,014 - INFO - Test runtime: 2.68 seconds
+2026-09-09 02:02:27,014 - INFO - Test output for preactjs__preact-4316 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-4316/test_output.txt
+2026-09-09 02:02:27,076 - INFO - Git diff after:
+diff --git a/src/diff/props.js b/src/diff/props.js
+index 75016c40..142e1444 100644
+--- a/src/diff/props.js
++++ b/src/diff/props.js
+@@ -55,7 +55,12 @@ export function setProperty(dom, name, value, oldValue, isSvg) {
+ 			name !== (name = name.replace(/(PointerCapture)$|Capture$/i, '$1'));
+ 
+ 		// Infer correct casing for DOM built-in events:
+-		if (name.toLowerCase() in dom) name = name.toLowerCase().slice(2);
++		if (
++			name.toLowerCase() in dom ||
++			name === 'onFocusOut' ||
++			name === 'onFocusIn'
++		)
++			name = name.toLowerCase().slice(2);
+ 		else name = name.slice(2);
+ 
+ 		if (!dom._listeners) dom._listeners = {};
+2026-09-09 02:02:27,076 - INFO - Git diff changed after running eval script
+2026-09-09 02:02:27,076 - INFO - Grading answer for preactjs__preact-4316...
+2026-09-09 02:02:27,077 - INFO - report: {'preactjs__preact-4316': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['event handling > should support camel-case focus event names'], 'failure': []}, 'PASS_TO_PASS': {'success': ['event handling > should only register on* functions as handlers', 'event handling > should only register truthy values as handlers', 'event handling > should support native event names', 'event handling > should support camel-case event names', 'event handling > should update event handlers', 'event handling > should remove event handlers', 'event handling > should register events not appearing on dom nodes', 'event handling > should use capturing for event props ending with *Capture', 'event handling > should support both capturing and non-capturing events on the same element', 'event handling > should support (got|lost)PointerCapture events'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for preactjs__preact-4316: resolved: True
+2026-09-09 02:02:27,077 - INFO - Attempting to stop container sweb.eval.preactjs__preact-4316.genai-expo-q2-web30...
+2026-09-09 02:02:42,243 - INFO - Container sweb.eval.preactjs__preact-4316.genai-expo-q2-web30 stopped successfully.
+2026-09-09 02:02:42,243 - INFO - Attempting to remove container sweb.eval.preactjs__preact-4316.genai-expo-q2-web30...
+2026-09-09 02:02:42,276 - INFO - Container sweb.eval.preactjs__preact-4316.genai-expo-q2-web30 removed successfully.

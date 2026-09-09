@@ -1,0 +1,102 @@
+2026-09-09 01:27:59,368 - INFO - Image not found locally, attempting to pull...
+2026-09-09 01:31:18,192 - INFO - Creating container for mrdoob__three.js-25687...
+2026-09-09 01:31:18,975 - INFO - Container for mrdoob__three.js-25687 created: 4d7e4e173431d8bc5ec22f5cf334ead0177208744b9d43e4061cb3ad4a105f32
+2026-09-09 01:31:19,108 - INFO - Container for mrdoob__three.js-25687 started: 4d7e4e173431d8bc5ec22f5cf334ead0177208744b9d43e4061cb3ad4a105f32
+2026-09-09 01:31:19,108 - INFO - Intermediate patch for mrdoob__three.js-25687 written to logs/run_evaluation/genai-expo-q2-web30/q2/mrdoob__three.js-25687/patch.diff, now applying to container...
+2026-09-09 01:31:19,186 - INFO - >>>>> Applied Patch:
+Checking patch src/core/Object3D.js...
+Checking patch src/loaders/ObjectLoader.js...
+Checking patch test/unit/src/core/Object3D.tests.js...
+Applied patch src/core/Object3D.js cleanly.
+Applied patch src/loaders/ObjectLoader.js cleanly.
+Applied patch test/unit/src/core/Object3D.tests.js cleanly.
+
+2026-09-09 01:31:25,251 - INFO - Git diff before:
+diff --git a/src/core/Object3D.js b/src/core/Object3D.js
+index d22e714c5e..ce82fce8fe 100644
+--- a/src/core/Object3D.js
++++ b/src/core/Object3D.js
+@@ -720,6 +720,7 @@ class Object3D extends EventDispatcher {
+ 		object.matrix = this.matrix.toArray();
+ 
+ 		if ( this.matrixAutoUpdate === false ) object.matrixAutoUpdate = false;
++		if ( this.up.isVector3 ) object.up = this.up.toArray();
+ 
+ 		// object specific properties
+ 
+diff --git a/src/loaders/ObjectLoader.js b/src/loaders/ObjectLoader.js
+index 64ba5d4680..80ac46d3ac 100644
+--- a/src/loaders/ObjectLoader.js
++++ b/src/loaders/ObjectLoader.js
+@@ -963,6 +963,8 @@ class ObjectLoader extends Loader {
+ 
+ 		}
+ 
++		if ( data.up !== undefined ) object.up.fromArray( data.up );
++
+ 		if ( data.castShadow !== undefined ) object.castShadow = data.castShadow;
+ 		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
+ 
+diff --git a/test/unit/src/core/Object3D.tests.js b/test/unit/src/core/Object3D.tests.js
+index 3d77072af0..189a7099a8 100644
+--- a/test/unit/src/core/Object3D.tests.js
++++ b/test/unit/src/core/Object3D.tests.js
+@@ -1283,18 +1283,21 @@ export default QUnit.module( 'Core', () => {
+ 					'userData': { 'foo': 'bar' },
+ 					'layers': 1,
+ 					'matrix': [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
++					'up': [ 0, 1, 0 ],
+ 					'children': [
+ 						{
+ 							'uuid': '5D4E9AE8-DA61-4912-A575-71A5BE3D72CD',
+ 							'type': 'Object3D',
+ 							'layers': 1,
+ 							'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ],
++							'up': [ 0, 1, 0 ],
+ 							'children': [
+ 								{
+ 									'uuid': 'B43854B3-E970-4E85-BD41-AAF8D7BFA189',
+ 									'type': 'Object3D',
+ 									'layers': 1,
+-									'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ]
++									'matrix': [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ],
++									'up': [ 0, 1, 0 ]
+ 								}
+ 							]
+ 						}
+2026-09-09 01:31:25,251 - INFO - Eval script for mrdoob__three.js-25687 written to logs/run_evaluation/genai-expo-q2-web30/q2/mrdoob__three.js-25687/eval.sh; copying to container...
+2026-09-09 01:31:25,682 - INFO - Test runtime: 0.39 seconds
+2026-09-09 01:31:25,682 - INFO - Test output for mrdoob__three.js-25687 written to logs/run_evaluation/genai-expo-q2-web30/q2/mrdoob__three.js-25687/test_output.txt
+2026-09-09 01:31:25,728 - INFO - Git diff after:
+diff --git a/src/core/Object3D.js b/src/core/Object3D.js
+index d22e714c5e..ce82fce8fe 100644
+--- a/src/core/Object3D.js
++++ b/src/core/Object3D.js
+@@ -720,6 +720,7 @@ class Object3D extends EventDispatcher {
+ 		object.matrix = this.matrix.toArray();
+ 
+ 		if ( this.matrixAutoUpdate === false ) object.matrixAutoUpdate = false;
++		if ( this.up.isVector3 ) object.up = this.up.toArray();
+ 
+ 		// object specific properties
+ 
+diff --git a/src/loaders/ObjectLoader.js b/src/loaders/ObjectLoader.js
+index 64ba5d4680..80ac46d3ac 100644
+--- a/src/loaders/ObjectLoader.js
++++ b/src/loaders/ObjectLoader.js
+@@ -963,6 +963,8 @@ class ObjectLoader extends Loader {
+ 
+ 		}
+ 
++		if ( data.up !== undefined ) object.up.fromArray( data.up );
++
+ 		if ( data.castShadow !== undefined ) object.castShadow = data.castShadow;
+ 		if ( data.receiveShadow !== undefined ) object.receiveShadow = data.receiveShadow;
+2026-09-09 01:31:25,728 - INFO - Git diff changed after running eval script
+2026-09-09 01:31:25,728 - INFO - Grading answer for mrdoob__three.js-25687...
+2026-09-09 01:31:25,729 - INFO - report: {'mrdoob__three.js-25687': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['Core > Object3D > toJSON'], 'failure': []}, 'PASS_TO_PASS': {'success': ['Core > Object3D > clone', 'Core > Object3D > copy'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for mrdoob__three.js-25687: resolved: True
+2026-09-09 01:31:25,729 - INFO - Attempting to stop container sweb.eval.mrdoob__three.js-25687.genai-expo-q2-web30...
+2026-09-09 01:31:40,881 - INFO - Container sweb.eval.mrdoob__three.js-25687.genai-expo-q2-web30 stopped successfully.
+2026-09-09 01:31:40,881 - INFO - Attempting to remove container sweb.eval.mrdoob__three.js-25687.genai-expo-q2-web30...
+2026-09-09 01:31:40,906 - INFO - Container sweb.eval.mrdoob__three.js-25687.genai-expo-q2-web30 removed successfully.

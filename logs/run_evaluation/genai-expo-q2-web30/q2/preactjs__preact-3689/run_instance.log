@@ -1,0 +1,162 @@
+2026-09-09 01:52:41,677 - INFO - Image not found locally, attempting to pull...
+2026-09-09 01:54:02,466 - INFO - Creating container for preactjs__preact-3689...
+2026-09-09 01:54:03,231 - INFO - Container for preactjs__preact-3689 created: b9f84c73c41061b4a57f84eff864d48605a25263b6934f0776c67bda51f6a175
+2026-09-09 01:54:03,323 - INFO - Container for preactjs__preact-3689 started: b9f84c73c41061b4a57f84eff864d48605a25263b6934f0776c67bda51f6a175
+2026-09-09 01:54:03,323 - INFO - Intermediate patch for preactjs__preact-3689 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3689/patch.diff, now applying to container...
+2026-09-09 01:54:03,395 - INFO - >>>>> Applied Patch:
+Checking patch hooks/src/index.d.ts...
+Checking patch hooks/src/index.js...
+Checking patch hooks/src/internal.d.ts...
+Checking patch hooks/test/browser/errorBoundary.test.js...
+Applied patch hooks/src/index.d.ts cleanly.
+Applied patch hooks/src/index.js cleanly.
+Applied patch hooks/src/internal.d.ts cleanly.
+Applied patch hooks/test/browser/errorBoundary.test.js cleanly.
+
+2026-09-09 01:54:03,454 - INFO - Git diff before:
+diff --git a/hooks/src/index.d.ts b/hooks/src/index.d.ts
+index a33efeaf..72322bd4 100644
+--- a/hooks/src/index.d.ts
++++ b/hooks/src/index.d.ts
+@@ -1,4 +1,4 @@
+-import { PreactContext, Ref as PreactRef } from '../..';
++import { ErrorInfo, PreactContext, Ref as PreactRef } from '../..';
+ 
+ type Inputs = ReadonlyArray<unknown>;
+ 
+@@ -135,5 +135,5 @@ export function useContext<T>(context: PreactContext<T>): T;
+ export function useDebugValue<T>(value: T, formatter?: (value: T) => any): void;
+ 
+ export function useErrorBoundary(
+-	callback?: (error: any) => Promise<void> | void
++	callback?: (error: any, errorInfo: ErrorInfo) => Promise<void> | void
+ ): [any, () => void];
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index 81255112..031cd725 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -345,7 +345,7 @@ export function useDebugValue(value, formatter) {
+ }
+ 
+ /**
+- * @param {(error: any) => void} cb
++ * @param {(error: any, errorInfo: import('../..').ErrorInfo) => void} cb
+  */
+ export function useErrorBoundary(cb) {
+ 	/** @type {import('./internal').ErrorBoundaryHookState} */
+@@ -353,8 +353,8 @@ export function useErrorBoundary(cb) {
+ 	const errState = useState();
+ 	state._value = cb;
+ 	if (!currentComponent.componentDidCatch) {
+-		currentComponent.componentDidCatch = err => {
+-			if (state._value) state._value(err);
++		currentComponent.componentDidCatch = (err, errorInfo) => {
++			if (state._value) state._value(err, errorInfo);
+ 			errState[1](err);
+ 		};
+ 	}
+diff --git a/hooks/src/internal.d.ts b/hooks/src/internal.d.ts
+index 4fec7b06..7fff655b 100644
+--- a/hooks/src/internal.d.ts
++++ b/hooks/src/internal.d.ts
+@@ -75,5 +75,5 @@ export interface ContextHookState {
+ }
+ 
+ export interface ErrorBoundaryHookState {
+-	_value?: (error: any) => void;
++	_value?: (error: any, errorInfo: import('../..').ErrorInfo) => void;
+ }
+diff --git a/hooks/test/browser/errorBoundary.test.js b/hooks/test/browser/errorBoundary.test.js
+index 4c2f7f39..753bdb09 100644
+--- a/hooks/test/browser/errorBoundary.test.js
++++ b/hooks/test/browser/errorBoundary.test.js
+@@ -60,6 +60,25 @@ describe('errorBoundary', () => {
+ 		expect(spy).to.be.calledWith(error);
+ 	});
+ 
++	it('passes errorInfo to the errorBoundary callback', () => {
++		const spy = sinon.spy();
++		const error = new Error('test');
++		const Throws = () => {
++			throw error;
++		};
++
++		const App = props => {
++			const [err] = useErrorBoundary(spy);
++			return err ? <p>Error</p> : <Throws />;
++		};
++
++		render(<App />, scratch);
++		rerender();
++		expect(scratch.innerHTML).to.equal('<p>Error</p>');
++		expect(spy).to.be.calledOnce;
++		expect(spy).to.be.calledWith(error, {});
++	});
++
+ 	it('does not leave a stale closure', () => {
+ 		const spy = sinon.spy(),
+ 			spy2 = sinon.spy();
+2026-09-09 01:54:03,454 - INFO - Eval script for preactjs__preact-3689 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3689/eval.sh; copying to container...
+2026-09-09 01:54:05,447 - INFO - Test runtime: 1.95 seconds
+2026-09-09 01:54:05,447 - INFO - Test output for preactjs__preact-3689 written to logs/run_evaluation/genai-expo-q2-web30/q2/preactjs__preact-3689/test_output.txt
+2026-09-09 01:54:05,481 - INFO - Git diff after:
+diff --git a/hooks/src/index.d.ts b/hooks/src/index.d.ts
+index a33efeaf..72322bd4 100644
+--- a/hooks/src/index.d.ts
++++ b/hooks/src/index.d.ts
+@@ -1,4 +1,4 @@
+-import { PreactContext, Ref as PreactRef } from '../..';
++import { ErrorInfo, PreactContext, Ref as PreactRef } from '../..';
+ 
+ type Inputs = ReadonlyArray<unknown>;
+ 
+@@ -135,5 +135,5 @@ export function useContext<T>(context: PreactContext<T>): T;
+ export function useDebugValue<T>(value: T, formatter?: (value: T) => any): void;
+ 
+ export function useErrorBoundary(
+-	callback?: (error: any) => Promise<void> | void
++	callback?: (error: any, errorInfo: ErrorInfo) => Promise<void> | void
+ ): [any, () => void];
+diff --git a/hooks/src/index.js b/hooks/src/index.js
+index 81255112..031cd725 100644
+--- a/hooks/src/index.js
++++ b/hooks/src/index.js
+@@ -345,7 +345,7 @@ export function useDebugValue(value, formatter) {
+ }
+ 
+ /**
+- * @param {(error: any) => void} cb
++ * @param {(error: any, errorInfo: import('../..').ErrorInfo) => void} cb
+  */
+ export function useErrorBoundary(cb) {
+ 	/** @type {import('./internal').ErrorBoundaryHookState} */
+@@ -353,8 +353,8 @@ export function useErrorBoundary(cb) {
+ 	const errState = useState();
+ 	state._value = cb;
+ 	if (!currentComponent.componentDidCatch) {
+-		currentComponent.componentDidCatch = err => {
+-			if (state._value) state._value(err);
++		currentComponent.componentDidCatch = (err, errorInfo) => {
++			if (state._value) state._value(err, errorInfo);
+ 			errState[1](err);
+ 		};
+ 	}
+diff --git a/hooks/src/internal.d.ts b/hooks/src/internal.d.ts
+index 4fec7b06..7fff655b 100644
+--- a/hooks/src/internal.d.ts
++++ b/hooks/src/internal.d.ts
+@@ -75,5 +75,5 @@ export interface ContextHookState {
+ }
+ 
+ export interface ErrorBoundaryHookState {
+-	_value?: (error: any) => void;
++	_value?: (error: any, errorInfo: import('../..').ErrorInfo) => void;
+ }
+2026-09-09 01:54:05,481 - INFO - Git diff changed after running eval script
+2026-09-09 01:54:05,482 - INFO - Grading answer for preactjs__preact-3689...
+2026-09-09 01:54:05,482 - INFO - report: {'preactjs__preact-3689': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['errorBoundary > calls the errorBoundary callback'], 'failure': []}, 'PASS_TO_PASS': {'success': ['errorBoundary > catches errors', 'errorBoundary > returns error', 'errorBoundary > does not leave a stale closure'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for preactjs__preact-3689: resolved: True
+2026-09-09 01:54:05,482 - INFO - Attempting to stop container sweb.eval.preactjs__preact-3689.genai-expo-q2-web30...
+2026-09-09 01:54:20,622 - INFO - Container sweb.eval.preactjs__preact-3689.genai-expo-q2-web30 stopped successfully.
+2026-09-09 01:54:20,622 - INFO - Attempting to remove container sweb.eval.preactjs__preact-3689.genai-expo-q2-web30...
+2026-09-09 01:54:20,651 - INFO - Container sweb.eval.preactjs__preact-3689.genai-expo-q2-web30 removed successfully.

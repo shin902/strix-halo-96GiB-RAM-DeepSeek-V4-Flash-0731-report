@@ -1,0 +1,53 @@
+diff --git a/packages/docusaurus/src/server/__tests__/brokenLinks.test.ts b/packages/docusaurus/src/server/__tests__/brokenLinks.test.ts
+index 2f962db07c..f316ffec8a 100644
+--- a/packages/docusaurus/src/server/__tests__/brokenLinks.test.ts
++++ b/packages/docusaurus/src/server/__tests__/brokenLinks.test.ts
+@@ -148,6 +148,32 @@ describe('handleBrokenLinks', () => {
+     });
+   });
+ 
++  it('accepts valid link with anchor to page with trailing slash variant', async () => {
++    await testBrokenLinks({
++      routes: [{path: '/page1'}, {path: '/page2/'}],
++      collectedLinks: {
++        '/page1': {
++          links: ['/page2#page2anchor', '/page2/#page2anchor'],
++          anchors: [],
++        },
++        '/page2/': {links: [], anchors: ['page2anchor']},
++      },
++    });
++  });
++
++  it('accepts valid link with anchor to page without trailing slash variant', async () => {
++    await testBrokenLinks({
++      routes: [{path: '/page1'}, {path: '/page2'}],
++      collectedLinks: {
++        '/page1': {
++          links: ['/page2#page2anchor', '/page2/#page2anchor'],
++          anchors: [],
++        },
++        '/page2': {links: [], anchors: ['page2anchor']},
++      },
++    });
++  });
++
+   it('accepts valid links and anchors, sparse arrays', async () => {
+     await testBrokenLinks({
+       routes: [{path: '/page1'}, {path: '/page2'}],
+diff --git a/packages/docusaurus/src/server/brokenLinks.ts b/packages/docusaurus/src/server/brokenLinks.ts
+index 9e940f7b8c..90a7fecaa5 100644
+--- a/packages/docusaurus/src/server/brokenLinks.ts
++++ b/packages/docusaurus/src/server/brokenLinks.ts
+@@ -125,7 +125,10 @@ function createBrokenLinksHelper({
+       return false;
+     }
+     const targetPage =
+-      collectedLinks.get(pathname) || collectedLinks.get(decodeURI(pathname));
++      collectedLinks.get(pathname) ||
++      collectedLinks.get(decodeURI(pathname)) ||
++      collectedLinks.get(addTrailingSlash(pathname)) ||
++      collectedLinks.get(removeTrailingSlash(pathname));
+     // link with anchor to a page that does not exist (or did not collect any
+     // link/anchor) is considered as a broken anchor
+     if (!targetPage) {

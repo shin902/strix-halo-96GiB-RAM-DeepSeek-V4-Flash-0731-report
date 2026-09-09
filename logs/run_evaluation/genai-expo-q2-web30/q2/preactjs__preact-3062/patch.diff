@@ -1,0 +1,40 @@
+diff --git a/src/diff/props.js b/src/diff/props.js
+index d26e5f1e..472d9977 100644
+--- a/src/diff/props.js
++++ b/src/diff/props.js
+@@ -111,6 +111,9 @@ export function setProperty(dom, name, value, oldValue, isSvg) {
+ 			name !== 'href' &&
+ 			name !== 'list' &&
+ 			name !== 'form' &&
++			// Default value in browsers is `-1` and an empty string is
++			// cast to `0` instead
++			name !== 'tabIndex' &&
+ 			name !== 'download' &&
+ 			name in dom
+ 		) {
+diff --git a/test/browser/render.test.js b/test/browser/render.test.js
+index 6b3d5846..bbf25a7e 100644
+--- a/test/browser/render.test.js
++++ b/test/browser/render.test.js
+@@ -1142,4 +1142,21 @@ describe('render()', () => {
+ 		expect(scratch.firstChild.contentEditable).to.equal('true');
+ 		expect(scratch.querySelector('p').contentEditable).to.equal('false');
+ 	});
++
++	// #3060
++	it('should reset tabindex on undefined/null', () => {
++		render(<div tabIndex={0} />, scratch);
++		expect(scratch.firstChild.tabIndex).to.equal(0);
++		render(<div tabIndex={undefined} />, scratch);
++		expect(scratch.firstChild.tabIndex).to.equal(-1);
++		render(<div tabIndex={null} />, scratch);
++		expect(scratch.firstChild.tabIndex).to.equal(-1);
++
++		render(<div tabindex={0} />, scratch);
++		expect(scratch.firstChild.tabIndex).to.equal(0);
++		render(<div tabindex={undefined} />, scratch);
++		expect(scratch.firstChild.tabIndex).to.equal(-1);
++		render(<div tabindex={null} />, scratch);
++		expect(scratch.firstChild.tabIndex).to.equal(-1);
++	});
+ });
