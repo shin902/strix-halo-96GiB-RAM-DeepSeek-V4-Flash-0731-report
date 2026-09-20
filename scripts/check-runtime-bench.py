@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Offline self-check of benchmark arithmetic; no model, GPU or test framework."""
+"""Offline self-check of launch flags and arithmetic; no model, GPU or test framework."""
+import json
 from pathlib import Path
 import runpy
 
 bench = runpy.run_path(str(Path(__file__).with_name("bench-runtime.py")))
+config = json.loads((bench["ROOT"] / "configs/runtime-bench.json").read_text())
+for drafter in config["variants"].values():
+    cmd = bench["command"](config, drafter)
+    assert "--slots" in cmd and "--metrics" in cmd, "Required monitoring endpoints must be enabled"
 response = {
     "timings": {"prompt_n": 4, "cache_n": 6, "prompt_ms": 20,
                 "predicted_n": 5, "predicted_ms": 50, "draft_n": 4, "draft_n_accepted": 3},

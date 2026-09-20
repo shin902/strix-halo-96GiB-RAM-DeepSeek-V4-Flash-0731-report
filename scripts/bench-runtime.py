@@ -126,7 +126,7 @@ def command(config, drafter):
            "--port", str(config["port"]), "-np", "1", "-c", str(config["context_size"]),
            "-b", str(config["batch_size"]), "-ub", str(config["ubatch_size"]),
            "-ngl", "99", "-fa", "on", "-ctk", config["target_kv"], "-ctv", config["target_kv"],
-           "--metrics", "--jinja", "--cache-ram", "0", "--no-context-shift", "--log-colors", "off"]
+           "--metrics", "--slots", "--jinja", "--cache-ram", "0", "--no-context-shift", "--log-colors", "off"]
     if drafter:
         cmd += ["--spec-type", "draft-dspark", "-md", drafter, "-ngld", "99",
                 "--spec-draft-n-max", str(config["n_max"]),

@@ -22,7 +22,7 @@ Preview版とREAP targetは含めません。reasoning / codingの2 workload、�
 # 実行ファイル・GGUFの存在と計画を確認。モデル起動・推論はしない
 python3 scripts/bench-runtime.py --dry-run
 
-# 集計計算の軽いセルフチェック（GPU不要）
+# 起動引数と集計計算の軽いセルフチェック（GPU不要）
 python3 scripts/check-runtime-bench.py
 
 # 他のLLMを自分で停止してから、まず1構成・短い入力で確認
@@ -42,7 +42,7 @@ python3 scripts/bench-runtime.py --cache-mode cold --output runs/runtime/expo-co
 
 **実行前の注意:** 専用`llama-server`をlocalhost:8099、1 slotで起動し、終了・中断時には自分が起動したprocessだけを停止します。使用中portには接続せず失敗します。他のLLMを自動停止しないため、RAM/GPUを競合させないでください。96GBで全構成の起動・長文生成が成立する保証はありません。失敗時はログを残して停止し、勝手にcontextやKVを変更しません。
 
-初期設定はcontext 65536 / batch・ubatch 2048 / target KV `q8_0` / draft KV `q4_0` / `n_max=4`。手元のbinaryがTQ4を提供していなかったため、**これはTQ4最終構成の測定ではありません**。利用するbuildに合わせてconfigを固定してください。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
+展示会の正式測定は **target KV `q8_0` / draft KV `q4_0` に固定**します（genai-expo DEC-0019）。TurboQuant（`tq3_0` / `tq4_0`）の導入・比較は今回のスコープ外であり、最終目標にも含めません。展示後のnote / 後続検証へ分離し、今回の結果と混ぜません。他の初期設定はcontext 65536 / batch・ubatch 2048 / `n_max=4`。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
 
 ### 測定方法と指標
 
