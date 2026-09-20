@@ -50,8 +50,8 @@ python3 scripts/bench-runtime.py --cache-mode cold --output runs/runtime/expo-co
 - `reuse`では固定prefixを段階的に延ばし、同一slotのcacheを再利用します。各workload・各反復の最初の点はcold。warmupは別保存し、集計から除外します。
 - 実際に再利用できた量は **`timings.cache_n`** から取得。recurrent state / checkpointの制約で再計算された分も隠しません。`tokens_cached`はこのbuildでは終了時のslot長なので、cache hit数には使いません。
 - `prefill_tps = prompt_n / (prompt_ms / 1000)`。cached tokenを分子に含めません。`prefill_kind=incremental`と`cold`は別系列として表示してください。
-- `decode_tps = predicted_n / (predicted_ms / 1000)`。HTTP全体の所要時間`wall_seconds`とは分離します。
-- `acceptance = accepted / drafted`（0〜1）。plainでは空欄です。`/metrics`のrequest前後差からverification回数を取り、`mean_accepted_draft_tokens = accepted / steps`、llama.cppのログに合わせた`mean_accepted_length = 1 + accepted / steps`も保存します。必要な統計がない場合は推測せず失敗します。
+- `decode_tps`はserverの`timings.predicted_per_second`を保存します。このbuildではprefillから得られる最初の1 tokenをdecodeの分子から除くため、即EOSは0です。HTTP全体の所要時間`wall_seconds`とは分離します。
+- `acceptance = accepted / drafted`（0〜1）。plain、または早期EOSなどでdraft試行が0件のときは空欄です。`/metrics`のrequest前後差からverification回数を取り、`mean_accepted_draft_tokens = accepted / steps`、llama.cppのログに合わせた`mean_accepted_length = 1 + accepted / steps`も保存します。draft・accepted・verificationがすべて0の正常終了は、両meanを空欄にして記録し、ベンチを継続します。必要な統計の欠落や矛盾は引き続きエラーにします。
 - メモリはリクエスト開始・終了と **1秒間隔** で`/proc/meminfo` / `/proc/vmstat`を記録します。`memory_used_percent = 100 × (MemTotal − MemAvailable) / MemTotal`、`swap_used_percent = 100 × (SwapTotal − SwapFree) / SwapTotal`。swap未設定なら使用率は空欄です。OS認識RAMを分母とし、公称96GBとは区別します。
 - 各点のメモリ／swap使用量・使用率のピーク、最小MemAvailable、swap in/out差分bytesをCSVに保存します。**ホスト全体の値**であり、process RSSやGPU専用量ではありません。UMAの二重加算はしません。1秒未満のpeakとモデルロード中のpeakは捕捉対象外です（ロード前後のsnapshotは保存）。
 

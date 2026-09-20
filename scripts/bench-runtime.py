@@ -250,12 +250,14 @@ def summarize(response, delta, prompt, speculative):
     if timing["prompt_ms"] <= 0 or timing["predicted_ms"] <= 0 or timing["predicted_n"] <= 0:
         raise ValueError("missing/invalid timing data")
     drafted = timing.get("draft_n", 0)
-    accepted = timing["draft_n_accepted"] if drafted else 0
-    if not 0 <= accepted <= drafted or bool(drafted) != speculative:
-        raise ValueError("requested speculative path did not run, or unexpected draft counters")
-    if speculative and any(delta[k] is None for k in delta):
+    accepted = timing["draft_n_accepted"] if drafted else timing.get("draft_n_accepted", 0)
+    if not 0 <= accepted <= drafted or (drafted and not speculative):
+        raise ValueError("unexpected draft counters")
+    if speculative and any(delta.get(k) is None for k in SPEC_METRICS):
         raise ValueError("server lacks speculation counters required for mean accepted length")
-    if speculative and (delta["drafted"] != drafted or delta["accepted"] != accepted or delta["steps"] <= 0):
+    steps = delta["steps"] if speculative else None
+    if speculative and (delta["drafted"] != drafted or delta["accepted"] != accepted
+                        or (drafted > 0 and steps <= 0) or (drafted == 0 and steps != 0)):
         raise ValueError("metrics/response mismatch; ensure this server has no other clients")
     tokens = response.get("tokens")
     if not tokens:
@@ -267,12 +269,13 @@ def summarize(response, delta, prompt, speculative):
             "prefill_kind": "incremental" if cache_n else "cold",
             "prefill_ms": timing["prompt_ms"], "prefill_tps": prompt_n * 1000 / timing["prompt_ms"],
             "decode_tokens": timing["predicted_n"], "decode_ms": timing["predicted_ms"],
-            "decode_tps": timing["predicted_n"] * 1000 / timing["predicted_ms"],
+            # Use server accounting: its first token comes from prefill, so immediate EOS has 0 decode TPS.
+            "decode_tps": timing["predicted_per_second"],
             "draft_tokens": drafted, "accepted_tokens": accepted,
             "acceptance": accepted / drafted if drafted else None,
-            "verification_steps": delta["steps"] if speculative else None,
-            "mean_accepted_draft_tokens": accepted / delta["steps"] if speculative else None,
-            "mean_accepted_length": 1 + accepted / delta["steps"] if speculative else None,
+            "verification_steps": steps,
+            "mean_accepted_draft_tokens": accepted / steps if steps else None,
+            "mean_accepted_length": 1 + accepted / steps if steps else None,
             "stop_type": response.get("stop_type"), "repeated_tail_warning": loop}
 
 
