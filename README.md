@@ -6,13 +6,11 @@
 
 ### 構成と実行
 
-`configs/runtime-bench.json` は同じFull256 asymmetric Q2 targetに対して、plain（DSpark OFF）と **0731系4 drafter** を順番に測ります。
+`configs/runtime-bench.json` は同じFull256 asymmetric Q2 targetに対して、plain（DSpark OFF）と **0731系Q2/Q8 drafter 2構成**を順番に測ります。Q2/Q4 2構成は30K contextのモデルロードでhost-wide OOMが再現したため、一時的にデフォルト対象から外しています。
 
 | variant | drafter |
 | --- | --- |
 | `plain` | なし |
-| `q2k-q4k` | Q2K/Q4K non-REAP |
-| `q2k-q4k-k160` | Q2K/Q4K K160 REAP |
 | `q2k-q8` | Q2_K/Q8_0 non-REAP |
 | `q2k-q8-k160` | Q2_K/Q8_0 K160 REAP |
 
@@ -29,7 +27,7 @@ python3 scripts/check-runtime-resume.py
 # 他のLLMを自分で停止してから、まず1構成・短い入力で確認
 python3 scripts/bench-runtime.py --variant plain --depths 2048 --predict 128
 
-# plain + 4 drafter、reasoning/coding、全深度
+# plain + Q2/Q8 drafter 2構成、reasoning/coding、全深度
 python3 scripts/bench-runtime.py --output runs/runtime/expo-01
 
 # 対象を絞る／同条件で繰り返す場合

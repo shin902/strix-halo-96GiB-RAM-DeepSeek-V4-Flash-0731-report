@@ -13,8 +13,6 @@
   "predict": 512,
   "variants": {
     "plain": null,
-    "q2k-q4k": "~/models/DeepSeek-V4-Flash-0731/DeepSeek-V4-Flash-0731-DSpark-Q2K-Q4K.gguf",
-    "q2k-q4k-k160": "~/models/DeepSeek-V4-Flash-0731/DeepSeek-V4-Flash-0731-DSpark-K160-REAP-L40-42-Q2K-Q4K.gguf",
     "q2k-q8": "~/models/DeepSeek-V4-Flash-0731/dspark-DeepSeek-V4-Flash-0731-EXPERT-Q2_K.gguf",
     "q2k-q8-k160": "~/models/DeepSeek-V4-Flash-0731/DeepSeek-V4-Flash-0731-DSpark-K160-REAP-L40-42-Q2K-Q8-0.gguf"
   },
