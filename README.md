@@ -14,7 +14,7 @@
 | `q2k-q8` | Q2_K/Q8_0 non-REAP |
 | `q2k-q8-k160` | Q2_K/Q8_0 K160 REAP |
 
-Preview版とREAP targetは含めません。reasoning / codingの2 workload、入力深度2K / 8K / 16K / 28K、各点最大512 generated tokens、greedy / seed 1234が初期値です。EOSは尊重し、早期終了時も実際の生成数を記録します。
+Preview版とREAP targetは含めません。reasoning / codingの2 workload、入力深度2K / 8K / 16K / 22K、各点最大512 generated tokens、greedy / seed 1234が初期値です。EOSは尊重し、早期終了時も実際の生成数を記録します。
 
 ```bash
 # 実行ファイル・GGUFの存在と計画を確認。モデル起動・推論はしない
@@ -48,7 +48,7 @@ python3 scripts/bench-runtime.py --cache-mode cold --output runs/runtime/expo-co
 
 **実行前の注意:** 専用`llama-server`をlocalhost:8099、1 slotで起動し、終了・中断時には自分が起動したprocessだけを停止します。使用中portには接続せず失敗します。他のLLMを自動停止しないため、RAM/GPUを競合させないでください。96GBで全構成の起動・長文生成が成立する保証はありません。失敗時はログを残して停止し、勝手にcontextやKVを変更しません。
 
-展示会の正式測定は **target KV `q8_0` / draft KV `q4_0` に固定**します（genai-expo DEC-0019）。TurboQuant（`tq3_0` / `tq4_0`）の導入・比較は今回のスコープ外であり、最終目標にも含めません。展示後のnote / 後続検証へ分離し、今回の結果と混ぜません。他の初期設定はcontext 30000 / batch・ubatch 2048 / `n_max=4`。Q2K/Q4K drafterは30K contextでもメモリ不足になり得ます。最大入力28672に生成512 token等の余白を残します。swap利用を前提とし、空きRAMだけを理由に停止しません。RAM・swap使用量とswap in/outは測定中に記録します。OOM回避は保証しません。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
+展示会の正式測定は **target KV `q8_0` / draft KV `q4_0` に固定**します（genai-expo DEC-0019）。TurboQuant（`tq3_0` / `tq4_0`）の導入・比較は今回のスコープ外であり、最終目標にも含めません。展示後のnote / 後続検証へ分離し、今回の結果と混ぜません。他の初期設定はcontext 24000 / batch・ubatch 2048 / `n_max=4`。Q2K/Q4Kは30Kでモデルロード中、Q2K/Q8も30Kで最初の測定開始時にhost-wide OOMが再現したため、最大入力22528に生成512 token等の余白を残します。swap利用を前提とし、空きRAMだけを理由に停止しません。RAM・swap使用量とswap in/outは測定中に記録します。OOM回避は保証しません。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
 
 ### 測定方法と指標
 
