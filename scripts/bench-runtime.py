@@ -136,11 +136,16 @@ def command(config, drafter):
     return cmd
 
 
+def port_in_use(port):
+    with socket.socket() as probe:
+        return probe.connect_ex(("127.0.0.1", port)) == 0
+
+
 @contextmanager
 def server(config, drafter, out, timeout):
     # Never connect to or stop an existing service, even if it uses our port.
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", config["port"]))
+    if port_in_use(config["port"]):
+        raise RuntimeError(f"port {config['port']} is already in use")
     env = {k: v for k, v in os.environ.items() if not k.startswith("LLAMA_ARG_")}
     env.update(config.get("env", {}))
     cmd = command(config, drafter)

@@ -3,12 +3,19 @@
 import json
 from pathlib import Path
 import runpy
+import socket
 
 bench = runpy.run_path(str(Path(__file__).with_name("bench-runtime.py")))
 config = json.loads((bench["ROOT"] / "configs/runtime-bench.json").read_text())
 for drafter in config["variants"].values():
     cmd = bench["command"](config, drafter)
     assert "--slots" in cmd and "--metrics" in cmd, "Required monitoring endpoints must be enabled"
+with socket.socket() as listener:
+    listener.bind(("127.0.0.1", 0))
+    listener.listen()
+    port = listener.getsockname()[1]
+    assert bench["port_in_use"](port)
+assert not bench["port_in_use"](port)
 response = {
     "timings": {"prompt_n": 4, "cache_n": 6, "prompt_ms": 20,
                 "predicted_n": 5, "predicted_ms": 50, "predicted_per_second": 80,
