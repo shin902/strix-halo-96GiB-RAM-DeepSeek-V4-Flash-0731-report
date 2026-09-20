@@ -1,4 +1,79 @@
-# DeepSeek V4 Flash SWE-bench harness
+# DeepSeek V4 Flash benchmarks
+
+## Runtime benchmark: prefill / decode / acceptance / memory
+
+`genai-expo` の展示用測定スクリプトは **`scripts/bench-runtime.py`**。Python 3標準ライブラリのみを使い、このレポートrepositoryへ測定条件・生データをまとめます。推論runtime自体は変更しません。
+
+### 構成と実行
+
+`configs/runtime-bench.json` は同じFull256 asymmetric Q2 targetに対して、plain（DSpark OFF）と **0731系4 drafter** を順番に測ります。
+
+| variant | drafter |
+| --- | --- |
+| `plain` | なし |
+| `q2k-q4k` | Q2K/Q4K non-REAP |
+| `q2k-q4k-k160` | Q2K/Q4K K160 REAP |
+| `q2k-q8` | Q2_K/Q8_0 non-REAP |
+| `q2k-q8-k160` | Q2_K/Q8_0 K160 REAP |
+
+Preview版とREAP targetは含めません。reasoning / codingの2 workload、入力深度2K / 8K / 16K / 32K、各点最大512 generated tokens、greedy / seed 1234が初期値です。EOSは尊重し、早期終了時も実際の生成数を記録します。
+
+```bash
+# 実行ファイル・GGUFの存在と計画を確認。モデル起動・推論はしない
+python3 scripts/bench-runtime.py --dry-run
+
+# 集計計算の軽いセルフチェック（GPU不要）
+python3 scripts/check-runtime-bench.py
+
+# 他のLLMを自分で停止してから、まず1構成・短い入力で確認
+python3 scripts/bench-runtime.py --variant plain --depths 2048 --predict 128
+
+# plain + 4 drafter、reasoning/coding、全深度
+python3 scripts/bench-runtime.py --output runs/runtime/expo-01
+
+# 対象を絞る／同条件で繰り返す場合
+python3 scripts/bench-runtime.py --variant plain,q2k-q8 --workload coding --repetitions 3
+
+# cold prefillは別runにする
+python3 scripts/bench-runtime.py --cache-mode cold --output runs/runtime/expo-cold-01
+```
+
+設定変更は `configs/runtime-bench.local.json` にコピーして `--config` で指定できます。相対パスはconfigの場所基準、`~`は展開します。
+
+**実行前の注意:** 専用`llama-server`をlocalhost:8099、1 slotで起動し、終了・中断時には自分が起動したprocessだけを停止します。使用中portには接続せず失敗します。他のLLMを自動停止しないため、RAM/GPUを競合させないでください。96GBで全構成の起動・長文生成が成立する保証はありません。失敗時はログを残して停止し、勝手にcontextやKVを変更しません。
+
+初期設定はcontext 65536 / batch・ubatch 2048 / target KV `q8_0` / draft KV `q4_0` / `n_max=4`。手元のbinaryがTQ4を提供していなかったため、**これはTQ4最終構成の測定ではありません**。利用するbuildに合わせてconfigを固定してください。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
+
+### 測定方法と指標
+
+- 入力はモデルのchat templateを適用したtoken列。全variantで同じ固定contextとtaskを使い、前の生成文は次の入力へ混ぜません。
+- `reuse`では固定prefixを段階的に延ばし、同一slotのcacheを再利用します。各workload・各反復の最初の点はcold。warmupは別保存し、集計から除外します。
+- 実際に再利用できた量は **`timings.cache_n`** から取得。recurrent state / checkpointの制約で再計算された分も隠しません。`tokens_cached`はこのbuildでは終了時のslot長なので、cache hit数には使いません。
+- `prefill_tps = prompt_n / (prompt_ms / 1000)`。cached tokenを分子に含めません。`prefill_kind=incremental`と`cold`は別系列として表示してください。
+- `decode_tps = predicted_n / (predicted_ms / 1000)`。HTTP全体の所要時間`wall_seconds`とは分離します。
+- `acceptance = accepted / drafted`（0〜1）。plainでは空欄です。`/metrics`のrequest前後差からverification回数を取り、`mean_accepted_draft_tokens = accepted / steps`、llama.cppのログに合わせた`mean_accepted_length = 1 + accepted / steps`も保存します。必要な統計がない場合は推測せず失敗します。
+- メモリはリクエスト開始・終了と **1秒間隔** で`/proc/meminfo` / `/proc/vmstat`を記録します。`memory_used_percent = 100 × (MemTotal − MemAvailable) / MemTotal`、`swap_used_percent = 100 × (SwapTotal − SwapFree) / SwapTotal`。swap未設定なら使用率は空欄です。OS認識RAMを分母とし、公称96GBとは区別します。
+- 各点のメモリ／swap使用量・使用率のピーク、最小MemAvailable、swap in/out差分bytesをCSVに保存します。**ホスト全体の値**であり、process RSSやGPU専用量ではありません。UMAの二重加算はしません。1秒未満のpeakとモデルロード中のpeakは捕捉対象外です（ロード前後のsnapshotは保存）。
+
+**初期workloadは動作確認用の合成・反復corpusです。** 入力深度は厳密なtoken数ですが、自然な長文会話や本番のreasoning/coding全般を代表するスコアではありません。展示で代表値を主張するならconfig内の`context` / `task`を固定した実データへ置き換え、保存した条件と一緒に説明してください。
+
+### 保存物とcorrectness
+
+`runs/runtime/<日時>/`（または`--output`）へ保存します。既存出力directoryの上書き・自動resumeはしません。
+
+- `plan.json`: config全文、選択条件、起動コマンド
+- `results.csv` / `results.jsonl`: 1構成 × workload × 反復 × 深度ごとの指標。各点でflush
+- `status.json`: 完了／失敗／中断。途中までの結果とログは保持
+- `<variant>/run.json`: binary `--version`（build commit）、実行ファイル・launcherのSHA-256、model/drafterのpath・size・mtime、実行環境、ロード前後のメモリ
+- `<variant>/server.log`, `props.json`, `slots.json`: 起動・runtime条件
+- `<variant>/<case>.request.json`, `.response.json`, `.output.txt`: 入出力原文とtimings
+- `<variant>/<case>.memory.jsonl`, `.metrics-before.txt`, `.metrics-after.txt`: メモリ時系列とspeculation counter原文
+
+巨大GGUF全体のハッシュ計算は自動では行いません。正式な再現性に必要なmodel hashやdriverの配布versionは別途記録してください。`runs/`はGit管理外なので、採用結果はレビューしてから別途保存します。
+
+同じrunにplainがあれば、入力・samplingの同一性を確認し、生成token／textの完全一致をCSVに併記します。反復末尾の簡易警告も出しますが、**速度測定完了＝correctness合格ではありません**。batch差による不一致もあり得ます。`quality_review`は常に`unreviewed`とし、長文ループ・日本語品質・OOMを出力原文とログで確認するまで実用性能と断定しません。
+
+## SWE-bench harness
 
 Pi SDKを共通 agent harness として使い、`cloud-fp`、`q2-reap`、`reap-*` のOpenAI互換endpointを同じSWE-bench instanceへ通すための最小環境です。既存のレポートとは独立したTypeScript実装です。
 
