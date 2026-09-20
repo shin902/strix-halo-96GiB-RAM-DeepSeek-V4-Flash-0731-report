@@ -38,7 +38,7 @@ python3 scripts/bench-runtime.py --variant plain,q2k-q8 --workload coding --repe
 # 中断後は、同じconfig・variant・workload・depth・predict等を指定して再開
 python3 scripts/bench-runtime.py --resume runs/runtime/expo-01
 
-# Herdrペーン用：12時間上限、空きRAM 2 GiB未満で停止、完了・失敗を通知
+# Herdrペーン用：12時間上限、swap利用を許容、完了・失敗を通知
 ./scripts/run-runtime-bench-watched.sh
 ./scripts/run-runtime-bench-watched.sh --resume runs/runtime/<run-id>
 
@@ -50,7 +50,7 @@ python3 scripts/bench-runtime.py --cache-mode cold --output runs/runtime/expo-co
 
 **実行前の注意:** 専用`llama-server`をlocalhost:8099、1 slotで起動し、終了・中断時には自分が起動したprocessだけを停止します。使用中portには接続せず失敗します。他のLLMを自動停止しないため、RAM/GPUを競合させないでください。96GBで全構成の起動・長文生成が成立する保証はありません。失敗時はログを残して停止し、勝手にcontextやKVを変更しません。
 
-展示会の正式測定は **target KV `q8_0` / draft KV `q4_0` に固定**します（genai-expo DEC-0019）。TurboQuant（`tq3_0` / `tq4_0`）の導入・比較は今回のスコープ外であり、最終目標にも含めません。展示後のnote / 後続検証へ分離し、今回の結果と混ぜません。他の初期設定はcontext 30000 / batch・ubatch 2048 / `n_max=4`。Q2K/Q4K drafterは30K contextでもメモリ不足になり得ます。最大入力28672に生成512 token等の余白を残します。監視スクリプトのRAMチェックは1秒間隔の予防策であり、OOM回避を保証しません。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
+展示会の正式測定は **target KV `q8_0` / draft KV `q4_0` に固定**します（genai-expo DEC-0019）。TurboQuant（`tq3_0` / `tq4_0`）の導入・比較は今回のスコープ外であり、最終目標にも含めません。展示後のnote / 後続検証へ分離し、今回の結果と混ぜません。他の初期設定はcontext 30000 / batch・ubatch 2048 / `n_max=4`。Q2K/Q4K drafterは30K contextでもメモリ不足になり得ます。最大入力28672に生成512 token等の余白を残します。swap利用を前提とし、空きRAMだけを理由に停止しません。RAM・swap使用量とswap in/outは測定中に記録します。OOM回避は保証しません。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
 
 ### 測定方法と指標
 

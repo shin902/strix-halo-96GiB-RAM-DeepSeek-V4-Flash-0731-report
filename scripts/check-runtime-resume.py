@@ -62,20 +62,17 @@ with TemporaryDirectory() as tmp, patch.dict(bench["main"].__globals__, {
         pass
     else:
         raise AssertionError("changed conditions must not be merged")
-# Exercise watcher exit markers and low-memory stop without models or real notifications.
+# Exercise watcher exit markers without models or real notifications.
 with TemporaryDirectory() as tmp:
     root = Path(tmp)
-    for name, body in {"python3": "exit 7", "herdr": "exit 0", "awk": "echo 999999999"}.items():
+    for name, body in {"python3": "exit 7", "herdr": "exit 0"}.items():
         tool = root / name
         tool.write_text(f"#!/bin/sh\n{body}\n")
         tool.chmod(0o755)
     env = {**os.environ, "PATH": f"{root}:{os.environ['PATH']}"}
     launcher = Path(__file__).with_name("run-runtime-bench-watched.sh")
-    for body, available, expected in [("exit 7", 999999999, 7),
-                                       ("exit 0", 999999999, 0),
-                                       ("exec sleep 60", 0, 143)]:
-        (root / "python3").write_text(f"#!/bin/sh\n{body}\n")
-        (root / "awk").write_text(f"#!/bin/sh\necho {available}\n")
+    for expected in (7, 0):
+        (root / "python3").write_text(f"#!/bin/sh\nexit {expected}\n")
         result = subprocess.run(["bash", str(launcher), "--resume", str(root / "run")],
                                 env=env, capture_output=True, text=True, timeout=10)
         assert result.returncode == expected, result.stdout + result.stderr

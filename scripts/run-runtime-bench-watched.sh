@@ -15,21 +15,10 @@ mkdir -p runs/runtime
 rm -f "${output}.exit"
 printf 'Benchmark output: %s\nMonitor log: %s\n' "$output" "$log"
 
-# Stop before another host-wide OOM; keep a 2 GiB host reserve.
+# Swap is expected; do not abort based on available RAM alone.
 timeout --signal=TERM --kill-after=2m 12h \
-  python3 scripts/bench-runtime.py "${destination[@]}" "$@" > >(tee "$log") 2>&1 &
-pid=$!
-while kill -0 "$pid" 2>/dev/null; do
-  available=$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)
-  if (( available < 2097152 )); then
-    printf 'Stopping: MemAvailable below 2 GiB\n' | tee -a "$log"
-    kill -TERM "$pid" 2>/dev/null || true
-    break
-  fi
-  sleep 1
-done
-wait "$pid"
-status=$?
+  python3 scripts/bench-runtime.py "${destination[@]}" "$@" 2>&1 | tee "$log"
+status=${PIPESTATUS[0]}
 printf '%s\n' "$status" > "${output}.exit"
 if (( status == 0 )); then
   title="Runtime benchmark completed"
