@@ -16,7 +16,7 @@
 | `q2k-q8` | Q2_K/Q8_0 non-REAP |
 | `q2k-q8-k160` | Q2_K/Q8_0 K160 REAP |
 
-Preview版とREAP targetは含めません。reasoning / codingの2 workload、入力深度2K / 8K / 16K / 32K、各点最大512 generated tokens、greedy / seed 1234が初期値です。EOSは尊重し、早期終了時も実際の生成数を記録します。
+Preview版とREAP targetは含めません。reasoning / codingの2 workload、入力深度2K / 8K / 16K / 28K、各点最大512 generated tokens、greedy / seed 1234が初期値です。EOSは尊重し、早期終了時も実際の生成数を記録します。
 
 ```bash
 # 実行ファイル・GGUFの存在と計画を確認。モデル起動・推論はしない
@@ -24,6 +24,7 @@ python3 scripts/bench-runtime.py --dry-run
 
 # 起動引数と集計計算の軽いセルフチェック（GPU不要）
 python3 scripts/check-runtime-bench.py
+python3 scripts/check-runtime-resume.py
 
 # 他のLLMを自分で停止してから、まず1構成・短い入力で確認
 python3 scripts/bench-runtime.py --variant plain --depths 2048 --predict 128
@@ -34,6 +35,13 @@ python3 scripts/bench-runtime.py --output runs/runtime/expo-01
 # 対象を絞る／同条件で繰り返す場合
 python3 scripts/bench-runtime.py --variant plain,q2k-q8 --workload coding --repetitions 3
 
+# 中断後は、同じconfig・variant・workload・depth・predict等を指定して再開
+python3 scripts/bench-runtime.py --resume runs/runtime/expo-01
+
+# Herdrペーン用：12時間上限、空きRAM 2 GiB未満で停止、完了・失敗を通知
+./scripts/run-runtime-bench-watched.sh
+./scripts/run-runtime-bench-watched.sh --resume runs/runtime/<run-id>
+
 # cold prefillは別runにする
 python3 scripts/bench-runtime.py --cache-mode cold --output runs/runtime/expo-cold-01
 ```
@@ -42,7 +50,7 @@ python3 scripts/bench-runtime.py --cache-mode cold --output runs/runtime/expo-co
 
 **実行前の注意:** 専用`llama-server`をlocalhost:8099、1 slotで起動し、終了・中断時には自分が起動したprocessだけを停止します。使用中portには接続せず失敗します。他のLLMを自動停止しないため、RAM/GPUを競合させないでください。96GBで全構成の起動・長文生成が成立する保証はありません。失敗時はログを残して停止し、勝手にcontextやKVを変更しません。
 
-展示会の正式測定は **target KV `q8_0` / draft KV `q4_0` に固定**します（genai-expo DEC-0019）。TurboQuant（`tq3_0` / `tq4_0`）の導入・比較は今回のスコープ外であり、最終目標にも含めません。展示後のnote / 後続検証へ分離し、今回の結果と混ぜません。他の初期設定はcontext 65536 / batch・ubatch 2048 / `n_max=4`。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
+展示会の正式測定は **target KV `q8_0` / draft KV `q4_0` に固定**します（genai-expo DEC-0019）。TurboQuant（`tq3_0` / `tq4_0`）の導入・比較は今回のスコープ外であり、最終目標にも含めません。展示後のnote / 後続検証へ分離し、今回の結果と混ぜません。他の初期設定はcontext 30000 / batch・ubatch 2048 / `n_max=4`。Q2K/Q4K drafterは30K contextでもメモリ不足になり得ます。最大入力28672に生成512 token等の余白を残します。監視スクリプトのRAMチェックは1秒間隔の予防策であり、OOM回避を保証しません。既存の`LLAMA_ARG_*`は子processから除外し、意図しない設定継承を避けます。Vulkan関連環境は継承し、必要ならconfigの`env`で固定します。
 
 ### 測定方法と指標
 
@@ -59,13 +67,13 @@ python3 scripts/bench-runtime.py --cache-mode cold --output runs/runtime/expo-co
 
 ### 保存物とcorrectness
 
-`runs/runtime/<日時>/`（または`--output`）へ保存します。既存出力directoryの上書き・自動resumeはしません。
+`runs/runtime/<日時>/`（または`--output`）へ保存します。既存出力directoryは`--resume`で明示した場合だけ再利用します。保存済みplanと条件が異なる再開は拒否します。`results.jsonl`を完了点の正本としてCSVを再生成し、二重記録を防ぎます。完了variantは起動しません。途中系列の`reuse`では完了済みprefixリクエストを別artifactへ再実行してcacheを再構築し、未完了点だけ追記します（cache hit量の完全一致は保証しません）。同時再開はlockで拒否し、壊れたJSONLは自動切り捨てしません。旧64K runと新30K runは混ぜません。
 
 - `plan.json`: config全文、選択条件、起動コマンド
 - `results.csv` / `results.jsonl`: 1構成 × workload × 反復 × 深度ごとの指標。各点でflush
-- `status.json`: 完了／失敗／中断。途中までの結果とログは保持
-- `<variant>/run.json`: binary `--version`（build commit）、実行ファイル・launcherのSHA-256、model/drafterのpath・size・mtime、実行環境、ロード前後のメモリ
-- `<variant>/server.log`, `props.json`, `slots.json`: 起動・runtime条件
+- `status.json`: 実行中／完了／失敗／中断。途中までの結果とログは保持。監視スクリプトは隣接する`<run-id>.exit`へ終了コードを保存するので、過去のペーン出力に誤反応せず待機できます
+- `<variant>/attempt-<日時>/run.json`: binary `--version`（build commit）、実行ファイル・launcherのSHA-256、model/drafterのpath・size・mtime、実行環境、ロード前後のメモリ
+- `<variant>/attempt-<日時>/server.log`, `props.json`, `slots.json`: 起動・runtime条件（再開前のログも保持）。warmup・cache再構築用`replay-*`もこのdirectoryへ保存
 - `<variant>/<case>.request.json`, `.response.json`, `.output.txt`: 入出力原文とtimings
 - `<variant>/<case>.memory.jsonl`, `.metrics-before.txt`, `.metrics-after.txt`: メモリ時系列とspeculation counter原文
 

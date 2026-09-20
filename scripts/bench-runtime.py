@@ -3,6 +3,7 @@
 import argparse
 from contextlib import contextmanager
 import csv
+import fcntl
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -333,6 +334,19 @@ def load_config(path, args):
     return config, variants, workloads
 
 
+def resume_rows(out, plan):
+    if json.loads((out / "plan.json").read_text()) != plan:
+        raise ValueError("resume requires the original config and benchmark options")
+    text = (out / "results.jsonl").read_text()
+    if text and not text.endswith("\n"):
+        raise ValueError("incomplete results.jsonl tail; preserve and inspect it before resuming")
+    rows = [json.loads(line) for line in text.splitlines()]
+    keys = [(r["variant"], r["workload"], r["repeat"], r["input_tokens"]) for r in rows]
+    if len(set(keys)) != len(keys):
+        raise ValueError("duplicate completed points in results.jsonl")
+    return rows, set(keys)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=ROOT / "configs/runtime-bench.json")
@@ -345,6 +359,7 @@ def main():
     parser.add_argument("--timeout", type=float, default=3600, help="HTTP request timeout in seconds")
     parser.add_argument("--startup-timeout", type=float, default=600)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--resume", type=Path, help="resume an existing run with identical options")
     parser.add_argument("--dry-run", action="store_true", help="validate and print plan; do not start a server")
     args = parser.parse_args()
     if args.repetitions <= 0 or not 0 < args.timeout < float("inf") or not 0 < args.startup_timeout < float("inf"):
@@ -356,26 +371,58 @@ def main():
     if args.dry_run:
         print(json.dumps(plan, ensure_ascii=False, indent=2))
         return
-    out = args.output or ROOT / "runs/runtime" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
-    out.mkdir(parents=True, exist_ok=False)
-    save(out / "plan.json", plan)
+    if args.resume and args.output:
+        parser.error("--resume and --output are mutually exclusive")
+    out = args.resume or args.output or ROOT / "runs/runtime" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+    if not args.resume:
+        out.mkdir(parents=True, exist_ok=False)
+    # Hold the run lock until main returns; two resume processes must not append together.
+    lock = (out / ".lock").open("a")
+    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    rows, done = resume_rows(out, plan) if args.resume else ([], set())
+    if not args.resume:
+        save(out / "plan.json", plan)
+    save(out / "status.json", {"status": "running"})
     writer = None
     try:
-        with (out / "results.jsonl").open("w", encoding="utf-8") as jsonl, (out / "results.csv").open("w", newline="", encoding="utf-8") as csvfile:
+        with (out / "results.jsonl").open("a", encoding="utf-8") as jsonl, (out / "results.csv").open("w", newline="", encoding="utf-8") as csvfile:
+            if rows:
+                writer = csv.DictWriter(csvfile, fieldnames=list(rows[0]))
+                writer.writeheader()
+                writer.writerows(rows)
+                csvfile.flush()
             for variant in variants:
+                pending = {(variant, w, r, d) for w in workloads
+                           for r in range(1, args.repetitions + 1) for d in config["depths"]} - done
+                if not pending:
+                    continue
                 directory = out / variant
-                directory.mkdir()
+                directory.mkdir(exist_ok=True)
+                attempt = directory / datetime.now(timezone.utc).strftime("attempt-%Y%m%dT%H%M%S.%fZ")
+                attempt.mkdir()
                 drafter = config["variants"][variant]
-                with server(config, drafter, directory, args.startup_timeout) as url:
+                with server(config, drafter, attempt, args.startup_timeout) as url:
                     for workload in workloads:
+                        if not any(k[1] == workload for k in pending):
+                            continue
                         inputs, warmup = prompts(url, config["workloads"][workload], config["depths"])
-                        measure(url, request_payload(warmup, 16, config["seed"], False), directory,
+                        measure(url, request_payload(warmup, 16, config["seed"], False), attempt,
                                 f"{workload}-warmup", args.timeout)
                         for repeat in range(1, args.repetitions + 1):
+                            remaining = [k[3] for k in pending if k[1:3] == (workload, repeat)]
+                            if not remaining:
+                                continue
                             for point, (depth, tokens) in enumerate(inputs.items()):
+                                if depth > max(remaining):
+                                    break
                                 case = f"{workload}-r{repeat}-p{depth}"
                                 reuse = args.cache_mode == "reuse" and point > 0
                                 payload = request_payload(tokens, config["predict"], config["seed"], reuse)
+                                if (variant, workload, repeat, depth) in done:
+                                    if args.cache_mode == "reuse":
+                                        # Replay the prefix sequence without overwriting completed measurements.
+                                        measure(url, payload, attempt, f"replay-{case}", args.timeout)
+                                    continue
                                 response, delta, wall, mem = measure(url, payload, directory, case, args.timeout)
                                 row = {"variant": variant, "workload": workload, "repeat": repeat,
                                        "cache_mode": args.cache_mode, "cache_requested": reuse,
