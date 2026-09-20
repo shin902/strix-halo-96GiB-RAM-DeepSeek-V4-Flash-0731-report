@@ -4,7 +4,7 @@
   "port": 8099,
   "context_size": 40000,
   "batch_size": 2048,
-  "ubatch_size": 2048,
+  "ubatch_size": 512,
   "target_kv": "q8_0",
   "draft_kv": "q4_0",
   "n_max": 4,
