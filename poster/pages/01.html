@@ -245,7 +245,7 @@
       <p><strong>モデル：</strong>DeepSeek V4 Flash<br>大規模なオープンウェイトモデル。</p>
       <p><strong>PC：</strong>Strix Halo · 96 GiB<br>Ryzen AI MAX+ 395 / Radeon 8060S。</p>
     </div>
-    <p class="results-label">速度の変化（各段階の概数）</p>
+    <p class="results-label">最適化の軌跡｜試行ごとの生成速度</p>
     <div class="results">
       <div class="result">
         <p class="metric">01 / まず動かす</p>
@@ -255,16 +255,15 @@
       <div class="result">
         <p class="metric">02 / 実装を変える</p>
         <p class="value">約18<small>tok/s</small></p>
-        <p class="detail">Strix Halo向けの実装で改善</p>
+        <p class="detail">Strix Halo向けの実装で生成</p>
       </div>
       <div class="result">
-        <p class="metric">03 / 先読みを加える</p>
+        <p class="metric">03 / 高速化処理を試す</p>
         <p class="value"><em>約20</em><small>tok/s</small></p>
-        <p class="detail">投機的デコードで、もう一段速く</p>
+        <p class="detail">投機的デコードを加えた構成</p>
       </div>
     </div>
-    <p class="source">tok/s＝1秒あたりに生成するトークン数。「最初の文字が出るまでの時間」とは別の指標。12 / 18 / 20 は異なる構成・条件の概数で、同一条件の比較ではない。5枚目の約11 → 18
-      tok/sはVulkan実装同士の別測定。統一条件24点の比較は7枚目。</p>
+    <p class="source">tok/s＝1秒あたりの生成トークン数。条件を揃えた速度比較は7枚目。</p>
     <div class="question"><strong>この展示で追うこと</strong><span><b>入る？</b>　→　<b>速くなる？</b>　→　<b>実際どう？</b></span></div>
     <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>01 / 08</span></footer>
   </section>

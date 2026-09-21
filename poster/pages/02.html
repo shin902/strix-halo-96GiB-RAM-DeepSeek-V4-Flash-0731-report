@@ -129,13 +129,6 @@
       color: #b44025
     }
 
-    .memory-caption {
-      font-size: 11pt;
-      color: #555;
-      line-height: 1.45;
-      margin: 3mm 0 0
-    }
-
     .takeaway {
       border-top: .6mm solid #222;
       padding-top: 6mm;
@@ -209,12 +202,6 @@
       margin: 3mm 0 0
     }
 
-    .next {
-      font-size: 16pt;
-      font-weight: 700;
-      margin: 7mm 0 0
-    }
-
     footer {
       position: absolute;
       bottom: 12mm;
@@ -254,8 +241,6 @@
         <div class="remainder">約10.2</div>
       </div>
       <div class="memory-key"><span>重みのファイルサイズ</span><span>残り：OS・実行環境 ＋ KVキャッシュ</span></div>
-      <figcaption class="memory-caption">96 GiB構成。実行時の `free` 表示は91 GiB。差の約10.2
-        GiBは単純計算で、実際の空き容量・常駐量・KV容量を示す値ではない。出典：0824/llama-cpp-vulkan-prefill-chunk-benchmark.md</figcaption>
     </figure>
     <div class="takeaway">
       <h2>モデルは入った。<br>会話の余裕は小さい。</h2>
@@ -277,7 +262,6 @@
       <p class="source">左が DeepSeek V4 Flash、右が Claude Opus 4.8。出典：DeepSeek-V4-Flash-0731 公式モデルカード / DeepSeek V4
         Technical Documentation。公表値であり、このPCの量子化版の実測精度ではありません。</p>
     </aside>
-    <p class="next">次へ → 非対称Q2モデルをDwarfStarで動かす</p>
     <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>02 / 08</span></footer>
   </section>
 </body>
