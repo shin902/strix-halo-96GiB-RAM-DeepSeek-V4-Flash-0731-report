@@ -3,38 +3,70 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>使用感・失敗したこと</title>
-<style>@page{size:A3 landscape;margin:0}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
+<title>で、実際どれくらい速い？</title>
+<style>
+@page{size:A3 landscape;margin:0}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
 body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#202020;background:#f4f4f4}
-.page{width:420mm;height:297mm;padding:22mm 22mm 28mm;background:white;position:relative;break-after:page;overflow:hidden}
-.page{padding-left:42mm}
-.page:last-child{break-after:auto}
-.hero{background:white;color:#202020}
-.label{font-size:15pt;letter-spacing:3px;opacity:.7}
-h1{font-size:48pt;line-height:1.35;white-space:pre-line;margin:20mm 0 12mm;overflow-wrap:anywhere}
-.hero h1{font-size:65pt;margin-top:24mm}
-.lead{font-size:30pt;line-height:1.7;white-space:pre-line;margin:0 0 15mm}
-.body{font-size:var(--body-size);line-height:1.85;overflow-wrap:anywhere;display:flow-root}
-.body p{margin:0 0 1em;white-space:pre-line}
-.columns .body{column-count:2;column-gap:14mm}
-.footer{position:absolute;bottom:14mm;left:22mm;right:22mm;border-top:.3mm solid currentColor;padding-top:5mm;display:flex;gap:10mm;justify-content:space-between;font-size:11pt;opacity:.65}
-.footer span:first-child{overflow-wrap:anywhere;max-width:90%}
-.content{height:100%;overflow:hidden}
- @media print{body{background:white}
-.page{print-color-adjust:exact;-webkit-print-color-adjust:exact;margin:0}
-}
-.footer{left:42mm}
+.page{width:420mm;height:297mm;padding:18mm 22mm 22mm 42mm;background:white;position:relative;overflow:hidden;break-after:page}
+.label{font-size:13pt;letter-spacing:3px;color:#666}
+h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
+.dek{font-size:15pt;line-height:1.4;margin:0 0 9mm;color:#555}
+.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:82mm 91mm;gap:7mm 10mm}
+.chart{border-top:.7mm solid #202020;padding-top:4mm;min-width:0}
+.chart h2{font-size:22pt;line-height:1.2;margin:0 0 1mm}
+.chart .meta{font-size:11pt;color:#666;margin:0 0 5mm;line-height:1.35}
+.bars{display:grid;gap:2mm}.bar-row{display:grid;grid-template-columns:27mm 1fr 22mm;gap:3mm;align-items:center;font-size:12pt;white-space:nowrap}
+.bar-row .track{height:7mm;background:#efefef}.bar-row .fill{height:100%;background:#252525}.bar-row strong{text-align:right;font-size:15pt;font-weight:700}
+.bar-row.highlight strong{font-size:19pt}.bar-row.highlight .fill{background:#bb4a2c}
+.unit{font-size:10pt;color:#666;margin:2mm 0 0;text-align:right}
+.note{border-top:.7mm solid #202020;padding-top:4mm;display:flex;flex-direction:column;justify-content:space-between}
+.note h2{font-size:22pt;margin:0 0 3mm}.note p{font-size:15pt;line-height:1.5;margin:0}.note .source{font-size:10pt;line-height:1.5;color:#666}
+.footer{position:absolute;bottom:10mm;left:42mm;right:22mm;border-top:.3mm solid #999;padding-top:3mm;display:flex;justify-content:space-between;font-size:10pt;color:#666}
+@media print{body{background:white}.page{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style>
 </head>
 <body>
-<section class="page standard" style="--body-size:25pt">
-  <div class="content">
-    <div class="label">SECTION 07</div>
-    <h1>使用感・失敗したこと</h1>
-    <p class="lead"></p>
-    <div class="body"><p></p></div>
+<section class="page">
+  <div class="label">SECTION 07 · BENCHMARK</div>
+  <h1>で、実際どれくらい速い？</h1>
+  <p class="dek">保存済みの測定から見る「読む速さ」「書く速さ」「先読みの的中率」</p>
+  <div class="grid">
+    <div class="chart">
+      <h2>入力を読む速さ <small>Prefill</small></h2>
+      <p class="meta">Vulkan · 1,233 token · -ub の違い · 2回平均</p>
+      <div class="bars">
+        <div class="bar-row"><span>-ub 128</span><div class="track"><div class="fill" style="width:38.7%"></div></div><strong>62</strong></div>
+        <div class="bar-row"><span>-ub 256</span><div class="track"><div class="fill" style="width:48.3%"></div></div><strong>77</strong></div>
+        <div class="bar-row"><span>-ub 512</span><div class="track"><div class="fill" style="width:64.2%"></div></div><strong>103</strong></div>
+        <div class="bar-row"><span>-ub 1024</span><div class="track"><div class="fill" style="width:79.3%"></div></div><strong>127</strong></div>
+        <div class="bar-row highlight"><span>-ub 2048</span><div class="track"><div class="fill" style="width:100%"></div></div><strong>160</strong></div>
+      </div>
+      <p class="unit">token/s · -ub 2048 は pinned memory 警告あり</p>
+    </div>
+    <div class="chart">
+      <h2>出力する速さ <small>Decode</small></h2>
+      <p class="meta">ROCm · K160 target + MTP · 同一プロンプト</p>
+      <div class="bars">
+        <div class="bar-row highlight"><span>MTP なし</span><div class="track"><div class="fill" style="width:100%"></div></div><strong>16.23</strong></div>
+        <div class="bar-row"><span>draft 2</span><div class="track"><div class="fill" style="width:92.1%"></div></div><strong>14.94</strong></div>
+        <div class="bar-row"><span>draft 3</span><div class="track"><div class="fill" style="width:36.7%"></div></div><strong>5.96</strong></div>
+      </div>
+      <p class="unit">token/s · この条件では投機的デコードで減速</p>
+    </div>
+    <div class="chart">
+      <h2>先読みの的中率 <small>Acceptance</small></h2>
+      <p class="meta">上の ROCm / MTP 測定 · accepted ÷ drafted</p>
+      <div class="bars">
+        <div class="bar-row highlight"><span>draft 2</span><div class="track"><div class="fill" style="width:40%"></div></div><strong>40%</strong></div>
+        <div class="bar-row"><span>draft 3</span><div class="track"><div class="fill" style="width:33.3%"></div></div><strong>33%</strong></div>
+      </div>
+      <p class="unit">横棒の全幅 = 100% · 的中しても検証の負荷が残る</p>
+    </div>
+    <div class="note">
+      <div><h2>数字の読み方</h2><p>Prefill は Vulkan、Decode と Acceptance は ROCm の別測定。横並びで速度を直接比較しない。Vulkan での plain / DSpark / REAP の統一条件比較は、測定結果が揃い次第ここに差し替える。</p></div>
+      <p class="source">出典：0824/llama-cpp-vulkan-prefill-chunk-benchmark.md、0810/benchmark-1.md。両測定はモデル・backend・入力・KV設定が異なる。値は表示用に丸めた。</p>
+    </div>
   </div>
   <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>07 / 08</span></footer>
 </section>

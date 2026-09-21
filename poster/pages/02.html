@@ -3,40 +3,49 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>実験環境・96GBの制約</title>
-<style>@page{size:A3 landscape;margin:0}
+<title>そもそも、96GBに入るのか？</title>
+<style>
+@page{size:A3 landscape;margin:0}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#202020;background:#f4f4f4}
-.page{width:420mm;height:297mm;padding:22mm 22mm 28mm;background:white;position:relative;break-after:page;overflow:hidden}
-.page{padding-right:42mm}
-.page:last-child{break-after:auto}
-.hero{background:white;color:#202020}
-.label{font-size:15pt;letter-spacing:3px;opacity:.7}
-h1{font-size:48pt;line-height:1.35;white-space:pre-line;margin:20mm 0 12mm;overflow-wrap:anywhere}
-.hero h1{font-size:65pt;margin-top:24mm}
-.lead{font-size:30pt;line-height:1.7;white-space:pre-line;margin:0 0 15mm}
-.body{font-size:var(--body-size);line-height:1.85;overflow-wrap:anywhere;display:flow-root}
-.body p{margin:0 0 1em;white-space:pre-line}
-.columns .body{column-count:2;column-gap:14mm}
-.footer{position:absolute;bottom:14mm;left:22mm;right:22mm;border-top:.3mm solid currentColor;padding-top:5mm;display:flex;gap:10mm;justify-content:space-between;font-size:11pt;opacity:.65}
-.footer span:first-child{overflow-wrap:anywhere;max-width:90%}
-.content{height:100%;overflow:hidden}
- @media print{body{background:white}
-.page{print-color-adjust:exact;-webkit-print-color-adjust:exact;margin:0}
-}
-.footer{right:42mm}
+.page{width:420mm;height:297mm;padding:20mm 41mm 25mm 22mm;background:#fff;position:relative;overflow:hidden}
+.eyebrow{font-size:14pt;font-weight:700;letter-spacing:.16em;color:#555}
+h1{font-size:49pt;line-height:1.25;letter-spacing:-.04em;margin:9mm 0 7mm}
+.lead{font-size:25pt;line-height:1.48;margin:0 0 13mm;font-weight:650}
+.lead strong{border-bottom:2.5mm solid #222}
+.equation{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:5mm;margin:0 0 13mm}
+.term{border:1.1mm solid #222;min-height:62mm;padding:7mm 6mm;display:flex;flex-direction:column;justify-content:space-between}
+.term.dark{background:#222;color:white}
+.term small{font-size:13pt;font-weight:700;letter-spacing:.07em}
+.term b{font-size:29pt;line-height:1.22;letter-spacing:-.03em}
+.symbol{align-self:center;font-size:31pt;font-weight:400}
+.takeaway{border-top:.6mm solid #222;padding-top:8mm;display:grid;grid-template-columns:75mm 1fr;gap:9mm}
+.takeaway h2{font-size:19pt;margin:0;line-height:1.4}
+.takeaway p{font-size:20pt;line-height:1.65;margin:0}
+.next{font-size:16pt;font-weight:700;margin:10mm 0 0}
+footer{position:absolute;bottom:12mm;left:22mm;right:42mm;border-top:.3mm solid #999;padding-top:4mm;display:flex;justify-content:space-between;font-size:11pt;color:#666}
+@media print{body{background:#fff}.page{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style>
 </head>
 <body>
-<section class="page standard" style="--body-size:25pt">
-  <div class="content">
-    <div class="label">SECTION 02</div>
-    <h1>実験環境・96GBの制約</h1>
-    <p class="lead"></p>
-    <div class="body"><p></p></div>
+<section class="page">
+  <div class="eyebrow">SECTION 02 / 最初の壁</div>
+  <h1>そもそも、96GBに入るのか？</h1>
+  <p class="lead">全体で96GBあるメモリを、<strong>丸ごとモデルには使えない。</strong></p>
+  <div class="equation" aria-label="モデルの重み、OSと実行環境、会話の記憶領域を足した量が、実際に使えるメモリ以下である必要がある">
+    <div class="term dark"><small>01 / モデル本体</small><b>重み</b></div>
+    <span class="symbol">＋</span>
+    <div class="term"><small>02 / 動かすため</small><b>OS・実行環境</b></div>
+    <span class="symbol">＋</span>
+    <div class="term"><small>03 / 長く話すため</small><b>KVキャッシュ</b></div>
   </div>
-  <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>02 / 08</span></footer>
+  <div class="takeaway">
+    <h2>「起動できる」と<br>「常用できる」は違う</h2>
+    <p>モデルが読み込めても、長い入力や生成に使うメモリが残らなければ、実用には厳しい。まず重みを圧縮し、会話のための余白を作る必要があった。</p>
+  </div>
+  <p class="next">次へ → DwarfStarで、まずは96GBに押し込む</p>
+  <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>02 / 08</span></footer>
 </section>
 </body>
 </html>

@@ -3,40 +3,61 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>量子化・メモリに収める工夫</title>
-<style>@page{size:A3 landscape;margin:0}
+<title>まずはDwarfStarで96GBに押し込む</title>
+<style>
+@page{size:A3 landscape;margin:0}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#202020;background:#f4f4f4}
-.page{width:420mm;height:297mm;padding:22mm 22mm 28mm;background:white;position:relative;break-after:page;overflow:hidden}
-.page{padding-left:42mm}
-.page:last-child{break-after:auto}
-.hero{background:white;color:#202020}
-.label{font-size:15pt;letter-spacing:3px;opacity:.7}
-h1{font-size:48pt;line-height:1.35;white-space:pre-line;margin:20mm 0 12mm;overflow-wrap:anywhere}
-.hero h1{font-size:65pt;margin-top:24mm}
-.lead{font-size:30pt;line-height:1.7;white-space:pre-line;margin:0 0 15mm}
-.body{font-size:var(--body-size);line-height:1.85;overflow-wrap:anywhere;display:flow-root}
-.body p{margin:0 0 1em;white-space:pre-line}
-.columns .body{column-count:2;column-gap:14mm}
-.footer{position:absolute;bottom:14mm;left:22mm;right:22mm;border-top:.3mm solid currentColor;padding-top:5mm;display:flex;gap:10mm;justify-content:space-between;font-size:11pt;opacity:.65}
-.footer span:first-child{overflow-wrap:anywhere;max-width:90%}
-.content{height:100%;overflow:hidden}
- @media print{body{background:white}
-.page{print-color-adjust:exact;-webkit-print-color-adjust:exact;margin:0}
-}
-.footer{left:42mm}
+.page{width:420mm;height:297mm;padding:20mm 22mm 25mm 42mm;background:#fff;position:relative;overflow:hidden;break-after:page}
+.eyebrow{display:flex;align-items:center;gap:7mm;font-size:13pt;font-weight:700;letter-spacing:.12em}
+.eyebrow::before{content:"";width:11mm;height:1.4mm;background:#202020}
+h1{font-size:51pt;line-height:1.18;letter-spacing:-.045em;margin:10mm 0 6mm}
+.lead{font-size:24pt;font-weight:700;line-height:1.5;margin:0;max-width:305mm}
+.rule{height:.4mm;background:#202020;margin:11mm 0 11mm}
+.problem{display:grid;grid-template-columns:46mm 1fr;gap:7mm;align-items:start;margin-bottom:11mm}
+.problem .tag{font-size:13pt;font-weight:700;letter-spacing:.1em;padding-top:2mm}
+.problem p{font-size:23pt;line-height:1.5;margin:0;font-weight:700}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:10mm}
+.step{border-top:1.2mm solid #202020;padding-top:5mm}
+.step .number{font-size:15pt;font-weight:700;letter-spacing:.1em}
+.step h2{font-size:29pt;line-height:1.3;margin:4mm 0 4mm;letter-spacing:-.025em}
+.step p{font-size:18pt;line-height:1.58;margin:0}
+.step strong{font-weight:800}
+.takeaway{display:flex;align-items:baseline;gap:10mm;margin-top:13mm;border:1mm solid #202020;padding:7mm 9mm}
+.takeaway b{font-size:17pt;white-space:nowrap}
+.takeaway p{font-size:20pt;line-height:1.45;margin:0;font-weight:700}
+.footer{position:absolute;bottom:13mm;left:42mm;right:22mm;border-top:.3mm solid #202020;padding-top:4mm;display:flex;justify-content:space-between;font-size:11pt;color:#555}
+@media print{body{background:#fff}.page{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style>
 </head>
 <body>
-<section class="page standard" style="--body-size:25pt">
-  <div class="content">
-    <div class="label">SECTION 03</div>
-    <h1>量子化・メモリに収める工夫</h1>
-    <p class="lead"></p>
-    <div class="body"><p></p></div>
+<section class="page" aria-labelledby="title">
+  <div class="eyebrow">SECTION 03　/　入るのか</div>
+  <h1 id="title">まずはDwarfStarで<br>96GBに押し込む</h1>
+  <p class="lead">モデルを使うには、まず重みと実行時のメモリを収めなければならない。</p>
+  <div class="rule"></div>
+  <div class="problem">
+    <div class="tag">最初の壁</div>
+    <p>重みだけを小さくしても足りない。<br>長い文脈を扱うための領域も必要だ。</p>
   </div>
-  <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>03 / 08</span></footer>
+  <div class="steps" aria-label="圧縮の試行順序">
+    <div class="step">
+      <div class="number">01 / WEIGHTS</div>
+      <h2>非対称Q2量子化</h2>
+      <p>DwarfStarの量子化モデルを出発点に、<strong>重みを強く圧縮</strong>する。まずは96GB環境で起動できる構成を探した。</p>
+    </div>
+    <div class="step">
+      <div class="number">02 / KV CACHE</div>
+      <h2>TurboQuantも試す</h2>
+      <p>文脈が伸びると増えるKVキャッシュにも手を付ける。<strong>重み以外の余白</strong>をどう作るか、初期段階で試行した。</p>
+    </div>
+  </div>
+  <div class="takeaway">
+    <b>ここでの到達点</b>
+    <p>「動かせるか」を先に確かめる。次は、モデル自体を削って余裕を作れるか？</p>
+  </div>
+  <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash ｜ 圧縮の初期試行</span><span>03 / 08</span></footer>
 </section>
 </body>
 </html>

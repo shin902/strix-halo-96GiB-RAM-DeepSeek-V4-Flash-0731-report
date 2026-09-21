@@ -3,40 +3,58 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>タイトル・概要</title>
-<style>@page{size:A3 landscape;margin:0}
+<title>96GBのPCでDeepSeek V4 Flashを常用したい</title>
+<style>
+@page{size:A3 landscape;margin:0}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#202020;background:#f4f4f4}
-.page{width:420mm;height:297mm;padding:22mm 22mm 28mm;background:white;position:relative;break-after:page;overflow:hidden}
-.page{padding-left:42mm}
-.page:last-child{break-after:auto}
-.hero{background:white;color:#202020}
-.label{font-size:15pt;letter-spacing:3px;opacity:.7}
-h1{font-size:48pt;line-height:1.35;white-space:pre-line;margin:20mm 0 12mm;overflow-wrap:anywhere}
-.hero h1{font-size:65pt;margin-top:24mm}
-.lead{font-size:30pt;line-height:1.7;white-space:pre-line;margin:0 0 15mm}
-.body{font-size:var(--body-size);line-height:1.85;overflow-wrap:anywhere;display:flow-root}
-.body p{margin:0 0 1em;white-space:pre-line}
-.columns .body{column-count:2;column-gap:14mm}
-.footer{position:absolute;bottom:14mm;left:22mm;right:22mm;border-top:.3mm solid currentColor;padding-top:5mm;display:flex;gap:10mm;justify-content:space-between;font-size:11pt;opacity:.65}
-.footer span:first-child{overflow-wrap:anywhere;max-width:90%}
-.content{height:100%;overflow:hidden}
- @media print{body{background:white}
-.page{print-color-adjust:exact;-webkit-print-color-adjust:exact;margin:0}
-}
-.footer{left:42mm}
+body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#191919;background:#f4f4f4}
+.page{width:420mm;height:297mm;background:#fff;position:relative;overflow:hidden;break-after:page;padding:20mm 22mm 18mm 42mm}
+.eyebrow{display:flex;align-items:center;gap:7mm;font-size:13pt;font-weight:700;letter-spacing:.13em}
+.eyebrow::before{content:"";display:block;width:11mm;height:2mm;background:#e65b35}
+h1{font-size:51pt;line-height:1.35;letter-spacing:-.055em;margin:13mm 0 0;font-weight:800}
+h1 span{color:#d84e2c}
+.subhead{font-size:20pt;line-height:1.5;margin:8mm 0 0;font-weight:600}
+.rule{height:.45mm;background:#242424;margin:11mm 0 8mm}
+.intro{display:flex;gap:12mm;font-size:15pt;line-height:1.55}
+.intro p{margin:0;flex:1}
+.intro strong{font-size:16pt}
+.results-label{font-size:13pt;font-weight:700;letter-spacing:.1em;color:#b44025;margin:11mm 0 5mm}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+.result{background:#f4f2ef;padding:7mm 7mm 6mm;min-height:53mm}
+.result .metric{font-size:13pt;font-weight:700;margin:0 0 4mm}
+.result .value{font-size:27pt;font-weight:800;letter-spacing:-.05em;line-height:1.15;margin:0;white-space:nowrap}
+.result .value em{font-style:normal;color:#d84e2c}
+.result .detail{font-size:11.5pt;line-height:1.45;margin:4mm 0 0}
+.result .versus{font-size:12pt;line-height:1.4;margin:3mm 0 0;color:#555}
+.source{font-size:10.5pt;color:#666;line-height:1.45;margin:4mm 0 0}
+.question{position:absolute;left:42mm;right:22mm;bottom:30mm;border-left:1.7mm solid #e65b35;padding:2mm 0 2mm 6mm;display:flex;align-items:center;gap:10mm}
+.question strong{font-size:16pt;white-space:nowrap}
+.question span{font-size:19pt;font-weight:700;letter-spacing:.01em}
+.question b{color:#d84e2c}
+footer{position:absolute;bottom:12mm;left:42mm;right:22mm;border-top:.3mm solid #aaa;padding-top:4mm;display:flex;justify-content:space-between;font-size:11pt;color:#666}
+@media print{body{background:white}.page{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style>
 </head>
 <body>
-<section class="page hero" style="--body-size:25pt">
-  <div class="content">
-    <div class="label">SECTION 01</div>
-    <h1>タイトル・概要</h1>
-    <p class="lead"></p>
-    <div class="body"><p></p></div>
+<section class="page">
+  <div class="eyebrow">生成AIなんでも展示会 · 個人検証</div>
+  <h1>96GBのPCで<br><span>DeepSeek V4 Flash</span>を常用したい！</h1>
+  <p class="subhead">大きなモデルを、手元の1台で。「動く」の先の使い心地を確かめる。</p>
+  <div class="rule"></div>
+  <div class="intro">
+    <p><strong>モデル：</strong>DeepSeek V4 Flash<br>285B総量 / 13B稼働 · 256専門家から6つ選択 · 最大100万token</p>
+    <p><strong>PC：</strong>Strix Halo · 96 GiB<br>Ryzen AI MAX+ 395 / Radeon 8060S。</p>
   </div>
-  <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>01 / 08</span></footer>
+  <p class="results-label">Claude Opus 4.8と比べると？ · 公式公表ベンチマーク</p>
+  <div class="results">
+    <div class="result"><p class="metric">Terminal Bench 2.1</p><p class="value"><em>82.7</em> / 85.0</p><p class="versus">DSv4 Flash / Opus-4.8</p><p class="detail">端末での実作業を評価</p></div>
+    <div class="result"><p class="metric">DeepSWE</p><p class="value"><em>54.4</em> / 58.0</p><p class="versus">DSv4 Flash / Opus-4.8</p><p class="detail">ソフトウェア修正を評価</p></div>
+    <div class="result"><p class="metric">NL2Repo</p><p class="value"><em>54.2</em> / 69.7</p><p class="versus">DSv4 Flash / Opus-4.8</p><p class="detail">自然言語からの開発を評価</p></div>
+  </div>
+  <p class="source">出典：DeepSeek-V4-Flash-0731 公式モデルカードの比較表 / DeepSeek V4 Technical Documentation。公表値であり、このPCの量子化版の実測精度ではありません。Code Agent系はDeepSeek Harness minimal mode・reasoning maxでの評価。285Bは本体の公称値（DSparkを含む配布checkpointは304B表示）。</p>
+  <div class="question"><strong>この展示で追うこと</strong><span><b>入る？</b>　→　<b>速くなる？</b>　→　<b>実際どう？</b></span></div>
+  <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>01 / 08</span></footer>
 </section>
 </body>
 </html>
