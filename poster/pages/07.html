@@ -12,13 +12,13 @@ body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#20202
 .label{font-size:13pt;letter-spacing:3px;color:#666}
 h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
 .dek{font-size:15pt;line-height:1.4;margin:0 0 9mm;color:#555}
-.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:82mm 91mm;gap:7mm 10mm}
+.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:91mm 76mm;gap:7mm 10mm}.chart:first-child{grid-column:1 / -1}
 .chart{border-top:.7mm solid #202020;padding-top:4mm;min-width:0}
 .chart h2{font-size:22pt;line-height:1.2;margin:0 0 1mm}
 .chart .meta{font-size:11pt;color:#666;margin:0 0 5mm;line-height:1.35}
-.bars{display:grid;gap:2mm}.bar-row{display:grid;grid-template-columns:27mm 1fr 22mm;gap:3mm;align-items:center;font-size:12pt;white-space:nowrap}
-.bar-row .track{height:7mm;background:#efefef}.bar-row .fill{height:100%;background:#252525}.bar-row strong{text-align:right;font-size:15pt;font-weight:700}
-.bar-row.highlight strong{font-size:19pt}.bar-row.highlight .fill{background:#bb4a2c}
+.bars{display:grid;gap:2mm}.bar-row{display:grid;grid-template-columns:34mm 1fr 28mm;gap:5mm;align-items:center;font-size:16pt;white-space:nowrap}
+.bar-row .track{height:8mm;background:#efefef}.bar-row .fill{height:100%;background:#252525}.bar-row strong{text-align:right;font-size:19pt;font-weight:700}
+.bar-row.highlight strong{font-size:24pt}.bar-row.highlight .fill{background:#bb4a2c}
 .unit{font-size:10pt;color:#666;margin:2mm 0 0;text-align:right}
 .note{border-top:.7mm solid #202020;padding-top:4mm;display:flex;flex-direction:column;justify-content:space-between}
 .note h2{font-size:22pt;margin:0 0 3mm}.note p{font-size:15pt;line-height:1.5;margin:0}.note .source{font-size:10pt;line-height:1.5;color:#666}
@@ -30,7 +30,7 @@ h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
 <section class="page">
   <div class="label">SECTION 07 · BENCHMARK</div>
   <h1>で、実際どれくらい速い？</h1>
-  <p class="dek">保存済みの測定と、統一条件で測りたい「読む速さ」「書く速さ」「先読みの的中率」</p>
+  <p class="dek">入力を読む速さは実測。出力速度と先読みの的中率は統一条件で測定予定。</p>
   <div class="grid">
     <div class="chart">
       <h2>入力を読む速さ <small>Prefill</small></h2>
@@ -54,12 +54,9 @@ h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
       <p class="meta">DSpark · accepted ÷ drafted</p>
       <p>測定値を確認後、ここに採用率のグラフを配置する。</p>
     </div>
-    <div class="note">
-      <div><h2>数字の読み方</h2><p>Prefill は保存済みの Vulkan 測定。Decode と Acceptance は、Vulkan での plain / DSpark / REAP の測定結果が揃い次第掲載する。</p></div>
-      <p class="source">Prefill の出典：0824/llama-cpp-vulkan-prefill-chunk-benchmark.md。値は表示用に丸めた。</p>
-    </div>
+
   </div>
-  <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>07 / 08</span></footer>
+  <footer class="footer"><span>Prefill出典：0824/llama-cpp-vulkan-prefill-chunk-benchmark.md · 値は丸め表示</span><span>07 / 08</span></footer>
 </section>
 </body>
 </html>
