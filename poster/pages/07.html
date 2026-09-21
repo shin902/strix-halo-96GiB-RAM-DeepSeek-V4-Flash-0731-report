@@ -11,14 +11,14 @@ body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#20202
 .page{width:420mm;height:297mm;padding:18mm 22mm 22mm 42mm;background:white;position:relative;overflow:hidden;break-after:page}
 .label{font-size:13pt;letter-spacing:3px;color:#666}
 h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
-.dek{font-size:15pt;line-height:1.4;margin:0 0 9mm;color:#555}
-.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:91mm 76mm;gap:7mm 10mm}.chart:first-child{grid-column:1 / -1}
+.dek{font-size:27pt;line-height:1.35;margin:1mm 0 8mm;font-weight:800}.dek span{color:#bb4a2c}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:85mm 91mm;gap:7mm 10mm}.decode{grid-column:1 / -1}.prefill{grid-column:1}.acceptance{grid-column:2}
 .chart{border-top:.7mm solid #202020;padding-top:4mm;min-width:0}
 .chart h2{font-size:22pt;line-height:1.2;margin:0 0 1mm}
 .chart .meta{font-size:11pt;color:#666;margin:0 0 5mm;line-height:1.35}
-.bars{display:grid;gap:2mm}.bar-row{display:grid;grid-template-columns:34mm 1fr 28mm;gap:5mm;align-items:center;font-size:16pt;white-space:nowrap}
-.bar-row .track{height:8mm;background:#efefef}.bar-row .fill{height:100%;background:#252525}.bar-row strong{text-align:right;font-size:19pt;font-weight:700}
-.bar-row.highlight strong{font-size:24pt}.bar-row.highlight .fill{background:#bb4a2c}
+.bars{display:grid;gap:2mm}.bar-row{display:grid;grid-template-columns:52mm 1fr 28mm;gap:5mm;align-items:center;font-size:16pt;white-space:nowrap}
+.bar-row span small{display:block;font-size:10pt;color:#666}.bar-row .track{height:7mm;background:#efefef}.bar-row .fill{height:100%;background:#252525}.bar-row strong{text-align:right;font-size:18pt;font-weight:700}
+.bar-row.highlight strong{font-size:22pt}.bar-row.highlight .fill{background:#bb4a2c}
 .unit{font-size:10pt;color:#666;margin:2mm 0 0;text-align:right}
 .note{border-top:.7mm solid #202020;padding-top:4mm;display:flex;flex-direction:column;justify-content:space-between}
 .note h2{font-size:22pt;margin:0 0 3mm}.note p{font-size:15pt;line-height:1.5;margin:0}.note .source{font-size:10pt;line-height:1.5;color:#666}
@@ -28,13 +28,23 @@ h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
 </head>
 <body>
 <section class="page">
-  <div class="label">SECTION 07 · BENCHMARK</div>
+  <div class="label">SECTION 07 · 測定結果</div>
   <h1>で、実際どれくらい速い？</h1>
-  <p class="dek">入力速度と、統一条件24/24点で完走した出力速度・先読み採用率を比較する。</p>
+  <p class="dek"><span>先読みで生成が約1.3倍に。</span><br>先読み役を軽くしても、速さはほぼ同じ。</p>
   <div class="grid">
-    <div class="chart">
+    <div class="chart decode">
+      <h2>出力する速さ <small>Decode</small></h2>
+      <p class="meta">同じ条件で比べた、1秒あたりに生成する量（各構成8回の平均）</p>
+      <div class="bars">
+        <div class="bar-row"><span>先読みなし<small>plain</small></span><div class="track"><div class="fill" style="width:76.4%"></div></div><strong>16.57</strong></div>
+        <div class="bar-row highlight"><span>先読みあり<small>Q2/Q8</small></span><div class="track"><div class="fill" style="width:100%"></div></div><strong>21.68</strong></div>
+        <div class="bar-row"><span>先読み役を軽量化<small>K160</small></span><div class="track"><div class="fill" style="width:98.3%"></div></div><strong>21.31</strong></div>
+      </div>
+      <p class="unit">tok/s · 構成間の速度比は同条件の平均値から算出</p>
+    </div>
+    <div class="chart prefill">
       <h2>入力を読む速さ <small>Prefill</small></h2>
-      <p class="meta">Vulkan · 1,233 token · -ub の違い · 2回平均</p>
+      <p class="meta">1,233トークンの入力を、処理量を変えて比較</p>
       <div class="bars">
         <div class="bar-row"><span>-ub 128</span><div class="track"><div class="fill" style="width:38.7%"></div></div><strong>62</strong></div>
         <div class="bar-row"><span>-ub 256</span><div class="track"><div class="fill" style="width:48.3%"></div></div><strong>77</strong></div>
@@ -44,22 +54,12 @@ h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
       </div>
       <p class="unit">token/s · -ub 2048 は pinned memory 警告あり</p>
     </div>
-    <div class="chart">
-      <h2>出力する速さ <small>Decode</small></h2>
-      <p class="meta">Vulkan · context 40,000 · ubatch 512 · reasoning / coding × 4入力深度 · 各構成8点の平均</p>
+    <div class="chart acceptance">
+      <h2>先読みはどれくらい当たる？ <small>採用率</small></h2>
+      <p class="meta">候補のうち、実際に採用された割合</p>
       <div class="bars">
-        <div class="bar-row"><span>plain</span><div class="track"><div class="fill" style="width:76.4%"></div></div><strong>16.57</strong></div>
-        <div class="bar-row highlight"><span>Q2/Q8</span><div class="track"><div class="fill" style="width:100%"></div></div><strong>21.68</strong></div>
-        <div class="bar-row"><span>K160</span><div class="track"><div class="fill" style="width:98.3%"></div></div><strong>21.31</strong></div>
-      </div>
-      <p class="unit">tok/s · 構成間の速度比は同条件の平均値から算出</p>
-    </div>
-    <div class="chart">
-      <h2>先読みの的中率 <small>Acceptance</small></h2>
-      <p class="meta">DSpark · accepted ÷ drafted · 各構成8点の平均</p>
-      <div class="bars">
-        <div class="bar-row highlight"><span>Q2/Q8</span><div class="track"><div class="fill" style="width:100%"></div></div><strong>55.8%</strong></div>
-        <div class="bar-row"><span>K160</span><div class="track"><div class="fill" style="width:97.3%"></div></div><strong>54.3%</strong></div>
+        <div class="bar-row highlight"><span>先読みあり<small>Q2/Q8</small></span><div class="track"><div class="fill" style="width:100%"></div></div><strong>55.8%</strong></div>
+        <div class="bar-row"><span>軽量化後<small>K160</small></span><div class="track"><div class="fill" style="width:97.3%"></div></div><strong>54.3%</strong></div>
       </div>
       <p class="unit">plainは先読みなし · 棒の長さは55.8%を基準</p>
     </div>
