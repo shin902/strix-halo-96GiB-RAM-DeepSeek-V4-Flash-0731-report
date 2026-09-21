@@ -163,28 +163,29 @@
     <div class="eyebrow">08 / 08　結論と次の一手</div>
     <h1>結局、実用レベルになった？</h1>
     <div class="answer">
-      <strong>長い文章を入力しても、落ちずに動いた！<br><span>ただし、回答の完走はまだ未確認。</span></strong>
-      <p>今回の検証では、回答が終わる前に設定した生成上限（2,048トークン）に達し、最後まで答え切るかの確認には至らなかった。</p>
+      <strong>動いた。でも実用には、結局まだ遅い！<br><span>回答に数分待ち。エージェント用途の壁は高かった。</span></strong>
+      <p>約21 tok/sまで引き上げたものの、常用には30〜50 tok/s欲しい。さらに長文ファイル読込（Prefill）の遅さやスワップの懸念も残った。</p>
     </div>
     <div class="grid">
       <div class="block">
-        <span class="tag">できたこと</span>
-        <h2>長い文章でも落ちずに完走</h2>
-        <p>長文の読解もコード作成も、メモリ不足でクラッシュすることなく安定して生成を続けられた。</p>
+        <span class="tag">使用感｜生成速度（Decode）</span>
+        <h2>回答に数分待ち。最低30 tok/sは必要</h2>
+        <p>普段のエージェント利用では50 tok/s超を使っており、最低でも30 tok/sが実用ライン。約21 tok/sでは回答に数分待たされ厳しい。</p>
       </div>
       <div class="block">
-        <span class="tag">まだ言えないこと</span>
-        <h2>回答を最後まで出せるか？</h2>
-        <p>どちらのテストも生成量の上限で終了したため、実際の作業で最後まで答え切れるかは追加の検証が必要。</p>
+        <span class="tag">使用感｜読込（Prefill）とメモリ</span>
+        <p>ファイル読込の遅さと、スワップの影</p>
+        <p>コードやファイルを読み込むPrefillに時間がかかる。また、検証中にわずかなスワップ使用履歴も確認された。96GBあっても極限状態のため、他アプリを極力落とした専用環境での運用が前提になる。</p>
       </div>
     </div>
     <div class="next">
-      <h2>次にやること</h2>
-      <p>長文入力でも回答を完成できるか検証する。待ち時間の長い処理を特定し、速度と日本語品質の改善を進める。</p>
+      <h2>今後の展望</h2>
+      <p>エージェント実用の目安となる30 tok/s 台を目指す。ファイル読込（Prefill）の高速化やさらなる軽量化を進め、これ以上メモリ使用量を増やさない範囲で最適運用を追求したい。</p>
     </div>
-    <p class="test-condition">試験条件：軽量化した先読み役／入力61,440トークン／生成上限2,048トークン／context 65,536。RAM約90.3 GiB、swap 0。</p>
+    <p class="test-condition">試験条件：軽量化した先読み役／入力61,440トークン／context 65,536。RAM約90.3 GiB（スワップ発生に注意・他アプリ最小限推奨）。</p>
     <footer class="source">
-      <span>測定条件・ログ・続報：github.com/shin902/strix-halo-96GiB-RAM-DeepSeek-V4-Flash-0731-report　｜　詳しい試行錯誤はnote記事で公開予定</span><span>08
+      <span>ベンチマーク・詳細ログ：github.com/shin902/strix-halo-96GiB-RAM-DeepSeek-V4-Flash-0731-report　｜　note / Xで詳細 /
+        続報を近日公開予定</span><span>08
         / 08</span>
     </footer>
   </section>
