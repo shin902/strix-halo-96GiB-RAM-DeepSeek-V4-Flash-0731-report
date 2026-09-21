@@ -152,24 +152,55 @@
     .evidence {
       margin-top: 8mm;
       min-height: 36mm;
-      border: 0.4mm dashed #aebdbb;
-      background: #fafcfc;
-      padding: 5mm 7mm;
       display: flex;
       align-items: center;
-      gap: 10mm
+      justify-content: center;
     }
 
-    .evidence strong {
-      font-size: 15pt;
-      white-space: nowrap;
-      color: #356b68
+    .chat {
+      width: 100%;
+      max-width: 245mm;
+      border: .35mm solid #d8e2e1;
+      border-radius: 3mm;
+      background: #fff;
+      overflow: hidden
     }
 
-    .evidence span {
+    .messages {
+      display: grid;
+      gap: 2mm;
+      padding: 3mm 4mm 3.5mm
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1mm;
       font-size: 12pt;
-      line-height: 1.5;
-      color: #617174
+      line-height: 1.35
+    }
+
+    .message-label {
+      color: #667779;
+      font-size: 10pt;
+      font-weight: 700
+    }
+
+    .message.user {
+      align-items: flex-end
+    }
+
+    .message-text {
+      display: inline-block;
+      padding: 1.6mm 3mm;
+      border-radius: 2.5mm;
+      background: #e7f2ef;
+      color: #1c2529
+    }
+
+    .message.assistant .message-text {
+      background: #f4f0ed
     }
 
     footer {
@@ -216,10 +247,16 @@
         <p>容量面では魅力があったが、日本語の出力品質が大きく崩れた。常用したいモデル本体としては採用を見送った。</p>
       </div>
     </div>
-    <div class="evidence" aria-label="日本語出力の比較スクリーンショットを配置する領域"><strong>比較スクショ</strong><span>元モデルとREAP
-        K160の日本語出力例を、条件とともに配置予定</span></div>
+    <div class="evidence" aria-label="実際の会話">
+      <div class="chat" role="group" aria-label="会話チャット">
+        <div class="messages">
+          <div class="message user"><span class="message-label">ユーザー</span><span class="message-text">こんにちは</span></div>
+          <div class="message assistant"><span class="message-label">アシスタント</span><span class="message-text">Вić. На
+              рус. Привет. Можно предложить help.</span></div>
+        </div>
+      </div>
+    </div>
     <div class="takeaway"><strong>この試行の結論</strong><span>「入る」だけでは足りない。使える出力を保てるかが次の条件。</span></div>
-    <p class="note">※ ここは構成メモに基づく叩き台。掲載前に日本語出力例と比較条件を追加して確認する。</p>
     <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>04 / 08</span></footer>
   </section>
 </body>
