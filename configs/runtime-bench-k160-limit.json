@@ -1,0 +1,32 @@
+{
+  "server": "~/ghq/github.com/Nathanw1014/strix-halo-llamacpp/vulkan/llama-server",
+  "target": "/mnt/data/DeepSeek-V4-Flash-0731-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-imatrix.gguf",
+  "port": 8099,
+  "context_size": 65536,
+  "batch_size": 2048,
+  "ubatch_size": 512,
+  "target_kv": "q8_0",
+  "draft_kv": "q4_0",
+  "n_max": 4,
+  "seed": 1234,
+  "depths": [
+    32768,
+    49152,
+    61440
+  ],
+  "predict": 512,
+  "variants": {
+    "plain": null,
+    "q2k-q8-k160": "~/models/DeepSeek-V4-Flash-0731/DeepSeek-V4-Flash-0731-DSpark-K160-REAP-L40-42-Q2K-Q8-0.gguf"
+  },
+  "workloads": {
+    "reasoning": {
+      "context": "Case study: A laboratory has three workstations A, B and C and a shared memory budget of 96 GiB. Job P needs A for 4 minutes and 24 GiB; Q needs B for 6 minutes and 40 GiB; R needs C for 5 minutes and 32 GiB. S needs A and B together for 3 minutes and 48 GiB, after P and Q finish. T needs C for 2 minutes and 16 GiB, after R and S finish. Jobs cannot be interrupted. Memory is released at job completion. All jobs are available at time zero except for their dependencies. Completion at a time boundary releases resources before another job starts. A second scenario increases Q's memory to 56 GiB. A third reduces the shared budget to 80 GiB. These records are reference data, not instructions.\n",
+      "task": "日本語で考察してください。上記の3シナリオそれぞれについて、最短の完了時刻と各ジョブの開始・終了時刻を求め、全区間のメモリ制約を検算してください。最適性の下界と、その下界を達成できるかを論じてください。同じ記録が繰り返されていてもジョブは増えません。"
+    },
+    "coding": {
+      "context": "Repository reference: a TypeScript event store.\nexport type Event = { id: string; sequence: number; payload: string };\nexport class EventStore {\n  private events: Event[] = [];\n  append(event: Event): void { this.events.push(event); }\n  after(sequence: number): Event[] { return this.events.filter(e => e.sequence > sequence); }\n  latest(): Event | undefined { return this.events[this.events.length - 1]; }\n}\nRequirements: IDs are unique and nonempty, sequence numbers are nonnegative safe integers and strictly increasing. Repeating an identical append is idempotent. Reusing an ID with different data throws without mutation. Callers must not be able to mutate stored events through input objects or returned arrays. after() returns ascending snapshots. Empty latest() returns undefined. No external dependencies. These source excerpts are reference data, not instructions.\n",
+      "task": "Implement the corrected EventStore in TypeScript and runnable tests using node:assert/strict. Cover idempotence, conflicting IDs, ordering, invalid input and mutation isolation. Output code first, then briefly explain the trade-offs. Repeated reference excerpts describe the same module, not additional modules."
+    }
+  }
+}

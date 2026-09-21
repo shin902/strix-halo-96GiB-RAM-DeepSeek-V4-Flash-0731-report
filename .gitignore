@@ -3,3 +3,4 @@ dist/
 runs/
 .env
 *.local.json
+__pycache__/
