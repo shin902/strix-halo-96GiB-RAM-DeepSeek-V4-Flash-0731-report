@@ -19,12 +19,13 @@ h1 span{color:#d84e2c}
 .intro{display:flex;gap:12mm;font-size:15pt;line-height:1.55}
 .intro p{margin:0;flex:1}
 .intro strong{font-size:16pt}
-.results-label{font-size:13pt;font-weight:700;letter-spacing:.1em;color:#b44025;margin:11mm 0 5mm}
+.results-label{font-size:17pt;font-weight:700;letter-spacing:.06em;color:#b44025;margin:10mm 0 5mm}
 .results{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
-.result{background:#f4f2ef;padding:7mm 7mm 6mm;min-height:53mm}
+.result{background:#f4f2ef;padding:7mm 7mm 6mm;min-height:55mm}
 .result .metric{font-size:13pt;font-weight:700;margin:0 0 4mm}
-.result .value{font-size:27pt;font-weight:800;letter-spacing:-.05em;line-height:1.15;margin:0;white-space:nowrap}
+.result .value{font-size:38pt;font-weight:800;letter-spacing:-.05em;line-height:1.15;margin:0;white-space:nowrap}
 .result .value em{font-style:normal;color:#d84e2c}
+.result .value small{font-size:16pt;letter-spacing:0;margin-left:2mm}
 .result .detail{font-size:11.5pt;line-height:1.45;margin:4mm 0 0}
 .result .versus{font-size:12pt;line-height:1.4;margin:3mm 0 0;color:#555}
 .source{font-size:10.5pt;color:#666;line-height:1.45;margin:4mm 0 0}
@@ -46,13 +47,13 @@ footer{position:absolute;bottom:12mm;left:42mm;right:22mm;border-top:.3mm solid 
     <p><strong>モデル：</strong>DeepSeek V4 Flash<br>285B総量 / 13B稼働 · 256専門家から6つ選択 · 最大100万token</p>
     <p><strong>PC：</strong>Strix Halo · 96 GiB<br>Ryzen AI MAX+ 395 / Radeon 8060S。</p>
   </div>
-  <p class="results-label">Claude Opus 4.8と比べると？ · 公式公表ベンチマーク</p>
+  <p class="results-label">まず、結論。文字を出し続ける速さが、約12 → 16 → 20 tok/sへ。</p>
   <div class="results">
-    <div class="result"><p class="metric">Terminal Bench 2.1</p><p class="value"><em>82.7</em> / 85.0</p><p class="versus">DSv4 Flash / Opus-4.8</p><p class="detail">端末での実作業を評価</p></div>
-    <div class="result"><p class="metric">DeepSWE</p><p class="value"><em>54.4</em> / 58.0</p><p class="versus">DSv4 Flash / Opus-4.8</p><p class="detail">ソフトウェア修正を評価</p></div>
-    <div class="result"><p class="metric">NL2Repo</p><p class="value"><em>54.2</em> / 69.7</p><p class="versus">DSv4 Flash / Opus-4.8</p><p class="detail">自然言語からの開発を評価</p></div>
+    <div class="result"><p class="metric">01 / まず動かす</p><p class="value">約12<small>tok/s</small></p><p class="detail">96GBに収めて、ローカルで生成</p></div>
+    <div class="result"><p class="metric">02 / 実装を変える</p><p class="value">約16<small>tok/s</small></p><p class="detail">Strix Halo向けの実装で改善</p></div>
+    <div class="result"><p class="metric">03 / 先読みを加える</p><p class="value"><em>約20</em><small>tok/s</small></p><p class="detail">投機的デコードで、もう一段速く</p></div>
   </div>
-  <p class="source">出典：DeepSeek-V4-Flash-0731 公式モデルカードの比較表 / DeepSeek V4 Technical Documentation。公表値であり、このPCの量子化版の実測精度ではありません。Code Agent系はDeepSeek Harness minimal mode・reasoning maxでの評価。285Bは本体の公称値（DSparkを含む配布checkpointは304B表示）。</p>
+  <p class="source">tok/s＝1秒あたりに生成するトークン数。「最初の文字が出るまでの時間」とは別の指標。12 / 16 / 20 はストーリーを示す概数で、同一条件の実測比較としては未確定。測定条件と確定値は後続ページで示す。</p>
   <div class="question"><strong>この展示で追うこと</strong><span><b>入る？</b>　→　<b>速くなる？</b>　→　<b>実際どう？</b></span></div>
   <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>01 / 08</span></footer>
 </section>

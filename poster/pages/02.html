@@ -14,16 +14,25 @@ body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#20202
 h1{font-size:49pt;line-height:1.25;letter-spacing:-.04em;margin:9mm 0 7mm}
 .lead{font-size:25pt;line-height:1.48;margin:0 0 13mm;font-weight:650}
 .lead strong{border-bottom:2.5mm solid #222}
-.equation{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:5mm;margin:0 0 13mm}
-.term{border:1.1mm solid #222;min-height:62mm;padding:7mm 6mm;display:flex;flex-direction:column;justify-content:space-between}
+.equation{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:5mm;margin:0 0 10mm}
+.term{border:1.1mm solid #222;min-height:55mm;padding:7mm 6mm;display:flex;flex-direction:column;justify-content:space-between}
 .term.dark{background:#222;color:white}
 .term small{font-size:13pt;font-weight:700;letter-spacing:.07em}
 .term b{font-size:29pt;line-height:1.22;letter-spacing:-.03em}
 .symbol{align-self:center;font-size:31pt;font-weight:400}
-.takeaway{border-top:.6mm solid #222;padding-top:8mm;display:grid;grid-template-columns:75mm 1fr;gap:9mm}
+.takeaway{border-top:.6mm solid #222;padding-top:6mm;display:grid;grid-template-columns:75mm 1fr;gap:9mm}
 .takeaway h2{font-size:19pt;margin:0;line-height:1.4}
-.takeaway p{font-size:20pt;line-height:1.65;margin:0}
-.next{font-size:16pt;font-weight:700;margin:10mm 0 0}
+.takeaway p{font-size:18pt;line-height:1.55;margin:0}
+.benchmark{margin-top:8mm;background:#f4f2ef;padding:5mm 7mm 4mm}
+.benchmark h2{font-size:16pt;margin:0 0 3mm;line-height:1.4}
+.benchmark h2 span{font-size:12pt;font-weight:400;color:#555;margin-left:4mm}
+.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+.score{border-left:1mm solid #d84e2c;padding-left:4mm}
+.score strong{display:block;font-size:13pt}
+.score p{font-size:17pt;font-weight:800;margin:1mm 0 0;white-space:nowrap}
+.score p span{color:#d84e2c}
+.benchmark .source{font-size:9pt;line-height:1.35;color:#555;margin:3mm 0 0}
+.next{font-size:16pt;font-weight:700;margin:7mm 0 0}
 footer{position:absolute;bottom:12mm;left:22mm;right:42mm;border-top:.3mm solid #999;padding-top:4mm;display:flex;justify-content:space-between;font-size:11pt;color:#666}
 @media print{body{background:#fff}.page{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style>
@@ -44,7 +53,16 @@ footer{position:absolute;bottom:12mm;left:22mm;right:42mm;border-top:.3mm solid 
     <h2>「起動できる」と<br>「常用できる」は違う</h2>
     <p>モデルが読み込めても、長い入力や生成に使うメモリが残らなければ、実用には厳しい。まず重みを圧縮し、会話のための余白を作る必要があった。</p>
   </div>
-  <p class="next">次へ → DwarfStarで、まずは96GBに押し込む</p>
+  <aside class="benchmark" aria-label="このモデルを試したい理由となる公式ベンチマーク">
+    <h2>それでも載せたい理由 <span>Claude Opus 4.8との公式公表値の比較</span></h2>
+    <div class="scores">
+      <div class="score"><strong>Terminal Bench 2.1</strong><p><span>82.7</span> / 85.0</p></div>
+      <div class="score"><strong>DeepSWE</strong><p><span>54.4</span> / 58.0</p></div>
+      <div class="score"><strong>NL2Repo</strong><p><span>54.2</span> / 69.7</p></div>
+    </div>
+    <p class="source">左が DeepSeek V4 Flash、右が Claude Opus 4.8。出典：DeepSeek-V4-Flash-0731 公式モデルカード / DeepSeek V4 Technical Documentation。公表値であり、このPCの量子化版の実測精度ではありません。</p>
+  </aside>
+  <p class="next">次へ → 非対称Q2モデルをDwarfStarで動かす</p>
   <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>02 / 08</span></footer>
 </section>
 </body>
