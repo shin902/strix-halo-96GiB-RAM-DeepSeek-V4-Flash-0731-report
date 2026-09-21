@@ -167,9 +167,9 @@
       <h1>動かす方法を変えて、生成を速くする</h1>
       <p class="lead">96GBに入っても、1文字ずつ待つ体験では常用しづらい。<br>次の壁は、生成速度だった。</p>
       <div class="rule"></div>
-      <div class="path" aria-label="生成速度の変化。数値は確認待ち">
+      <div class="path" aria-label="Vulkan実装同士の生成速度比較">
         <div>
-          <div class="label">DwarfStar / ROCm</div>
+          <div class="label">mainline llama.cpp / Vulkan</div>
           <div class="metric"><strong>約11</strong><span>tok/s</span></div>
         </div>
         <div class="arrow" aria-hidden="true">→</div>
@@ -190,8 +190,7 @@
           </p>
         </div>
       </div>
-      <p class="note">叩き台：11 / 18
-        tok/sは構成メモの概数。掲載前にROCm側とVulkan側それぞれのモデル・量子化・入力長・測定ログを照合し、比較条件を明記する。ds4faのメモリ不足も実行条件とログを確認する。</p>
+      <p class="note">約11→18 tok/sはgenai-expo EXP-0010のVulkan実装同士の比較。ROCmとの同条件比較ではない。モデル・量子化・入力長などの詳細は元ログを参照。ds4faのメモリ不足も実行条件とログを確認する。</p>
     </div>
     <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>05 / 08</span></footer>
   </section>

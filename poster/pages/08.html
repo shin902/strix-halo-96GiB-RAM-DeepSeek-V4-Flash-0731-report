@@ -32,19 +32,19 @@ h1{font-size:43pt;line-height:1.25;letter-spacing:-.04em;margin:7mm 0 10mm}
   <div class="eyebrow">08 / 08　結論と次の一手</div>
   <h1>結局、実用レベルになった？</h1>
   <div class="answer">
-    <strong>短いやり取りはできた。<br><span>長文の常用には、まだ課題。</span></strong>
-    <p>96 GiBのPCで推論は成立。長文では、応答までの待ち時間とメモリの余裕を引き続き検証する。</p>
+    <strong>61K入力でも生成は完走。<br><span>タスク完遂は、まだ未確認。</span></strong>
+    <p>K160 drafterでcontext 65,536・入力61,440・最大生成2,048 tokensをreasoning / codingの両方で実行した。</p>
   </div>
   <div class="grid">
     <div class="block">
       <span class="tag">できたこと</span>
-      <h2>ローカル実行の入口に立てた</h2>
-      <p>圧縮したモデルを載せ、生成まで確認できた。短い対話や実験には使える。速度は設定と入力長で変わるため、前ページの測定条件とあわせて見る。</p>
+      <h2>長文でもOOMなく生成</h2>
+      <p>両タスクともRAM約90.3 GiB、swap 0、OOMなしで生成上限まで進んだ。統一40K条件の速度とメモリの結果は前ページに示す。</p>
     </div>
     <div class="block">
       <span class="tag">まだ言えないこと</span>
-      <h2>長文の「常用」は検証途中</h2>
-      <p>65K級の入力で安定して使えるか、長文ループ・日本語品質・メモリ不足を含めて確認が必要。速度の測定だけでは実用性を判定できない。</p>
+      <h2>最終回答・完成コードには未到達</h2>
+      <p>reasoning / codingとも2,048 tokensの生成上限で終了。長文の生成成立と、実際の課題を最後まで解けることは別に評価する必要がある。</p>
     </div>
   </div>
   <div class="next">

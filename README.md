@@ -16,7 +16,13 @@ npm run poster
 - 画像は例えば `poster/assets/chart.png` に置き、原稿から `<img src="../assets/chart.png" style="max-width:100%">` で参照します。
 - 「PDF / 印刷」で **A3横、倍率100%、余白なし、ヘッダー・フッターなし、背景グラフィックあり** を指定してPDF保存します。01〜08の順で印刷されます。
 - `.page` の420mm × 297mmを維持し、印刷前に文字・画像のはみ出しを確認してください。JavaScriptはビューアー内では実行しません。
-- 白黒の初期原稿は見出しのみ仮置きです。本文や実測データは未入力です。
+- ポスターの6〜8枚目には、genai-expoの統一条件24点と長文試験の結果を反映しています。5枚目の約11→18 tok/sはVulkan実装同士の比較（EXP-0010）で、ROCmとの比較値ではありません。
+
+### 展示で採用した測定結果
+
+統一条件はcontext 40,000・ubatch 512、plain / Q2/Q8 non-REAP / Q2/Q8 K160、reasoning / coding × 入力深度4点で計24点が完走しました。各構成8点の平均Decodeは順に16.57 / 21.68 / 21.31 tok/s、DSparkの平均Acceptanceはnon-REAP 55.8% / K160 54.3%です。ホストRAMピークはnon-REAP 91.6〜91.7 GiB、K160 89.4〜89.6 GiBでした。K160開始時に前構成のswap使用が残っていたため、その量をK160による新規swap使用量とは解釈しません。contextを縮小するだけではOOMが解消せず、ubatchを2048から512にした条件で完走しました。条件が混在したrunは比較から除外します。
+
+別の長文試験ではK160でcontext 65,536、入力61,440、生成上限2,048 tokensをreasoning / codingとも実行し、RAM約90.3 GiB、swap 0、OOMなしで生成上限まで到達しました。両方とも最終回答・完成コードには到達していないため、長文タスクの完遂を示す結果ではありません。
 
 ## Runtime benchmark: prefill / decode / acceptance / memory
 

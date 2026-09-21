@@ -64,8 +64,8 @@ p{margin:0;line-height:1.65}
         <p>targetを96GB級のメモリへ押し込んだところに、もう1つモデルを載せる。<strong>速度だけでなく、長い文脈で起動できるか</strong>が問題になる。</p>
         <p>初期のQ2/Q4 drafter構成は、30K contextのロードでホスト全体のOOMを確認。条件を変え、Q2/Q8構成で再検証している。</p>
       </div>
-      <div class="next"><b>次の手｜drafter側をREAPで削る</b>4枚目で試したtarget本体の削減とは別の話。先読み役を軽くして、速度とメモリの両立を探る。</div>
-      <p class="note">速度の改善幅と採用率は測定条件を揃えて次の7枚目で比較する。修正履歴・具体的な速度値は検証後に追記。</p>
+      <div class="next"><b>実測｜drafter側のREAPで約2 GiB削減</b>target本体のREAPとは分けて、先読み役をK160に削減。40K条件のホストRAMピークはnon-REAPの91.6〜91.7 GiBから89.4〜89.6 GiBへ。Decode速度はほぼ同じだった。</div>
+      <p class="note">context 40,000・ubatch 512で3構成が完走。context縮小だけではOOMを解消できず、ubatch 2048→512の変更が成立に寄与した。条件混在runは正式比較から除外。ホストRAM値であり、K160開始時の残存swapを新規使用量とは扱わない。</p>
     </div>
   </div>
   <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>06 / 08</span></footer>

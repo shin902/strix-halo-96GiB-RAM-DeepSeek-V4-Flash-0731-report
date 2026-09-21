@@ -30,7 +30,7 @@ h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
 <section class="page">
   <div class="label">SECTION 07 · BENCHMARK</div>
   <h1>で、実際どれくらい速い？</h1>
-  <p class="dek">入力を読む速さは実測。出力速度と先読みの的中率は統一条件で測定予定。</p>
+  <p class="dek">入力速度と、統一条件24/24点で完走した出力速度・先読み採用率を比較する。</p>
   <div class="grid">
     <div class="chart">
       <h2>入力を読む速さ <small>Prefill</small></h2>
@@ -46,17 +46,26 @@ h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
     </div>
     <div class="chart">
       <h2>出力する速さ <small>Decode</small></h2>
-      <p class="meta">Vulkan · plain / DSpark / REAP · 統一条件で比較予定</p>
-      <p>測定値を確認後、ここに比較グラフを配置する。</p>
+      <p class="meta">Vulkan · context 40,000 · ubatch 512 · reasoning / coding × 4入力深度 · 各構成8点の平均</p>
+      <div class="bars">
+        <div class="bar-row"><span>plain</span><div class="track"><div class="fill" style="width:76.4%"></div></div><strong>16.57</strong></div>
+        <div class="bar-row highlight"><span>Q2/Q8</span><div class="track"><div class="fill" style="width:100%"></div></div><strong>21.68</strong></div>
+        <div class="bar-row"><span>K160</span><div class="track"><div class="fill" style="width:98.3%"></div></div><strong>21.31</strong></div>
+      </div>
+      <p class="unit">tok/s · 構成間の速度比は同条件の平均値から算出</p>
     </div>
     <div class="chart">
       <h2>先読みの的中率 <small>Acceptance</small></h2>
-      <p class="meta">DSpark · accepted ÷ drafted</p>
-      <p>測定値を確認後、ここに採用率のグラフを配置する。</p>
+      <p class="meta">DSpark · accepted ÷ drafted · 各構成8点の平均</p>
+      <div class="bars">
+        <div class="bar-row highlight"><span>Q2/Q8</span><div class="track"><div class="fill" style="width:100%"></div></div><strong>55.8%</strong></div>
+        <div class="bar-row"><span>K160</span><div class="track"><div class="fill" style="width:97.3%"></div></div><strong>54.3%</strong></div>
+      </div>
+      <p class="unit">plainは先読みなし · 棒の長さは55.8%を基準</p>
     </div>
 
   </div>
-  <footer class="footer"><span>Prefill出典：0824/llama-cpp-vulkan-prefill-chunk-benchmark.md · 値は丸め表示</span><span>07 / 08</span></footer>
+  <footer class="footer"><span>Prefill：0824の実測（丸め） · Decode/Acceptance：genai-expo統一条件24点</span><span>07 / 08</span></footer>
 </section>
 </body>
 </html>
