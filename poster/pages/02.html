@@ -14,15 +14,7 @@ body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#20202
 h1{font-size:49pt;line-height:1.25;letter-spacing:-.04em;margin:9mm 0 7mm}
 .lead{font-size:25pt;line-height:1.48;margin:0 0 13mm;font-weight:650}
 .lead strong{border-bottom:2.5mm solid #222}
-.equation{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:5mm;margin:0 0 10mm}
-.term{border:1.1mm solid #222;min-height:55mm;padding:7mm 6mm;display:flex;flex-direction:column;justify-content:space-between}
-.term.dark{background:#222;color:white}
-.term small{font-size:13pt;font-weight:700;letter-spacing:.07em}
-.term b{font-size:29pt;line-height:1.22;letter-spacing:-.03em}
-.symbol{align-self:center;font-size:31pt;font-weight:400}
-.takeaway{border-top:.6mm solid #222;padding-top:6mm;display:grid;grid-template-columns:75mm 1fr;gap:9mm}
-.takeaway h2{font-size:19pt;margin:0;line-height:1.4}
-.takeaway p{font-size:18pt;line-height:1.55;margin:0}
+.memory-figure{margin:0 0 8mm}.memory-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5mm}.memory-head strong{font-size:28pt}.memory-head span{font-size:16pt;color:#555}.memory-bar{height:43mm;display:flex;border:1mm solid #222}.weights{width:88.75%;background:#222;color:white;padding:5mm 7mm;display:flex;justify-content:space-between;align-items:center}.weights b{font-size:25pt}.weights strong{font-size:38pt}.remainder{flex:1;background:#f1ede9;display:flex;align-items:center;justify-content:center;color:#b44025;font-size:27pt;font-weight:800}.memory-key{display:flex;justify-content:space-between;gap:8mm;margin-top:4mm;font-size:14pt;font-weight:700}.memory-key span:last-child{color:#b44025}.memory-caption{font-size:11pt;color:#555;line-height:1.45;margin:3mm 0 0}.takeaway{border-top:.6mm solid #222;padding-top:6mm;display:grid;grid-template-columns:89mm 1fr;gap:9mm}.takeaway h2{font-size:24pt;margin:0;line-height:1.35}.takeaway p{font-size:18pt;line-height:1.5;margin:0}
 .benchmark{margin-top:8mm;background:#f4f2ef;padding:5mm 7mm 4mm}
 .benchmark h2{font-size:16pt;margin:0 0 3mm;line-height:1.4}
 .benchmark h2 span{font-size:12pt;font-weight:400;color:#555;margin-left:4mm}
@@ -42,16 +34,15 @@ footer{position:absolute;bottom:12mm;left:22mm;right:42mm;border-top:.3mm solid 
   <div class="eyebrow">SECTION 02 / 最初の壁</div>
   <h1>そもそも、96GBに入るのか？</h1>
   <p class="lead">Macと同じようにCPUとGPUでメモリを共有する。<br>その96GBを、<strong>丸ごとモデルには使えない。</strong></p>
-  <div class="equation" aria-label="モデルの重み、OSと実行環境、会話の記憶領域を足した量が、実際に使えるメモリ以下である必要がある">
-    <div class="term dark"><small>01 / モデル本体</small><b>重み</b></div>
-    <span class="symbol">＋</span>
-    <div class="term"><small>02 / 動かすため</small><b>OS・実行環境</b></div>
-    <span class="symbol">＋</span>
-    <div class="term"><small>03 / 長く話すため</small><b>KVキャッシュ</b></div>
-  </div>
+  <figure class="memory-figure" aria-label="OSが認識した91 GiBに対し、モデルファイルが80.76 GiB。差は約10.2 GiBで、OS・実行環境とKVキャッシュがこの残りを使う。実行時の内訳を測定した図ではない。">
+    <div class="memory-head"><strong>モデルだけで約89%</strong><span>OS認識RAM 91 GiB を基準</span></div>
+    <div class="memory-bar"><div class="weights"><b>モデルファイル</b><strong>80.76 GiB</strong></div><div class="remainder">約10.2</div></div>
+    <div class="memory-key"><span>重みのファイルサイズ</span><span>残り：OS・実行環境 ＋ KVキャッシュ</span></div>
+    <figcaption class="memory-caption">96 GiB構成。実行時の `free` 表示は91 GiB。差の約10.2 GiBは単純計算で、実際の空き容量・常駐量・KV容量を示す値ではない。出典：0824/llama-cpp-vulkan-prefill-chunk-benchmark.md</figcaption>
+  </figure>
   <div class="takeaway">
-    <h2>「起動できる」と<br>「常用できる」は違う</h2>
-    <p>モデルが読み込めても、長い入力や生成に使うメモリが残らなければ、実用には厳しい。まず重みを圧縮し、会話のための余白を作る必要があった。</p>
+    <h2>モデルは入った。<br>会話の余裕は小さい。</h2>
+    <p>速くするために先読み役のモデルを追加すると、この狭い残りをさらに使う。長い会話と高速化を両立できるかが、次の壁になった。</p>
   </div>
   <aside class="benchmark" aria-label="このモデルを試したい理由となる公式ベンチマーク">
     <h2>それでも載せたい理由 <span>Claude Opus 4.8との公式公表値の比較</span></h2>
