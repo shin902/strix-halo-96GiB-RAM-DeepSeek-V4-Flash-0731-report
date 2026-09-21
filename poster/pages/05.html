@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>速度・メモリの実測</title>
+<style>@page{size:A3 landscape;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#202020;background:#f4f4f4}
+.page{width:420mm;height:297mm;padding:22mm 22mm 28mm;background:white;position:relative;break-after:page;overflow:hidden}
+.page{padding-left:42mm}
+.page:last-child{break-after:auto}
+.hero{background:white;color:#202020}
+.label{font-size:15pt;letter-spacing:3px;opacity:.7}
+h1{font-size:48pt;line-height:1.35;white-space:pre-line;margin:20mm 0 12mm;overflow-wrap:anywhere}
+.hero h1{font-size:65pt;margin-top:24mm}
+.lead{font-size:30pt;line-height:1.7;white-space:pre-line;margin:0 0 15mm}
+.body{font-size:var(--body-size);line-height:1.85;overflow-wrap:anywhere;display:flow-root}
+.body p{margin:0 0 1em;white-space:pre-line}
+.columns .body{column-count:2;column-gap:14mm}
+.footer{position:absolute;bottom:14mm;left:22mm;right:22mm;border-top:.3mm solid currentColor;padding-top:5mm;display:flex;gap:10mm;justify-content:space-between;font-size:11pt;opacity:.65}
+.footer span:first-child{overflow-wrap:anywhere;max-width:90%}
+.content{height:100%;overflow:hidden}
+ @media print{body{background:white}
+.page{print-color-adjust:exact;-webkit-print-color-adjust:exact;margin:0}
+}
+.footer{left:42mm}
+</style>
+</head>
+<body>
+<section class="page standard" style="--body-size:25pt">
+  <div class="content">
+    <div class="label">SECTION 05</div>
+    <h1>速度・メモリの実測</h1>
+    <p class="lead"></p>
+    <div class="body"><p></p></div>
+  </div>
+  <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>05 / 08</span></footer>
+</section>
+</body>
+</html>
