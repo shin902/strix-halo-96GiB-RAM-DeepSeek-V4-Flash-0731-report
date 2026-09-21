@@ -1,60 +1,227 @@
 <!doctype html>
 <html lang="ja">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>モデルを削れば、もっと余裕ができる？</title>
-<style>
-@page{size:A3 landscape;margin:0}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#1c2529;background:#f4f4f4}
-.page{width:420mm;height:297mm;padding:20mm 42mm 25mm 22mm;background:#fff;position:relative;overflow:hidden}
-.eyebrow{display:flex;align-items:center;gap:5mm;color:#536367;font-size:14pt;font-weight:700;letter-spacing:.12em}
-.eyebrow:before{content:"";display:block;width:12mm;height:1.2mm;background:#167b77}
-h1{font-size:43pt;line-height:1.22;letter-spacing:-.035em;margin:10mm 0 4mm}
-.lead{font-size:21pt;line-height:1.5;margin:0 0 12mm;color:#45565b}
-.story{display:grid;grid-template-columns:1fr 16mm 1fr;align-items:stretch;gap:5mm}
-.card{min-height:94mm;padding:10mm 10mm 8mm;border:0.45mm solid #d5dfdf;border-top:2mm solid #167b77;background:#fbfdfc}
-.card.result{background:#fffaf7;border-color:#eadbd3;border-top-color:#bf603f}
-.tag{font-size:12pt;font-weight:700;letter-spacing:.12em;color:#167b77;margin:0 0 5mm}
-.result .tag{color:#ae5536}
-h2{font-size:24pt;line-height:1.3;margin:0 0 7mm;letter-spacing:-.025em}
-.card p{font-size:17pt;line-height:1.6;margin:0}
-.arrow{align-self:center;text-align:center;font-size:30pt;color:#87999b}
-.takeaway{margin-top:11mm;padding:7mm 9mm;border-left:2mm solid #1c2529;background:#edf3f2;display:flex;align-items:baseline;gap:8mm}
-.takeaway strong{font-size:16pt;white-space:nowrap}
-.takeaway span{font-size:20pt;line-height:1.4;font-weight:700}
-.note{margin:5mm 0 0;color:#6e787b;font-size:11pt;line-height:1.45}
-.evidence{margin-top:8mm;min-height:36mm;border:0.4mm dashed #aebdbb;background:#fafcfc;padding:5mm 7mm;display:flex;align-items:center;gap:10mm}
-.evidence strong{font-size:15pt;white-space:nowrap;color:#356b68}
-.evidence span{font-size:12pt;line-height:1.5;color:#617174}
-footer{position:absolute;bottom:13mm;left:22mm;right:42mm;border-top:.3mm solid #b8c3c3;padding-top:4mm;display:flex;justify-content:space-between;font-size:11pt;color:#687578}
-@media print{body{background:#fff}.page{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>モデルを削れば、もっと余裕ができる？</title>
+  <style>
+    @page {
+      size: A3 landscape;
+      margin: 0
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      color: #1c2529;
+      background: #f4f4f4
+    }
+
+    .page {
+      width: 420mm;
+      height: 297mm;
+      padding: 20mm 42mm 25mm 22mm;
+      background: #fff;
+      position: relative;
+      overflow: hidden
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 5mm;
+      color: #536367;
+      font-size: 14pt;
+      font-weight: 700;
+      letter-spacing: .12em
+    }
+
+    .eyebrow:before {
+      content: "";
+      display: block;
+      width: 12mm;
+      height: 1.2mm;
+      background: #167b77
+    }
+
+    h1 {
+      font-size: 43pt;
+      line-height: 1.22;
+      letter-spacing: -.035em;
+      margin: 10mm 0 4mm
+    }
+
+    .lead {
+      font-size: 21pt;
+      line-height: 1.5;
+      margin: 0 0 12mm;
+      color: #45565b
+    }
+
+    .story {
+      display: grid;
+      grid-template-columns: 1fr 16mm 1fr;
+      align-items: stretch;
+      gap: 5mm
+    }
+
+    .card {
+      min-height: 94mm;
+      padding: 10mm 10mm 8mm;
+      border: 0.45mm solid #d5dfdf;
+      border-top: 2mm solid #167b77;
+      background: #fbfdfc
+    }
+
+    .card.result {
+      background: #fffaf7;
+      border-color: #eadbd3;
+      border-top-color: #bf603f
+    }
+
+    .tag {
+      font-size: 12pt;
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: #167b77;
+      margin: 0 0 5mm
+    }
+
+    .result .tag {
+      color: #ae5536
+    }
+
+    h2 {
+      font-size: 24pt;
+      line-height: 1.3;
+      margin: 0 0 7mm;
+      letter-spacing: -.025em
+    }
+
+    .card p {
+      font-size: 17pt;
+      line-height: 1.6;
+      margin: 0
+    }
+
+    .arrow {
+      align-self: center;
+      text-align: center;
+      font-size: 30pt;
+      color: #87999b
+    }
+
+    .takeaway {
+      margin-top: 11mm;
+      padding: 7mm 9mm;
+      border-left: 2mm solid #1c2529;
+      background: #edf3f2;
+      display: flex;
+      align-items: baseline;
+      gap: 8mm
+    }
+
+    .takeaway strong {
+      font-size: 16pt;
+      white-space: nowrap
+    }
+
+    .takeaway span {
+      font-size: 20pt;
+      line-height: 1.4;
+      font-weight: 700
+    }
+
+    .note {
+      margin: 5mm 0 0;
+      color: #6e787b;
+      font-size: 11pt;
+      line-height: 1.45
+    }
+
+    .evidence {
+      margin-top: 8mm;
+      min-height: 36mm;
+      border: 0.4mm dashed #aebdbb;
+      background: #fafcfc;
+      padding: 5mm 7mm;
+      display: flex;
+      align-items: center;
+      gap: 10mm
+    }
+
+    .evidence strong {
+      font-size: 15pt;
+      white-space: nowrap;
+      color: #356b68
+    }
+
+    .evidence span {
+      font-size: 12pt;
+      line-height: 1.5;
+      color: #617174
+    }
+
+    footer {
+      position: absolute;
+      bottom: 13mm;
+      left: 22mm;
+      right: 42mm;
+      border-top: .3mm solid #b8c3c3;
+      padding-top: 4mm;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11pt;
+      color: #687578
+    }
+
+    @media print {
+      body {
+        background: #fff
+      }
+
+      .page {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact
+      }
+    }
+  </style>
 </head>
+
 <body>
-<section class="page">
-  <div class="eyebrow">SECTION 04 · 容量の次の一手</div>
-  <h1>モデルを削れば、もっと余裕ができる？</h1>
-  <p class="lead">前回は重みを圧縮した。今回は、使われにくい部分を削る。<strong>REAP</strong>を試した。</p>
-  <div class="story">
-    <div class="card">
-      <p class="tag">REAP / 試したこと</p>
-      <h2>使われにくい部分を削る</h2>
-      <p>利用頻度の低いエキスパートを削り、モデル本体を小さくする。空いた領域を会話や実行時のメモリに回せないかと考えた。</p>
+  <section class="page">
+    <div class="eyebrow">SECTION 04 · 容量の次の一手</div>
+    <h1>モデルを削れば、もっと余裕ができる？</h1>
+    <p class="lead">前回は重みを圧縮した。今回は、使われにくい部分を削る。<strong>REAP</strong>を試した。</p>
+    <div class="story">
+      <div class="card">
+        <p class="tag">REAP / 試したこと</p>
+        <h2>使われにくい部分を削る</h2>
+        <p>利用頻度の低いエキスパートを削り、モデル本体を小さくする。空いた領域を会話や実行時のメモリに回せないかと考えた。</p>
+      </div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="card result">
+        <p class="tag">観察したこと</p>
+        <h2>日本語の品質が厳しい</h2>
+        <p>容量面では魅力があったが、日本語の出力品質が大きく崩れた。常用したいモデル本体としては採用を見送った。</p>
+      </div>
     </div>
-    <div class="arrow" aria-hidden="true">→</div>
-    <div class="card result">
-      <p class="tag">観察したこと</p>
-      <h2>日本語の品質が厳しい</h2>
-      <p>容量面では魅力があったが、日本語の出力品質が大きく崩れた。常用したいモデル本体としては採用を見送った。</p>
-    </div>
-  </div>
-  <div class="evidence" aria-label="日本語出力の比較スクリーンショットを配置する領域"><strong>比較スクショ</strong><span>元モデルとREAP K160の日本語出力例を、条件とともに配置予定</span></div>
-  <div class="takeaway"><strong>この試行の結論</strong><span>「入る」だけでは足りない。使える出力を保てるかが次の条件。</span></div>
-  <p class="note">※ ここは構成メモに基づく叩き台。掲載前に日本語出力例と比較条件を追加して確認する。</p>
-  <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>04 / 08</span></footer>
-</section>
+    <div class="evidence" aria-label="日本語出力の比較スクリーンショットを配置する領域"><strong>比較スクショ</strong><span>元モデルとREAP
+        K160の日本語出力例を、条件とともに配置予定</span></div>
+    <div class="takeaway"><strong>この試行の結論</strong><span>「入る」だけでは足りない。使える出力を保てるかが次の条件。</span></div>
+    <p class="note">※ ここは構成メモに基づく叩き台。掲載前に日本語出力例と比較条件を追加して確認する。</p>
+    <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>04 / 08</span></footer>
+  </section>
 </body>
+
 </html>

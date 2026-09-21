@@ -1,62 +1,273 @@
 <!doctype html>
 <html lang="ja">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>96GBのPCでDeepSeek V4 Flashを常用したい</title>
-<style>
-@page{size:A3 landscape;margin:0}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#191919;background:#f4f4f4}
-.page{width:420mm;height:297mm;background:#fff;position:relative;overflow:hidden;break-after:page;padding:20mm 22mm 18mm 42mm}
-.eyebrow{display:flex;align-items:center;gap:7mm;font-size:13pt;font-weight:700;letter-spacing:.13em}
-.eyebrow::before{content:"";display:block;width:11mm;height:2mm;background:#e65b35}
-h1{font-size:51pt;line-height:1.35;letter-spacing:-.055em;margin:13mm 0 0;font-weight:800}
-h1 span{color:#d84e2c}
-.subhead{font-size:22pt;line-height:1.45;margin:6mm 0 0;font-weight:700}.subhead span{color:#d84e2c}.outcome{font-size:29pt;line-height:1.35;font-weight:800;margin:7mm 0 0;border-left:2mm solid #e65b35;padding-left:6mm}.outcome small{display:block;font-size:20pt;color:#555;font-weight:700}
-.rule{height:.45mm;background:#242424;margin:11mm 0 8mm}
-.intro{display:flex;gap:12mm;font-size:14pt;line-height:1.5}
-.intro p{margin:0;flex:1}
-.intro strong{font-size:16pt}
-.results-label{font-size:17pt;font-weight:700;letter-spacing:.03em;color:#b44025;margin:8mm 0 4mm}
-.results{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
-.result{background:#f4f2ef;padding:6mm;min-height:47mm}
-.result .metric{font-size:13pt;font-weight:700;margin:0 0 4mm}
-.result .value{font-size:35pt;font-weight:800;letter-spacing:-.05em;line-height:1.15;margin:0;white-space:nowrap}
-.result .value em{font-style:normal;color:#d84e2c}
-.result .value small{font-size:16pt;letter-spacing:0;margin-left:2mm}
-.result .detail{font-size:11.5pt;line-height:1.45;margin:4mm 0 0}
-.result .versus{font-size:12pt;line-height:1.4;margin:3mm 0 0;color:#555}
-.source{font-size:10.5pt;color:#666;line-height:1.45;margin:4mm 0 0}
-.question{position:absolute;left:42mm;right:22mm;bottom:27mm;border-left:1.7mm solid #e65b35;padding:2mm 0 2mm 6mm;display:flex;align-items:center;gap:10mm}
-.question strong{font-size:16pt;white-space:nowrap}
-.question span{font-size:19pt;font-weight:700;letter-spacing:.01em}
-.question b{color:#d84e2c}
-footer{position:absolute;bottom:12mm;left:42mm;right:22mm;border-top:.3mm solid #aaa;padding-top:4mm;display:flex;justify-content:space-between;font-size:11pt;color:#666}
-@media print{body{background:white}.page{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>96GBのPCでDeepSeek V4 Flashを常用したい</title>
+  <style>
+    @page {
+      size: A3 landscape;
+      margin: 0
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      color: #191919;
+      background: #f4f4f4
+    }
+
+    .page {
+      width: 420mm;
+      height: 297mm;
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+      break-after: page;
+      padding: 20mm 22mm 18mm 42mm
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7mm;
+      font-size: 13pt;
+      font-weight: 700;
+      letter-spacing: .13em
+    }
+
+    .eyebrow::before {
+      content: "";
+      display: block;
+      width: 11mm;
+      height: 2mm;
+      background: #e65b35
+    }
+
+    h1 {
+      font-size: 51pt;
+      line-height: 1.35;
+      letter-spacing: -.055em;
+      margin: 13mm 0 0;
+      font-weight: 800
+    }
+
+    h1 span {
+      color: #d84e2c
+    }
+
+    .subhead {
+      font-size: 22pt;
+      line-height: 1.45;
+      margin: 6mm 0 0;
+      font-weight: 700
+    }
+
+    .subhead span {
+      color: #d84e2c
+    }
+
+    .outcome {
+      font-size: 29pt;
+      line-height: 1.35;
+      font-weight: 800;
+      margin: 7mm 0 0;
+      border-left: 2mm solid #e65b35;
+      padding-left: 6mm
+    }
+
+    .outcome small {
+      display: block;
+      font-size: 20pt;
+      color: #555;
+      font-weight: 700
+    }
+
+    .rule {
+      height: .45mm;
+      background: #242424;
+      margin: 11mm 0 8mm
+    }
+
+    .intro {
+      display: flex;
+      gap: 12mm;
+      font-size: 14pt;
+      line-height: 1.5
+    }
+
+    .intro p {
+      margin: 0;
+      flex: 1
+    }
+
+    .intro strong {
+      font-size: 16pt
+    }
+
+    .results-label {
+      font-size: 17pt;
+      font-weight: 700;
+      letter-spacing: .03em;
+      color: #b44025;
+      margin: 8mm 0 4mm
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5mm
+    }
+
+    .result {
+      background: #f4f2ef;
+      padding: 6mm;
+      min-height: 47mm
+    }
+
+    .result .metric {
+      font-size: 13pt;
+      font-weight: 700;
+      margin: 0 0 4mm
+    }
+
+    .result .value {
+      font-size: 35pt;
+      font-weight: 800;
+      letter-spacing: -.05em;
+      line-height: 1.15;
+      margin: 0;
+      white-space: nowrap
+    }
+
+    .result .value em {
+      font-style: normal;
+      color: #d84e2c
+    }
+
+    .result .value small {
+      font-size: 16pt;
+      letter-spacing: 0;
+      margin-left: 2mm
+    }
+
+    .result .detail {
+      font-size: 11.5pt;
+      line-height: 1.45;
+      margin: 4mm 0 0
+    }
+
+    .result .versus {
+      font-size: 12pt;
+      line-height: 1.4;
+      margin: 3mm 0 0;
+      color: #555
+    }
+
+    .source {
+      font-size: 10.5pt;
+      color: #666;
+      line-height: 1.45;
+      margin: 4mm 0 0
+    }
+
+    .question {
+      position: absolute;
+      left: 42mm;
+      right: 22mm;
+      bottom: 27mm;
+      border-left: 1.7mm solid #e65b35;
+      padding: 2mm 0 2mm 6mm;
+      display: flex;
+      align-items: center;
+      gap: 10mm
+    }
+
+    .question strong {
+      font-size: 16pt;
+      white-space: nowrap
+    }
+
+    .question span {
+      font-size: 19pt;
+      font-weight: 700;
+      letter-spacing: .01em
+    }
+
+    .question b {
+      color: #d84e2c
+    }
+
+    footer {
+      position: absolute;
+      bottom: 12mm;
+      left: 42mm;
+      right: 22mm;
+      border-top: .3mm solid #aaa;
+      padding-top: 4mm;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11pt;
+      color: #666
+    }
+
+    @media print {
+      body {
+        background: white
+      }
+
+      .page {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact
+      }
+    }
+  </style>
 </head>
+
 <body>
-<section class="page">
-  <div class="eyebrow">生成AIなんでも展示会 · 個人検証</div>
-  <h1>96GBのPCで<br><span>DeepSeek V4 Flash</span>を常用したい！</h1>
-  <p class="subhead">フロンティアモデルと比較できる<span>強いモデル</span>を、手元の1台で使いたい。</p>
-  <p class="outcome">短いやり取りはできた。<small>長文の常用は、まだ検証中。</small></p>
-  <div class="rule"></div>
-  <div class="intro">
-    <p><strong>モデル：</strong>DeepSeek V4 Flash<br>大規模なオープンウェイトモデル。</p>
-    <p><strong>PC：</strong>Strix Halo · 96 GiB<br>Ryzen AI MAX+ 395 / Radeon 8060S。</p>
-  </div>
-  <p class="results-label">速度の変化（各段階の概数）</p>
-  <div class="results">
-    <div class="result"><p class="metric">01 / まず動かす</p><p class="value">約12<small>tok/s</small></p><p class="detail">96GBに収めて、ローカルで生成</p></div>
-    <div class="result"><p class="metric">02 / 実装を変える</p><p class="value">約16<small>tok/s</small></p><p class="detail">Strix Halo向けの実装で改善</p></div>
-    <div class="result"><p class="metric">03 / 先読みを加える</p><p class="value"><em>約20</em><small>tok/s</small></p><p class="detail">投機的デコードで、もう一段速く</p></div>
-  </div>
-  <p class="source">tok/s＝1秒あたりに生成するトークン数。「最初の文字が出るまでの時間」とは別の指標。12 / 16 / 20 は異なる構成・条件の概数で、同一条件の比較ではない。5枚目の約11 → 18 tok/sはVulkan実装同士の別測定。統一条件24点の比較は7枚目。</p>
-  <div class="question"><strong>この展示で追うこと</strong><span><b>入る？</b>　→　<b>速くなる？</b>　→　<b>実際どう？</b></span></div>
-  <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>01 / 08</span></footer>
-</section>
+  <section class="page">
+    <div class="eyebrow">生成AIなんでも展示会 · 個人検証</div>
+    <h1>96GBのPCで<br><span>DeepSeek V4 Flash</span>を常用したい！</h1>
+    <p class="subhead">フロンティアモデルと比較できる<span>強いモデル</span>を、手元の1台で使いたい。</p>
+    <p class="outcome">短いやり取りはできた。<small>長文の常用は、まだ検証中。</small></p>
+    <div class="rule"></div>
+    <div class="intro">
+      <p><strong>モデル：</strong>DeepSeek V4 Flash<br>大規模なオープンウェイトモデル。</p>
+      <p><strong>PC：</strong>Strix Halo · 96 GiB<br>Ryzen AI MAX+ 395 / Radeon 8060S。</p>
+    </div>
+    <p class="results-label">速度の変化（各段階の概数）</p>
+    <div class="results">
+      <div class="result">
+        <p class="metric">01 / まず動かす</p>
+        <p class="value">約12<small>tok/s</small></p>
+        <p class="detail">96GBに収めて、ローカルで生成</p>
+      </div>
+      <div class="result">
+        <p class="metric">02 / 実装を変える</p>
+        <p class="value">約18<small>tok/s</small></p>
+        <p class="detail">Strix Halo向けの実装で改善</p>
+      </div>
+      <div class="result">
+        <p class="metric">03 / 先読みを加える</p>
+        <p class="value"><em>約20</em><small>tok/s</small></p>
+        <p class="detail">投機的デコードで、もう一段速く</p>
+      </div>
+    </div>
+    <p class="source">tok/s＝1秒あたりに生成するトークン数。「最初の文字が出るまでの時間」とは別の指標。12 / 18 / 20 は異なる構成・条件の概数で、同一条件の比較ではない。5枚目の約11 → 18
+      tok/sはVulkan実装同士の別測定。統一条件24点の比較は7枚目。</p>
+    <div class="question"><strong>この展示で追うこと</strong><span><b>入る？</b>　→　<b>速くなる？</b>　→　<b>実際どう？</b></span></div>
+    <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>01 / 08</span></footer>
+  </section>
 </body>
+
 </html>
