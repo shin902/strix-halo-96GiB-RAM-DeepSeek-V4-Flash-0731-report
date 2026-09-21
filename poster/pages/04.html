@@ -233,18 +233,18 @@
   <section class="page">
     <div class="eyebrow">SECTION 04 · 容量の次の一手</div>
     <h1>モデルを削れば、もっと余裕ができる？</h1>
-    <p class="lead">前回は重みを圧縮した。今回は、使われにくい部分を削る、REAPを試した。</p>
+    <p class="lead">全体の圧縮に続いて、普段あまり使われない部分を切り落とす手法（REAP）を試した。</p>
     <div class="story">
       <div class="card">
-        <p class="tag">REAP / 試したこと</p>
-        <h2>使われにくい部分を削る</h2>
-        <p>利用頻度の低いエキスパートを削り、モデル本体を小さくする。空いた領域を会話や実行時のメモリに回せないかと考えた。</p>
+        <p class="tag">試したこと</p>
+        <h2>出番の少ない部分を削る</h2>
+        <p>利用頻度の低い回路を削ってモデルをスリム化し、浮いたメモリを会話や高速化に回そうと考えた。</p>
       </div>
       <div class="arrow" aria-hidden="true">→</div>
       <div class="card result">
-        <p class="tag">観察したこと</p>
-        <h2>日本語がしゃべれない</h2>
-        <p>容量面では魅力があったが、日本語の出力品質が大きく崩れた。常用したいモデル本体としては採用を見送った。</p>
+        <p class="tag">結果</p>
+        <h2>まさかの日本語崩壊…</h2>
+        <p>容量は削減できたものの、日本語で入力すると怪文書が返る状態に。普段使いのモデルとしては採用を見送った。</p>
       </div>
     </div>
     <div class="evidence" aria-label="実際の会話">
@@ -256,7 +256,7 @@
         </div>
       </div>
     </div>
-    <div class="takeaway"><strong>この試行の結論</strong><span>「読み込める」だけでは足りない。使える出力を保てるかが次の条件。</span></div>
+    <div class="takeaway"><strong>この試行の結論</strong><span>「読み込める」だけでは不十分。自然な日本語で会話できることが必須条件。</span></div>
     <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>04 / 08</span></footer>
   </section>
 </body>

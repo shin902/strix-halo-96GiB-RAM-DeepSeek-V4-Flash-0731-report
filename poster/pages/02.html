@@ -232,7 +232,7 @@
   <section class="page">
     <div class="eyebrow">SECTION 02 / 最初の壁</div>
     <h1>そもそも、96GBに入るのか？</h1>
-    <p class="lead">Macと同じようにCPUとGPUでメモリを共有する。<br>その96GBを、<strong>丸ごとモデルには使えない。</strong></p>
+    <p class="lead">「96GBあれば余裕」と思いきや、実はギリギリでした。<br>CPUとGPUで共有するため、<strong>96GB丸ごとをモデルに使えるわけではない。</strong></p>
     <figure class="memory-figure" aria-label="モデルの重み、OSやその他のソフト、会話の記憶領域を足した量が、実際に使えるメモリ以下である必要がある">
       <div class="memory-head"><strong>モデルだけで約89%</strong><span>OS認識RAM 91 GiB を基準</span></div>
       <div class="memory-bar">
@@ -242,8 +242,8 @@
       <div class="memory-key"><span>重みのファイルサイズ</span><span>残り：OS・実行環境 ＋ KVキャッシュ</span></div>
     </figure>
     <div class="takeaway">
-      <h2>モデルは入った。<br>会話の余裕は小さい。</h2>
-      <p>速くするために先読み役のモデルを追加すると、この狭い残りをさらに使う。長い会話と高速化を両立できるかが、次の壁になった。</p>
+      <h2>モデルは入った。<br>でも、残りはたった数GB。</h2>
+      <p>モデルだけで約81GB。OS分を引くと残りは約10GB未満しかなく、この狭い隙間で「長い会話」と「高速化」を両立できるかが最初の壁となった。</p>
     </div>
     <aside class="benchmark" aria-label="このモデルを試したい理由となる公式ベンチマーク">
       <h2>それでも載せたい理由 - Claude Opus 4.8とのベンチマークの比較</h2>

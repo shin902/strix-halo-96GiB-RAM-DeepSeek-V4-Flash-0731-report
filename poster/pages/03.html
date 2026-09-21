@@ -181,27 +181,28 @@
   <section class="page" aria-labelledby="title">
     <div class="eyebrow">SECTION 03　/　入るのか</div>
     <h1 id="title">圧縮したモデルを、96GBで動かす</h1>
-    <p class="lead">モデルを実用的に使える限界まで圧縮し、DwarfStarで動かした。</p>
+    <p class="lead">元は約167GBの超巨大モデルを、実用性を損なわない限界まで圧縮し、手元のPCで動かした。</p>
     <div class="rule"></div>
     <div class="problem">
       <div class="tag">最初の達成</div>
-      <p>約80.76 GiBの量子化モデルを読み込み、手元のPCで生成できた。</p>
+      <p>約81GBまでに圧縮して読み込みに成功。手元の環境で文章を生成できた。</p>
     </div>
     <div class="steps" aria-label="量子化でできたことと残った課題">
       <div class="step">
         <div class="number">モデル / WEIGHTS</div>
-        <h2>まず、圧縮して入れる</h2>
-        <p>実用的に動かせる限界まで圧縮し、<strong>重みの容量を抑えた</strong>。96GB環境で起動できることを確認した。</p>
+        <h2>まずは圧縮してねじ込む</h2>
+        <p>賢さを維持できるギリギリまでデータを圧縮し、<strong>96GBの枠内に収めた</strong>。</p>
       </div>
       <div class="step">
         <div class="number">実行 / INFERENCE</div>
-        <h2>ローカルで生成を確認</h2>
-        <p>DwarfStarでモデルを読み込み、<strong>短い対話を実行</strong>。Web系SWE-bench 30問では、Q2版もクラウドFP8版も<strong>20/30（66.7%）</strong>を解決し、総合スコアの品質劣化は見られなかった。</p>
+        <h2>手元でちゃんと動いた！</h2>
+        <p>専用ソフトで動かして<strong>短い対話を確認</strong>。Web系SWE-bench
+          30問では、Q2版もクラウドのフル精度版も<strong>20/30（66.7%）</strong>を解決し、総合スコアの品質劣化は見られなかった。</p>
       </div>
     </div>
     <div class="takeaway">
       <b>ここでの到達点</b>
-      <p>圧縮すれば起動できた。次は、あまり使われない部分を削って余白を作る。</p>
+      <p>起動には成功したものの、メモリの余白はわずか。次は「使われない部分を削る」手法を試す。</p>
     </div>
     <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash ｜ 96GBでの起動</span><span>03 / 08</span></footer>
   </section>

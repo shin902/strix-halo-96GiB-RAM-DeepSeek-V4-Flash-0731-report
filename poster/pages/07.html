@@ -205,11 +205,11 @@
   <section class="page">
     <div class="label">SECTION 07 · 測定結果</div>
     <h1>で、実際どれくらい速い？</h1>
-    <p class="dek"><span>先読みで生成が約1.3倍に。</span><br>先読み役を軽くしても、速さはほぼ同じ。</p>
+    <p class="dek"><span>先読みで生成スピードが約1.3倍に。</span><br>先読み役を軽量化しても、速さはほぼ同じ。</p>
     <div class="grid">
       <div class="chart decode">
         <h2>出力する速さ <small>Decode</small></h2>
-        <p class="meta">同じ条件で比べた、1秒あたりに生成する量（各構成8回の平均）</p>
+        <p class="meta">条件を揃えて測定した、1秒あたりの生成トークン数（各構成8回の平均）</p>
         <div class="bars">
           <div class="bar-row"><span>先読みなし<small>plain</small></span>
             <div class="track">
@@ -231,7 +231,7 @@
       </div>
       <div class="chart prefill">
         <h2>入力を読む速さ <small>Prefill</small></h2>
-        <p class="meta">1,233トークンの入力を、処理量を変えて比較</p>
+        <p class="meta">1,233トークンの指示を入力したときの処理速度を比較</p>
         <div class="bars">
           <div class="bar-row"><span>-ub 128</span>
             <div class="track">
@@ -263,7 +263,7 @@
       </div>
       <div class="chart acceptance">
         <h2>先読みはどれくらい当たる？ <small>採用率</small></h2>
-        <p class="meta">候補のうち、実際に採用された割合</p>
+        <p class="meta">先読み役が出した候補のうち、メインモデルに採用された割合</p>
         <div class="bars">
           <div class="bar-row highlight"><span>先読みあり<small>Q2/Q8</small></span>
             <div class="track">

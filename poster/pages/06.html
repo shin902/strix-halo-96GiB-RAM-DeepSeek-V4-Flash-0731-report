@@ -195,34 +195,35 @@
   <section class="page">
     <div class="label">SECTION 06　/　速度をもう一段上げる</div>
     <h1>高速化手法を取り入れてみる</h1>
-    <p class="lead">生成を速くしたい。先読み役を追加すると、今度はメモリが足りない。</p>
+    <p class="lead">さらに速く生成したい。ただ「先読み役」を追加すると、今度はメモリが足りない。</p>
     <div class="story">
       <div>
         <div class="problem">
-          <h2>課題｜生成をもっと速くしたい</h2>
-          <p>targetモデルだけで次のtokenを順に確定すると、毎回大きなモデルを動かす。DSparkを使い、候補を先に複数作る。</p>
+          <h2>「先読み」でまとめて文字を出す</h2>
+          <p>毎回大きなメインモデルを動かす代わりに、軽い「先読み役」に次の単語候補を複数作らせ、メインがまとめて検証する仕組みを導入した。</p>
         </div>
         <div class="diagram" role="img" aria-label="小さなdrafterが次のtoken候補を先読みし、targetがまとめて検証。採用された候補だけ先へ進む">
           <div class="diagram-title">投機的デコードの流れ</div>
           <div class="steps">
-            <div class="step"><b>① 先読み</b>小さなdrafterが候補を作る</div>
+            <div class="step"><b>① 先読み</b>小さな先読み役が候補を作成</div>
             <div class="arrow">→</div>
-            <div class="step"><b>② 検証</b>targetが候補をまとめて確認</div>
+            <div class="step"><b>② 検証</b>メインが候補をまとめて確認</div>
             <div class="arrow">→</div>
             <div class="step"><b>③ 採用</b>一致した分だけ先へ進む</div>
           </div>
-          <p class="diagram-note">候補が外れれば利得は小さい。採用率と検証コストが速度を左右する。</p>
+          <p class="diagram-note">候補が当たるほど速くなる。採用率と検証にかかるコストが速度の鍵。</p>
         </div>
       </div>
       <div>
         <div class="wall">
-          <h2>次の壁｜この手法はメモリを追加で使う</h2>
-          <p>targetを96GB級のメモリへ押し込んだところに、もう1つモデルを載せる。<strong>速度だけでなく、長い文脈で起動できるか</strong>が問題になる。</p>
-          <p>初期構成では、長い会話の設定でメモリ不足になった。速くするために追加した先読み役も、軽くする必要がある。</p>
+          <h2>先読み役を載せると、メモリ不足に</h2>
+          <p>すでにギリギリのメモリにもう1つモデルを載せるため、長い会話を試すとメモリ不足で止まってしまう問題が生じた。</p>
+          <p>速くするために追加した先読み役自体も、メモリを圧迫しないよう軽量化する必要に迫られた。</p>
         </div>
-        <div class="next"><b>本体を削ると日本語が崩れた。ならば、先読み役だけを軽くする。</b>4枚目の失敗を踏まえ、削る場所を変えた。今回の測定では、メモリを約2 GiB節約し、生成の速さもほぼ維持できた。
+        <div class="next">
+          <b>本体を削ると日本語が崩れる。それなら「先読み役」だけを削る。</b>4枚目の失敗を踏まえ、メインではなく先読み役だけを軽量化。約2GBのメモリを節約しつつ、生成スピードもほぼ維持できた。
         </div>
-        <p class="note">測定：context 40,000・ubatch 512。ホストRAMピークは通常の先読み役91.6〜91.7 GiB、軽量化後89.4〜89.6 GiB。速度比較は7枚目。</p>
+        <p class="note">※測定条件：長めの会話（4万トークン）。ホストRAMピークは通常91.7GB→軽量化後89.6GBに削減。詳しい速度比較は7枚目。</p>
       </div>
     </div>
     <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>06 / 08</span></footer>
