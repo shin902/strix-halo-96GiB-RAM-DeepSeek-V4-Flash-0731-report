@@ -73,26 +73,6 @@
       font-weight: 700
     }
 
-    .subhead span {
-      color: #d84e2c
-    }
-
-    .outcome {
-      font-size: 29pt;
-      line-height: 1.35;
-      font-weight: 800;
-      margin: 7mm 0 0;
-      border-left: 2mm solid #e65b35;
-      padding-left: 6mm
-    }
-
-    .outcome small {
-      display: block;
-      font-size: 20pt;
-      color: #555;
-      font-weight: 700
-    }
-
     .rule {
       height: .45mm;
       background: #242424;
@@ -102,8 +82,8 @@
     .intro {
       display: flex;
       gap: 12mm;
-      font-size: 14pt;
-      line-height: 1.5
+      font-size: 15pt;
+      line-height: 1.55
     }
 
     .intro p {
@@ -118,9 +98,9 @@
     .results-label {
       font-size: 17pt;
       font-weight: 700;
-      letter-spacing: .03em;
+      letter-spacing: .06em;
       color: #b44025;
-      margin: 8mm 0 4mm
+      margin: 10mm 0 5mm
     }
 
     .results {
@@ -131,8 +111,8 @@
 
     .result {
       background: #f4f2ef;
-      padding: 6mm;
-      min-height: 47mm
+      padding: 7mm 7mm 6mm;
+      min-height: 55mm
     }
 
     .result .metric {
@@ -142,7 +122,7 @@
     }
 
     .result .value {
-      font-size: 35pt;
+      font-size: 38pt;
       font-weight: 800;
       letter-spacing: -.05em;
       line-height: 1.15;
@@ -185,7 +165,7 @@
       position: absolute;
       left: 42mm;
       right: 22mm;
-      bottom: 27mm;
+      bottom: 30mm;
       border-left: 1.7mm solid #e65b35;
       padding: 2mm 0 2mm 6mm;
       display: flex;
@@ -237,12 +217,11 @@
 <body>
   <section class="page">
     <div class="eyebrow">生成AIなんでも展示会 · 個人検証</div>
-    <h1>96GBのPCで<br><span>DeepSeek V4 Flash</span>を常用したい！</h1>
-    <p class="subhead">フロンティアモデルと比較できる<span>強いモデル</span>を、手元の1台で使いたい。</p>
-    <p class="outcome">短いやり取りはできた。<small>長文の常用は、まだ検証中。</small></p>
+    <h1>96GBのPCで<br><span>DeepSeek V4 Flash</span>を動かしたい！</h1>
+    <p class="subhead">大きなモデルを、手元の1台で。「動く」の先の使い心地を確かめる。</p>
     <div class="rule"></div>
     <div class="intro">
-      <p><strong>モデル：</strong>DeepSeek V4 Flash<br>大規模なオープンウェイトモデル。</p>
+      <p><strong>モデル：</strong>DeepSeek V4 Flash<br>フロンティアモデルと比較できるモデル。</p>
       <p><strong>PC：</strong>Strix Halo · 96 GiB<br>Ryzen AI MAX+ 395 / Radeon 8060S。</p>
     </div>
     <p class="results-label">最適化の軌跡｜試行ごとの生成速度</p>
@@ -264,7 +243,7 @@
       </div>
     </div>
     <p class="source">tok/s＝1秒あたりの生成トークン数。条件を揃えた速度比較は7枚目。</p>
-    <div class="question"><strong>この展示で追うこと</strong><span><b>入る？</b>　→　<b>速くなる？</b>　→　<b>実際どう？</b></span></div>
+    <div class="question"><strong>この展示で追うこと</strong><span>入る？　→　速くなる？　→　実際どう？</span></div>
     <footer><span>Strix Halo × DeepSeek V4 Flash</span><span>01 / 08</span></footer>
   </section>
 </body>

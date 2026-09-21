@@ -233,8 +233,7 @@
     <div class="eyebrow">SECTION 02 / 最初の壁</div>
     <h1>そもそも、96GBに入るのか？</h1>
     <p class="lead">Macと同じようにCPUとGPUでメモリを共有する。<br>その96GBを、<strong>丸ごとモデルには使えない。</strong></p>
-    <figure class="memory-figure"
-      aria-label="OSが認識した91 GiBに対し、モデルファイルが80.76 GiB。差は約10.2 GiBで、OS・実行環境とKVキャッシュがこの残りを使う。実行時の内訳を測定した図ではない。">
+    <figure class="memory-figure" aria-label="モデルの重み、OSやその他のソフト、会話の記憶領域を足した量が、実際に使えるメモリ以下である必要がある">
       <div class="memory-head"><strong>モデルだけで約89%</strong><span>OS認識RAM 91 GiB を基準</span></div>
       <div class="memory-bar">
         <div class="weights"><b>モデルファイル</b><strong>80.76 GiB</strong></div>
