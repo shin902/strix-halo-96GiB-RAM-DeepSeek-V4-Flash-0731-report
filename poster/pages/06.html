@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>投機的デコードで、さらに速くする</title>
+<title>高速化手法を取り入れてみる</title>
 <style>
 @page{size:A3 landscape;margin:0}
 *{box-sizing:border-box}
@@ -38,13 +38,13 @@ p{margin:0;line-height:1.65}
 <body>
 <section class="page">
   <div class="label">SECTION 06　/　速度をもう一段上げる</div>
-  <h1>投機的デコードで、さらに速くする</h1>
-  <p class="lead">Vulkanに切り替えても、1トークンずつの生成はまだ待つ。<br>小さなモデルに先読みさせたら、まとめて進められるか？</p>
+  <h1>高速化手法を取り入れてみる</h1>
+  <p class="lead">まだ実用するには耐え難い速度。<br>小さなモデルに先読みさせたら、まとめて進められるか？</p>
   <div class="story">
     <div>
       <div class="problem">
         <h2>課題｜生成をもっと速くしたい</h2>
-        <p>targetモデルだけで次のtokenを順に確定すると、毎回大きなモデルを動かす。<strong>DSpark / MTP</strong>を使い、候補を先に複数作る。</p>
+        <p>targetモデルだけで次のtokenを順に確定すると、毎回大きなモデルを動かす。<strong>DSpark</strong>を使い、候補を先に複数作る。</p>
       </div>
       <div class="diagram" role="img" aria-label="小さなdrafterが次のtoken候補を先読みし、targetがまとめて検証。採用された候補だけ先へ進む">
         <div class="diagram-title">投機的デコードの流れ</div>
@@ -60,7 +60,7 @@ p{margin:0;line-height:1.65}
     </div>
     <div>
       <div class="wall">
-        <h2>次の壁｜drafterもメモリを使う</h2>
+        <h2>次の壁｜この手法はメモリを追加で使う</h2>
         <p>targetを96GB級のメモリへ押し込んだところに、もう1つモデルを載せる。<strong>速度だけでなく、長い文脈で起動できるか</strong>が問題になる。</p>
         <p>初期のQ2/Q4 drafter構成は、30K contextのロードでホスト全体のOOMを確認。条件を変え、Q2/Q8構成で再検証している。</p>
       </div>

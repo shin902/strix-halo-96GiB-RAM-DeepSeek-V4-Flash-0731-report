@@ -30,7 +30,7 @@ h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
 <section class="page">
   <div class="label">SECTION 07 · BENCHMARK</div>
   <h1>で、実際どれくらい速い？</h1>
-  <p class="dek">保存済みの測定から見る「読む速さ」「書く速さ」「先読みの的中率」</p>
+  <p class="dek">保存済みの測定と、統一条件で測りたい「読む速さ」「書く速さ」「先読みの的中率」</p>
   <div class="grid">
     <div class="chart">
       <h2>入力を読む速さ <small>Prefill</small></h2>
@@ -46,26 +46,17 @@ h1{font-size:40pt;line-height:1.15;margin:5mm 0 3mm;letter-spacing:-.04em}
     </div>
     <div class="chart">
       <h2>出力する速さ <small>Decode</small></h2>
-      <p class="meta">ROCm · K160 target + MTP · 同一プロンプト</p>
-      <div class="bars">
-        <div class="bar-row highlight"><span>MTP なし</span><div class="track"><div class="fill" style="width:100%"></div></div><strong>16.23</strong></div>
-        <div class="bar-row"><span>draft 2</span><div class="track"><div class="fill" style="width:92.1%"></div></div><strong>14.94</strong></div>
-        <div class="bar-row"><span>draft 3</span><div class="track"><div class="fill" style="width:36.7%"></div></div><strong>5.96</strong></div>
-      </div>
-      <p class="unit">token/s · この条件では投機的デコードで減速</p>
+      <p class="meta">Vulkan · plain / DSpark / REAP · 統一条件で比較予定</p>
+      <p>測定値を確認後、ここに比較グラフを配置する。</p>
     </div>
     <div class="chart">
       <h2>先読みの的中率 <small>Acceptance</small></h2>
-      <p class="meta">上の ROCm / MTP 測定 · accepted ÷ drafted</p>
-      <div class="bars">
-        <div class="bar-row highlight"><span>draft 2</span><div class="track"><div class="fill" style="width:40%"></div></div><strong>40%</strong></div>
-        <div class="bar-row"><span>draft 3</span><div class="track"><div class="fill" style="width:33.3%"></div></div><strong>33%</strong></div>
-      </div>
-      <p class="unit">横棒の全幅 = 100% · 的中しても検証の負荷が残る</p>
+      <p class="meta">DSpark · accepted ÷ drafted</p>
+      <p>測定値を確認後、ここに採用率のグラフを配置する。</p>
     </div>
     <div class="note">
-      <div><h2>数字の読み方</h2><p>Prefill は Vulkan、Decode と Acceptance は ROCm の別測定。横並びで速度を直接比較しない。Vulkan での plain / DSpark / REAP の統一条件比較は、測定結果が揃い次第ここに差し替える。</p></div>
-      <p class="source">出典：0824/llama-cpp-vulkan-prefill-chunk-benchmark.md、0810/benchmark-1.md。両測定はモデル・backend・入力・KV設定が異なる。値は表示用に丸めた。</p>
+      <div><h2>数字の読み方</h2><p>Prefill は保存済みの Vulkan 測定。Decode と Acceptance は、Vulkan での plain / DSpark / REAP の測定結果が揃い次第掲載する。</p></div>
+      <p class="source">Prefill の出典：0824/llama-cpp-vulkan-prefill-chunk-benchmark.md。値は表示用に丸めた。</p>
     </div>
   </div>
   <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash</span><span>07 / 08</span></footer>
