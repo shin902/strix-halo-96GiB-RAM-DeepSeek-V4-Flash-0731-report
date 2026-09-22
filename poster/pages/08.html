@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>結局、実用レベルになった？</title>
+  <style>
+    @page {
+      size: A3 landscape;
+      margin: 0
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      color: #202020;
+      background: #fff
+    }
+
+    .page {
+      width: 420mm;
+      height: 297mm;
+      padding: 20mm 42mm 17mm 20mm;
+      position: relative;
+      overflow: hidden;
+      background: #fff;
+      break-after: page
+    }
+
+    .eyebrow {
+      font-size: 14pt;
+      letter-spacing: .16em;
+      color: #666
+    }
+
+    h1 {
+      font-size: 43pt;
+      line-height: 1.25;
+      letter-spacing: -.04em;
+      margin: 7mm 0 10mm
+    }
+
+    .answer {
+      border-top: 1.2mm solid #202020;
+      border-bottom: .35mm solid #bbb;
+      padding: 9mm 0 10mm;
+      display: block
+    }
+
+    .answer strong {
+      display: block;
+      font-size: 39pt;
+      line-height: 1.28;
+      letter-spacing: -.05em
+    }
+
+    .answer strong span {
+      color: #b44025
+    }
+
+    .answer p {
+      font-size: 19pt;
+      line-height: 1.45;
+      margin: 5mm 0 0
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16mm;
+      margin-top: 10mm
+    }
+
+    .block h2 {
+      font-size: 20pt;
+      margin: 0 0 5mm;
+      line-height: 1.3
+    }
+
+    .block p {
+      font-size: 15.5pt;
+      line-height: 1.62;
+      margin: 0
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11pt;
+      letter-spacing: .08em;
+      border: 1px solid #aaa;
+      padding: 1.5mm 3mm;
+      margin-bottom: 5mm;
+      color: #555
+    }
+
+    .bottom-section {
+      margin-top: 8mm;
+      border-top: .35mm solid #bbb;
+      padding-top: 7mm;
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 12mm;
+      align-items: stretch;
+    }
+
+    .next-block h2 {
+      font-size: 18pt;
+      margin: 0 0 3mm;
+      line-height: 1.3;
+    }
+
+    .next-block p {
+      font-size: 14.5pt;
+      line-height: 1.55;
+      margin: 0;
+      color: #333;
+    }
+
+    .note-card {
+      background: #f8f8f9;
+      border: 1px solid #d4d4dc;
+      border-left: 2mm solid #b44025;
+      padding: 5mm 6mm;
+      display: flex;
+      align-items: center;
+      gap: 6mm;
+    }
+
+    .note-qr-wrap {
+      flex-shrink: 0;
+      width: 29mm;
+      height: 29mm;
+      background: #fff;
+      padding: 1.5mm;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .note-qr-wrap img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .note-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .note-badge {
+      display: inline-block;
+      background: #b44025;
+      color: #fff;
+      font-size: 10.5pt;
+      font-weight: 700;
+      letter-spacing: .05em;
+      padding: 1mm 3mm;
+      margin-bottom: 2mm;
+    }
+
+    .note-info h3 {
+      font-size: 15pt;
+      margin: 0 0 1.5mm;
+      line-height: 1.3;
+      color: #111;
+    }
+
+    .note-info p {
+      font-size: 12.5pt;
+      line-height: 1.45;
+      margin: 0 0 2mm;
+      color: #444;
+    }
+
+    .note-info .note-url {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #202020;
+      word-break: break-all;
+    }
+
+    .source {
+      position: absolute;
+      bottom: 16mm;
+      left: 20mm;
+      right: 42mm;
+      border-top: .3mm solid #bbb;
+      padding-top: 4mm;
+      display: flex;
+      justify-content: space-between;
+      gap: 10mm;
+      font-size: 10.5pt;
+      color: #555
+    }
+
+    .source span:first-child {
+      max-width: 88%;
+      overflow-wrap: anywhere
+    }
+
+    @media print {
+      .page {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="page">
+    <div class="eyebrow">08 / 08　結論と次の一手</div>
+    <h1>結局、実用レベルになった？</h1>
+    <div class="answer">
+      <strong>96GBの制約でも動かすことはできた。速くもなった。<br><span>ただ、エージェント用途ではまだ遅い...</span></strong>
+      <p>約21 tok/sまで引き上げたものの、常用には30〜50 tok/s欲しい。さらに長文ファイル読込（Prefill）の遅さやスワップの懸念も残った。</p>
+    </div>
+    <div class="grid">
+      <div class="block">
+        <span class="tag">使用感｜生成速度（Decode）</span>
+        <h2>回答に数分待ち。最低30 tok/sは必要</h2>
+        <p>普段のエージェント利用では50 tok/s超を使っており、最低でも30 tok/sが実用ライン。約21 tok/sでは回答に数分待たされ厳しい。</p>
+      </div>
+      <div class="block">
+        <span class="tag">使用感｜読込（Prefill）とメモリ</span>
+        <h2>ファイル読込の遅さと、スワップの影</h2>
+        <p>コードやファイルを読み込むPrefillに時間がかかる。また、検証中にわずかなスワップ使用履歴も確認された。96GBあっても極限状態のため、他アプリを極力落とした専用環境での運用が前提になる。</p>
+      </div>
+    </div>
+    <div class="bottom-section">
+      <div class="next-block">
+        <h2>今後の展望</h2>
+        <p>エージェント実用の目安となる30 tok/s 台を目指す。ファイル読込（Prefill）の高速化やさらなる軽量化を進め、これ以上メモリ使用量を増やさない範囲で最適運用を追求したい。</p>
+      </div>
+      <div class="note-card">
+        <div class="note-qr-wrap">
+          <img src="../assets/note_qr.svg" alt="note QRコード">
+        </div>
+        <div class="note-info">
+          <span class="note-badge">noteで続きの研究を掲載予定！</span>
+          <h3>展示の深掘り・やり残した最適化の検証</h3>
+          <p>展示で触れきれなかった詳細情報やログに加え、カーネル最適化など今回やり足りなかった技術的挑戦の続きをnoteで順次公開予定！</p>
+          <div class="note-url">https://note.com/observer2003</div>
+        </div>
+      </div>
+    </div>
+    <footer class="source">
+      <span>ベンチマーク・詳細ログ：github.com/shin902/strix-halo-96GiB-RAM-DeepSeek-V4-Flash-0731-report</span><span>08 / 08</span>
+    </footer>
+  </section>
+</body>
+
+</html>

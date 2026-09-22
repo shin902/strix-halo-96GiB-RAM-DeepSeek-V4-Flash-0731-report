@@ -6,7 +6,8 @@
     "bench": "tsx src/cli.ts",
     "dry-run": "tsx src/cli.ts --mode dry-run --config configs/swebench-multilingual-web-30.json",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test test/**/*.test.ts"
+    "test": "tsx --test test/**/*.test.ts",
+    "poster": "python3 -m http.server 4173 --bind 127.0.0.1 --directory poster"
   },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "0.84.2"

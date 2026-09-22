@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>圧縮したモデルを96GBで動かす</title>
+  <style>
+    @page {
+      size: A3 landscape;
+      margin: 0
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      color: #202020;
+      background: #f4f4f4
+    }
+
+    .page {
+      width: 420mm;
+      height: 297mm;
+      padding: 20mm 22mm 25mm 42mm;
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+      break-after: page
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7mm;
+      font-size: 13pt;
+      font-weight: 700;
+      letter-spacing: .12em
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 11mm;
+      height: 1.4mm;
+      background: #202020
+    }
+
+    h1 {
+      font-size: 51pt;
+      line-height: 1.18;
+      letter-spacing: -.045em;
+      margin: 10mm 0 6mm
+    }
+
+    .lead {
+      font-size: 24pt;
+      font-weight: 700;
+      line-height: 1.5;
+      margin: 0;
+      max-width: 305mm
+    }
+
+    .rule {
+      height: .4mm;
+      background: #202020;
+      margin: 11mm 0 11mm
+    }
+
+    .problem {
+      display: grid;
+      grid-template-columns: 46mm 1fr;
+      gap: 7mm;
+      align-items: start;
+      margin-bottom: 11mm
+    }
+
+    .problem .tag {
+      font-size: 13pt;
+      font-weight: 700;
+      letter-spacing: .1em;
+      padding-top: 2mm
+    }
+
+    .problem p {
+      font-size: 23pt;
+      line-height: 1.5;
+      margin: 0;
+      font-weight: 700
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10mm
+    }
+
+    .step {
+      border-top: 1.2mm solid #202020;
+      padding-top: 5mm
+    }
+
+    .step .number {
+      font-size: 15pt;
+      font-weight: 700;
+      letter-spacing: .1em
+    }
+
+    .step h2 {
+      font-size: 29pt;
+      line-height: 1.3;
+      margin: 4mm 0 4mm;
+      letter-spacing: -.025em
+    }
+
+    .step p {
+      font-size: 18pt;
+      line-height: 1.58;
+      margin: 0
+    }
+
+    .step strong {
+      font-weight: 800
+    }
+
+    .takeaway {
+      display: flex;
+      align-items: baseline;
+      gap: 10mm;
+      margin-top: 13mm;
+      border: 1mm solid #202020;
+      padding: 7mm 9mm
+    }
+
+    .takeaway b {
+      font-size: 17pt;
+      white-space: nowrap
+    }
+
+    .takeaway p {
+      font-size: 20pt;
+      line-height: 1.45;
+      margin: 0;
+      font-weight: 700
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 13mm;
+      left: 42mm;
+      right: 22mm;
+      border-top: .3mm solid #202020;
+      padding-top: 4mm;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11pt;
+      color: #555
+    }
+
+    @media print {
+      body {
+        background: #fff
+      }
+
+      .page {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="page" aria-labelledby="title">
+    <div class="eyebrow">SECTION 03　/　入るのか</div>
+    <h1 id="title">圧縮したモデルを、96GBで動かす</h1>
+    <p class="lead">本来なら到底動かない超巨大モデルを、実用性を損なわない限界まで圧縮し、このパソコンで動かした。</p>
+    <div class="rule"></div>
+    <div class="problem">
+      <div class="tag">最初の達成</div>
+      <p>約81GBまで圧縮して読み込みに成功。実際に文章を生成できた。</p>
+    </div>
+    <div class="steps" aria-label="量子化でできたことと残った課題">
+      <div class="step">
+        <div class="number">モデル / WEIGHTS</div>
+        <h2>まずは圧縮してねじ込む</h2>
+        <p>賢さを維持できるギリギリまでデータを圧縮し、<strong>96GBの枠内に収めた</strong>。</p>
+      </div>
+      <div class="step">
+        <div class="number">実行 / INFERENCE</div>
+        <h2>手元でちゃんと動いた！</h2>
+        <p>専用ソフトで動かして<strong>短い対話を確認</strong>。Web系SWE-bench
+          30問では、Q2版もクラウドのフル精度版も<strong>20/30（66.7%）</strong>を解決し、総合スコアの品質劣化は見られなかった。</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <b>ここでの到達点</b>
+      <p>起動には成功したものの、メモリの余白はわずか。次は「使われない部分を削る」手法を試す。</p>
+    </div>
+    <footer class="footer"><span>Strix Halo × DeepSeek V4 Flash ｜ 96GBでの起動</span><span>03 / 08</span></footer>
+  </section>
+</body>
+
+</html>

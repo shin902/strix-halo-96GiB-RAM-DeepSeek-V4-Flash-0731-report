@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DS4 Flash — Poster Viewer</title><link rel="stylesheet" href="viewer.css"></head>
+<body>
+<header><div><h1>Poster Viewer <span>DS4 Flash</span></h1><p>A3横 × 8枚 · 2列 × 4段 · 仕上がり 幅80 × 高さ118.8 cm</p></div><nav><span id="status" role="status"></span><button id="reload">再読込</button><button id="print">PDF / 印刷 ↗</button></nav></header>
+<main><div class="intro"><span>全体レイアウト</span><span>HTMLはエディタで編集 · ページをクリックして拡大</span></div><div class="view-controls"><label><input id="trimmed" type="checkbox" checked> 裁断後をパネルに配置</label><span>外側を各2cmカット · パネル左右の余白は各5cm</span></div><div id="panel" class="trimmed"><span class="panel-label">展示パネル 90 × 180cm</span><div id="board"></div></div><p class="trim-note">印刷はA3横（42 × 29.7cm）。左列は左端、右列は右端を2cm切り、各40cm幅にします。紙同士の隙間は含みません。</p></main>
+<dialog id="detail"><div class="dialog-header"><span id="filename"></span><div><a id="original" target="_blank" rel="noopener">原稿を開く ↗</a><button id="close">閉じる ×</button></div></div><p id="trim-info" class="trim-note"></p><div class="preview-wrap"><iframe id="preview" title="A3拡大表示" sandbox="allow-same-origin"></iframe></div></dialog>
+<iframe id="print-frame" title="印刷用ポスター" sandbox="allow-same-origin allow-modals"></iframe>
+<script type="module" src="viewer.js"></script>
+</body></html>
