@@ -88,7 +88,7 @@
     }
 
     .weights {
-      width: 88.75%;
+      width: 87.9%;
       background: #222;
       color: white;
       padding: 5mm 7mm;
@@ -234,16 +234,16 @@
     <h1>そもそも、96GBに入るのか？</h1>
     <p class="lead">「96GBあれば余裕」と思いきや、実はギリギリでした。<br>CPUとGPUで共有するため、<strong>96GB丸ごとをモデルに使えるわけではない。</strong></p>
     <figure class="memory-figure" aria-label="モデルの重み、OSやその他のソフト、会話の記憶領域を足した量が、実際に使えるメモリ以下である必要がある">
-      <div class="memory-head"><strong>モデルだけで約89%</strong><span>OS認識RAM 91 GiB を基準</span></div>
+      <div class="memory-head"><strong>モデルだけで約88%</strong><span>OS認識RAM 92GB を基準</span></div>
       <div class="memory-bar">
         <div class="weights"><b>モデルファイル</b><strong>80.76 GiB</strong></div>
-        <div class="remainder">約10.2</div>
+        <div class="remainder">約11.1</div>
       </div>
       <div class="memory-key"><span>重みのファイルサイズ</span><span>残り：OS・実行環境 ＋ KVキャッシュ</span></div>
     </figure>
     <div class="takeaway">
       <h2>モデルは入った。<br>でも、残りはたった数GB。</h2>
-      <p>モデルだけで約81GB。OS分を引くと残りは約10GB未満しかなく、この狭い隙間で「長い会話」と「高速化」を両立できるかが最初の壁となった。</p>
+      <p>モデルだけで約81GB。OS分を引くと残りは約11GB未満しかなく、この狭い隙間で「長い会話」と「高速化」を両立できるかが最初の壁となった。</p>
     </div>
     <aside class="benchmark" aria-label="このモデルを試したい理由となる公式ベンチマーク">
       <h2>それでも載せたい理由 - Claude Opus 4.8とのベンチマークの比較</h2>
